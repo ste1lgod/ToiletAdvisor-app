@@ -356,6 +356,20 @@ body.dark .phoneCode{background:#2d3142;}
 #addForm input[type=text]:focus{border-color:var(--green);}
 #addSubmitBtn{padding:14px;background:var(--green);color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);}
 
+/* ===== OFFLINE BANNER ===== */
+#offlineBanner{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  background:#ef4444;color:#fff;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:10px 16px;
+  font-size:13px;font-weight:600;font-family:var(--font);
+  transform:translateY(-100%);
+  transition:transform .35s cubic-bezier(.32,1,.46,1);
+  box-shadow:0 2px 12px rgba(239,68,68,.4);
+}
+#offlineBanner.show{transform:translateY(0);}
+#offlineBanner svg{flex-shrink:0;opacity:.9;}
+
 /* Toast */
 #toast{
   position:fixed;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 8px);
@@ -370,6 +384,20 @@ body.dark #toast{background:#e2e8f0;color:#1a1a2e;}
 
 </head>
 <body>
+
+<!-- OFFLINE BANNER -->
+<div id="offlineBanner">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="1" y1="1" x2="23" y2="23"/>
+    <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/>
+    <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/>
+    <path d="M10.71 5.05A16 16 0 0 1 22.56 9"/>
+    <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/>
+    <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+    <circle cx="12" cy="20" r="1" fill="currentColor"/>
+  </svg>
+  <span id="offlineBannerText">Нет подключения к интернету — показаны сохранённые данные</span>
+</div>
 
 <!-- MAP -->
 <div id="map"></div>
@@ -589,6 +617,15 @@ body.dark #toast{background:#e2e8f0;color:#1a1a2e;}
 const API='https://toiletadvisor-server.onrender.com/api';
 const COLORS=['#019451','#3b82f6','#8b5cf6','#f59e0b','#ef4444','#06b6d4','#ec4899'];
 const TASHKENT=[41.2995,69.2401];
+const FALLBACK_TOILETS=[
+  {id:'seed-0001-tashkent-city-mall',lat:41.2956,lon:69.2797,title:'Туалет в Tashkent City Mall',description:'Чистый туалет на 1-м этаже ТРЦ Tashkent City Mall, рядом с фуд-кортом',isOpen:true,isFree:true,hasSoap:true,hasPaper:true,isAccessible:true,isTaharatkhana:false},
+  {id:'seed-0002-masjid-minor',lat:41.2871,lon:69.2768,title:'Тахаратхана у мечети Минор',description:'Место для омовения при мечети Минор. Горячая вода, мыло, тапочки',isOpen:true,isFree:true,hasSoap:true,hasPaper:false,isAccessible:false,isTaharatkhana:true},
+  {id:'seed-0003-railway-station',lat:41.3174,lon:69.2870,title:'Туалет на вокзале Ташкент-Главный',description:'Платный туалет в здании главного железнодорожного вокзала',isOpen:true,isFree:false,hasSoap:true,hasPaper:true,isAccessible:true,isTaharatkhana:false},
+  {id:'seed-0004-navoi-park',lat:41.3058,lon:69.2714,title:'Туалет в парке Алишера Навои',description:'Общественный туалет в центральной части парка Навои',isOpen:true,isFree:true,hasSoap:false,hasPaper:true,isAccessible:false,isTaharatkhana:false},
+  {id:'seed-0005-khastimom',lat:41.3276,lon:69.2623,title:'Тахаратхана в мечети Хастимом',description:'Тахаратхана при соборной мечети Хасти-Имом, рядом с медресе',isOpen:true,isFree:true,hasSoap:true,hasPaper:false,isAccessible:false,isTaharatkhana:true},
+  {id:'seed-0006-next-mall',lat:41.3376,lon:69.2841,title:'Туалет в ТРЦ Next',description:'Туалет на 2-м этаже торгового центра Next на Юнусабаде',isOpen:true,isFree:true,hasSoap:true,hasPaper:true,isAccessible:true,isTaharatkhana:false},
+  {id:'seed-0007-broadway',lat:41.2983,lon:69.2717,title:'Туалет на Broadway (пешеходная зона)',description:'Общественный платный туалет на пешеходной улице Сайилгох (Broadway)',isOpen:true,isFree:false,hasSoap:true,hasPaper:true,isAccessible:false,isTaharatkhana:false}
+];
 const T={
   ru:{search:'Поиск туалета...',loginBtn:'→ Войти',open:'Открыто',closed:'Закрыто',
       free:'🆓 Бесплатно',paid:'Платно',noReviews:'Пока нет отзывов',
@@ -653,6 +690,7 @@ function setLang(l){
   document.getElementById('searchInput').placeholder=t('search');
   document.getElementById('fnLabel').textContent=t('findNearest');
   updateLoginBtn();
+  if(typeof updateOfflineText==='function')updateOfflineText();
 }
 
 // ── LOGIN BTN ──
@@ -743,7 +781,17 @@ function findNearest(){
 <script>
 // ── MARKERS ──
 async function loadToilets(){
-  try{const r=await fetch(`${API}/toilets`);allToilets=await r.json();}catch(e){allToilets=[];}
+  try{
+    const r=await fetch(`${API}/toilets`,{signal:AbortSignal.timeout(8000)});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    allToilets=await r.json();
+    if(!Array.isArray(allToilets)||allToilets.length===0)throw new Error('empty');
+  }catch(e){
+    console.warn('Сервер недоступен, используются локальные данные:',e.message);
+    allToilets=FALLBACK_TOILETS;
+    if(!navigator.onLine)showOfflineBanner();
+    else showToast('⚠️ Сервер недоступен — показаны сохранённые данные');
+  }
   renderMarkers();
 }
 function renderMarkers(){
@@ -1078,6 +1126,34 @@ function showToast(msg){
   el.textContent=msg;el.classList.add('show');
   clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2800);
 }
+
+// ── OFFLINE BANNER ──
+const OFFLINE_TEXTS={
+  ru:'Нет подключения к интернету — показаны сохранённые данные',
+  uz:'Internet aloqasi yoq — saqlangan ma\'lumotlar ko\'rsatilmoqda',
+  en:'No internet connection — showing saved data'
+};
+function updateOfflineText(){
+  document.getElementById('offlineBannerText').textContent=OFFLINE_TEXTS[currentLang]||OFFLINE_TEXTS.ru;
+}
+function showOfflineBanner(){
+  updateOfflineText();
+  document.getElementById('offlineBanner').classList.add('show');
+  // сдвигаем headerPanel вниз чтобы баннер не перекрывал шапку
+  document.getElementById('headerPanel').style.marginTop='42px';
+}
+function hideOfflineBanner(){
+  document.getElementById('offlineBanner').classList.remove('show');
+  document.getElementById('headerPanel').style.marginTop='';
+}
+window.addEventListener('online',()=>{
+  hideOfflineBanner();
+  showToast('✓ Подключение восстановлено');
+  loadToilets();
+});
+window.addEventListener('offline',()=>showOfflineBanner());
+// Проверка при старте
+if(!navigator.onLine)showOfflineBanner();
 
 // ── INIT ──
 setLang(currentLang);
