@@ -2,263 +2,523 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0">
 <title>ToiletAdvisor</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Туалеты">
-<script src="https://api-maps.yandex.ru/2.1/?apikey=45bd36a1-ed61-4910-bba7-c4c36f55877b&lang=ru_RU&load=package.full" type="text/javascript"></script>
+<script src="https://api-maps.yandex.ru/2.1/?apikey=45bd36a1-ed61-4910-bba7-c4c36f55877b&lang=ru_RU&load=package.full"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
+/* ===== RESET ===== */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 *::-webkit-scrollbar{display:none;}
 *{scrollbar-width:none;}
+
+/* ===== DESIGN TOKENS ===== */
 :root{
   --green:#019451;
-  --green-light:#e6f5ee;
-  --green-mid:#c8eedd;
+  --green-l:#e8f5ee;
   --bg:#f4f8f5;
   --card:#ffffff;
-  --text:#1a1a1a;
+  --text:#111827;
   --text2:#6b7280;
   --border:#e5e7eb;
-  --shadow:0 2px 16px rgba(0,0,0,0.10);
-  --shadow2:0 8px 32px rgba(0,0,0,0.13);
-  --r:18px;
-  --rs:12px;
+  --sh:0 1px 8px rgba(0,0,0,0.08),0 4px 20px rgba(0,0,0,0.06);
+  --sh2:0 8px 40px rgba(0,0,0,0.14);
+  --r:20px;--rs:14px;
   --star:#f59e0b;
   --purple:#7c3aed;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --header-h:130px;
+  --nav-h:72px;
 }
-html,body{width:100%;height:100%;overflow:hidden;background:#dde8e2;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Rounded','Segoe UI',Roboto,sans-serif;}
+body.dark{
+  --bg:#0f1117;--card:#1c1f26;--text:#f1f5f9;--text2:#94a3b8;
+  --border:#2d3142;--sh:0 1px 8px rgba(0,0,0,0.35),0 4px 20px rgba(0,0,0,0.3);
+}
+
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-family:var(--font);color:var(--text);}
+
+/* ===== MAP ===== */
+#map{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;}
+
+/* ===== HEADER PANEL (solid white, no overlay) ===== */
+#headerPanel{
+  position:fixed;top:0;left:0;right:0;z-index:20;
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+  box-shadow:var(--sh);
+  padding-top:env(safe-area-inset-top,0px);
+}
+.hRow1{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 14px 8px;
+}
+#hTitle{font-size:17px;font-weight:700;letter-spacing:-.3px;white-space:nowrap;flex-shrink:0;}
+#hDot,#hAdv{color:var(--green);}
+.hControls{display:flex;align-items:center;gap:6px;margin-left:auto;}
+
+/* Lang dropdown */
+.langWrap{position:relative;}
+#langBtn{
+  display:flex;align-items:center;gap:4px;padding:6px 10px;
+  border:none;border-radius:10px;background:#f1f5f9;
+  color:var(--text);font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;
+}
+body.dark #langBtn{background:#2d3142;}
+#langChevron{width:10px;height:10px;transition:transform .18s;color:var(--text2);}
+#langBtn.open #langChevron{transform:rotate(180deg);}
+#langDrop{
+  position:absolute;top:calc(100%+6px);right:0;min-width:72px;
+  background:var(--card);border-radius:var(--rs);box-shadow:var(--sh2);
+  border:1px solid var(--border);overflow:hidden;z-index:200;
+  opacity:0;transform:translateY(-4px) scale(.97);pointer-events:none;
+  transition:opacity .16s,transform .16s;
+}
+#langDrop.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;}
+.lOpt{padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text);transition:background .12s;}
+.lOpt:hover,.lOpt.active{color:var(--green);}
+.lOpt:hover{background:var(--green-l);}
+
+/* Theme btn */
+#themeBtn{
+  width:34px;height:34px;border-radius:10px;background:#f1f5f9;border:none;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;
+}
+body.dark #themeBtn{background:#2d3142;}
+
+/* Login btn */
+#loginBtn{
+  padding:7px 13px;border:none;border-radius:12px;background:var(--green);
+  color:#fff;font-size:12px;font-weight:700;font-family:var(--font);
+  cursor:pointer;white-space:nowrap;flex-shrink:0;
+}
+#loginBtn:active{opacity:.82;}
+
+/* Search */
+.hRow2{padding:0 14px 8px;}
+#searchWrap{
+  display:flex;align-items:center;gap:8px;
+  background:var(--bg);border-radius:14px;padding:0 12px;
+  border:1.5px solid var(--border);
+}
+body.dark #searchWrap{background:#161a24;}
+#searchIco{display:flex;color:var(--text2);}
+#searchInput{
+  flex:1;border:none;background:transparent;padding:10px 4px;
+  font-size:14px;color:var(--text);outline:none;font-family:var(--font);
+}
+#searchInput::placeholder{color:var(--text2);}
+
+/* Chips */
+.hRow3{padding:0 14px 10px;}
+#categories{display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.catChip{
+  flex-shrink:0;padding:7px 14px;border-radius:20px;font-size:12px;font-weight:600;
+  font-family:var(--font);background:var(--card);color:var(--text2);
+  border:1.5px solid var(--border);cursor:pointer;white-space:nowrap;transition:all .18s;
+}
+body.dark .catChip{background:#1c1f26;}
+.catChip.active{background:var(--green);color:#fff;border-color:var(--green);}
 </style>
+
+<style>
+/* ===== GEO BTN (bottom-left, below zoom) ===== */
+#geoBtn{
+  position:fixed;left:14px;
+  bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 100px);
+  z-index:15;width:44px;height:44px;border-radius:50%;
+  background:rgba(255,255,255,0.88);backdrop-filter:blur(14px);
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 14px rgba(0,0,0,0.16);transition:transform .15s;
+}
+body.dark #geoBtn{background:rgba(28,31,38,0.92);}
+#geoBtn:active{transform:scale(.9);}
+
+/* ===== PULSING BLUE DOT ===== */
+@keyframes pulseRing{0%{transform:translate(-50%,-50%) scale(1);opacity:.55;}100%{transform:translate(-50%,-50%) scale(3.8);opacity:0;}}
+.uDotWrap{position:relative;width:20px;height:20px;}
+.uDotRing{
+  position:absolute;top:50%;left:50%;width:20px;height:20px;border-radius:50%;
+  background:rgba(59,130,246,.3);
+  animation:pulseRing 1.9s ease-out infinite;
+}
+.uDotCore{
+  position:absolute;top:50%;left:50%;
+  width:14px;height:14px;border-radius:50%;
+  background:#3b82f6;border:2.5px solid #fff;
+  transform:translate(-50%,-50%);
+  box-shadow:0 2px 8px rgba(59,130,246,.5);
+}
+
+/* ===== FIND NEAREST BUTTON ===== */
+#findNearestBtn{
+  position:fixed;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 4px);
+  left:50%;transform:translateX(-50%);z-index:15;
+  display:flex;align-items:center;gap:6px;
+  padding:11px 22px;background:var(--card);
+  border:1.5px solid var(--border);border-radius:28px;
+  font-size:13px;font-weight:700;font-family:var(--font);color:var(--green);
+  cursor:pointer;white-space:nowrap;
+  box-shadow:0 4px 20px rgba(0,0,0,0.11);
+  transition:transform .15s;
+}
+body.dark #findNearestBtn{background:rgba(28,31,38,0.94);}
+#findNearestBtn:active{transform:translateX(-50%) scale(.96);}
+
+/* ===== BOTTOM NAV ===== */
+#bottomNav{
+  position:fixed;bottom:0;left:0;right:0;z-index:20;
+  background:var(--card);border-top:1px solid var(--border);
+  display:flex;align-items:flex-end;justify-content:space-around;
+  padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px));
+  box-shadow:0 -2px 16px rgba(0,0,0,0.06);
+}
+.navBtn{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  background:none;border:none;cursor:pointer;color:var(--text2);
+  padding:2px 0;transition:color .18s;font-family:var(--font);
+}
+.navBtn.active{color:var(--green);}
+.navLabel{font-size:10px;font-weight:600;}
+.navIco svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.navCenter{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding-bottom:2px;}
+.navCenterCircle{
+  width:52px;height:52px;border-radius:50%;
+  background:var(--green);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 18px rgba(1,148,81,.45);
+  margin-top:-20px;transition:transform .15s;
+}
+.navCenterCircle:active{transform:scale(.92);}
+.navCenterCircle svg{width:24px;height:24px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+.navCenterLabel{font-size:10px;font-weight:600;color:var(--text2);font-family:var(--font);}
+</style>
+
+<style>
+/* ===== SHEET BACKDROP ===== */
+#sheetBackdrop{
+  position:fixed;inset:0;z-index:28;
+  background:rgba(0,0,0,0);pointer-events:none;
+  transition:background .3s;
+}
+#sheetBackdrop.vis{background:rgba(0,0,0,0.32);pointer-events:auto;}
+
+/* ===== BOTTOM SHEET ===== */
+#toiletSheet{
+  position:fixed;bottom:0;left:0;right:0;z-index:30;
+  background:var(--card);border-radius:24px 24px 0 0;
+  max-height:82vh;
+  transform:translateY(100%);
+  transition:transform .36s cubic-bezier(.32,1,.46,1);
+  box-shadow:0 -4px 40px rgba(0,0,0,0.16);
+  will-change:transform;touch-action:none;
+}
+#toiletSheet.open{transform:translateY(0);}
+
+#sDragZone{padding:12px 0 4px;cursor:grab;user-select:none;-webkit-user-select:none;}
+#sHandle{width:40px;height:4px;background:#d1d5db;border-radius:4px;margin:0 auto;}
+body.dark #sHandle{background:#3d4258;}
+#sScroll{padding:4px 20px 110px;max-height:calc(82vh - 30px);overflow-y:auto;}
+
+/* Sheet inner */
+#sTopRow{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px;}
+#sTitle{font-size:18px;font-weight:700;color:var(--text);flex:1;line-height:1.3;}
+#sRatingPill{display:flex;align-items:center;gap:3px;background:#fef3c7;border-radius:10px;padding:5px 10px;font-weight:700;font-size:13px;flex-shrink:0;color:#92400e;}
+#sPills{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px;}
+.mPill{padding:5px 12px;border-radius:12px;font-size:12px;font-weight:600;white-space:nowrap;font-family:var(--font);}
+.pBlue{background:#dbeafe;color:#1e40af;}
+.pGreen{background:#d1fae5;color:#065f46;}
+.pGreen2{background:#dcfce7;color:#166534;}
+.pRed{background:#fee2e2;color:#991b1b;}
+
+#taharatBlock{background:linear-gradient(135deg,#e6f5ee,#d0f0e0);border-radius:var(--r);padding:14px;margin-bottom:14px;}
+body.dark #taharatBlock{background:linear-gradient(135deg,#0a2e1c,#0f3d27);}
+#taharatTitle{font-size:14px;font-weight:700;color:#065f46;}
+#taharatSub{font-size:12px;color:#047857;margin-top:2px;}
+#taharatGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 10px;}
+.tItem{background:rgba(255,255,255,.72);border-radius:10px;padding:8px 10px;font-size:12.5px;font-weight:600;color:#065f46;}
+body.dark .tItem{background:rgba(255,255,255,.08);}
+#taharatNote{font-size:11.5px;color:#047857;line-height:1.5;}
+
+#sBadges{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px;}
+.sBadge{padding:5px 12px;border-radius:12px;font-size:12px;font-weight:500;background:#f3f4f6;color:#4b5563;}
+body.dark .sBadge{background:#2d3142;color:#94a3b8;}
+#sDesc{font-size:13px;color:var(--text2);line-height:1.6;padding:10px 14px;background:var(--bg);border-radius:var(--rs);margin-bottom:16px;}
+
+#reviewsTitle{font-size:16px;font-weight:700;color:var(--text);margin-bottom:10px;}
+.rvItem{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.rvItem:last-child{border-bottom:none;}
+.rvAvatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;flex-shrink:0;}
+.rvBody{flex:1;}
+.rvName{font-weight:600;font-size:13px;color:var(--text);}
+.rvDate{font-size:11px;color:var(--text2);margin-left:6px;}
+.rvStars{color:var(--star);font-size:12px;letter-spacing:1px;margin:3px 0;}
+.rvText{font-size:13px;color:var(--text2);line-height:1.5;}
+
+#reviewForm{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+#starRow{display:flex;gap:6px;margin-bottom:10px;}
+.starBtn{font-size:28px;color:#d1d5db;cursor:pointer;transition:color .15s,transform .1s;user-select:none;}
+.starBtn.lit{color:var(--star);}
+.starBtn:hover{transform:scale(1.15);}
+#authNotice{padding:12px 14px;background:#f0fdf4;border-radius:var(--rs);font-size:13px;color:#166534;font-weight:500;margin-bottom:10px;border:1px solid #bbf7d0;cursor:pointer;}
+body.dark #authNotice{background:#0a2e1c;border-color:#166534;color:#4ade80;}
+#reviewText{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);font-size:14px;resize:none;min-height:80px;font-family:var(--font);outline:none;transition:border-color .2s;}
+#reviewText:focus{border-color:var(--green);}
+#formBtns{display:flex;flex-direction:column;gap:9px;margin-top:10px;}
+#submitReviewBtn{padding:13px;background:var(--green);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:700;font-family:var(--font);cursor:pointer;}
+#submitReviewBtn:active{opacity:.85;}
+#routeBtn{padding:13px;background:transparent;color:var(--green);border:2px solid var(--green);border-radius:var(--rs);font-size:14px;font-weight:700;font-family:var(--font);cursor:pointer;}
+#routeBtn:hover{background:var(--green-l);}
+</style>
+
+<style>
+/* ===== OVERLAYS & MODALS ===== */
+.overlay{
+  position:fixed;inset:0;z-index:50;
+  background:rgba(0,0,0,.48);
+  display:flex;align-items:flex-end;
+  backdrop-filter:blur(5px);
+  animation:fadeIn .2s ease;
+}
+.overlay.hidden{display:none!important;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+.mBox{
+  background:var(--card);border-radius:24px 24px 0 0;
+  padding:0 22px 32px;width:100%;
+  max-height:90vh;overflow-y:auto;
+  animation:slideUp .28s cubic-bezier(.32,1,.46,1);
+  touch-action:none;
+}
+@keyframes slideUp{from{transform:translateY(56px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+
+.mDragZone{padding:12px 0 4px;cursor:grab;user-select:none;}
+.mHandle{width:40px;height:4px;background:#d1d5db;border-radius:4px;margin:0 auto;}
+body.dark .mHandle{background:#3d4258;}
+
+.mTitle{font-size:18px;font-weight:700;color:var(--text);text-align:center;margin-bottom:6px;line-height:1.4;font-family:var(--font);}
+.mSub{font-size:13px;color:var(--text2);font-weight:400;}
+.mNotice{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:10px 14px;font-size:13px;color:#166534;text-align:center;margin:10px 0 14px;}
+body.dark .mNotice{background:#0a2e1c;border-color:#166534;color:#4ade80;}
+
+.mTabRow{display:flex;border-radius:var(--rs);overflow:hidden;border:1.5px solid var(--border);margin-bottom:14px;}
+.mTab{flex:1;padding:11px;font-size:13px;font-weight:600;background:#f3f4f6;color:var(--text2);border:none;cursor:pointer;transition:all .2s;font-family:var(--font);}
+.mTab.active{background:var(--green);color:#fff;}
+body.dark .mTab{background:#2d3142;}
+
+.phoneRow{display:flex;align-items:center;border:1.5px solid var(--border);border-radius:var(--rs);overflow:hidden;margin-bottom:10px;background:var(--bg);}
+.phoneCode{padding:13px 12px;font-size:14px;font-weight:600;color:var(--text);background:#e9edf0;border-right:1px solid var(--border);white-space:nowrap;}
+body.dark .phoneCode{background:#2d3142;}
+.phoneRow input{flex:1;padding:13px 12px;border:none;background:transparent;font-size:14px;color:var(--text);outline:none;font-family:var(--font);}
+
+.passRow{display:flex;align-items:center;border:1.5px solid var(--border);border-radius:var(--rs);overflow:hidden;margin-bottom:14px;background:var(--bg);}
+.passRow input{flex:1;padding:13px 12px;border:none;background:transparent;font-size:14px;color:var(--text);outline:none;font-family:var(--font);}
+.eyeBtn{padding:0 14px;background:none;border:none;font-size:18px;cursor:pointer;color:var(--text2);}
+
+.pInput{width:100%;padding:13px 14px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--bg);font-size:14px;color:var(--text);outline:none;margin-bottom:10px;display:block;font-family:var(--font);}
+.pInput:focus{border-color:var(--green);}
+.mainBtn{width:100%;padding:14px;background:var(--green);color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;margin-bottom:8px;}
+.mainBtn:active{opacity:.85;}
+.secBtn{width:100%;padding:11px;background:none;border:1.5px solid var(--border);border-radius:var(--rs);font-size:12.5px;color:var(--text2);cursor:pointer;margin-bottom:8px;font-family:var(--font);}
+.cancelBtn{width:100%;padding:11px;background:var(--bg);border:none;border-radius:var(--rs);font-size:14px;color:var(--text2);cursor:pointer;font-family:var(--font);}
+
+/* checkboxes */
+.chkGrid{display:flex;flex-wrap:wrap;gap:8px;}
+.chkGrid label{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text);cursor:pointer;padding:8px 12px;background:var(--card);border-radius:var(--rs);border:1px solid var(--border);font-family:var(--font);}
+.chkGrid input[type=checkbox]{width:auto;accent-color:var(--green);}
+
+/* Tab screens */
+.tScreen{position:fixed;top:0;left:0;right:0;bottom:0;z-index:12;background:var(--bg);display:flex;flex-direction:column;align-items:center;overflow-y:auto;}
+.tScreen.hidden{display:none!important;}
+.hidden{display:none!important;}
+
+#profileScreen{padding-top:100px;gap:8px;}
+#pHeader{font-size:22px;font-weight:700;color:var(--text);font-family:var(--font);}
+#pSub{font-size:14px;color:var(--text2);margin-top:4px;}
+#pInfo{margin-top:16px;padding:14px 24px;background:var(--card);border-radius:var(--r);box-shadow:var(--sh);font-size:14px;color:var(--text);text-align:center;min-width:200px;}
+#pLogoutBtn{margin-top:12px;padding:12px 32px;background:#ef4444;color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);}
+
+#adminDeniedScreen{padding-top:120px;gap:8px;text-align:center;}
+#adIcon{font-size:52px;margin-bottom:8px;}
+#adTitle{font-size:20px;font-weight:700;color:var(--text);font-family:var(--font);}
+#adText{font-size:13px;color:var(--text2);padding:0 24px;line-height:1.6;margin-top:8px;}
+#adBtn{margin-top:20px;padding:13px 28px;background:var(--green);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);}
+
+#addScreen{padding:80px 16px 100px;align-items:stretch;}
+#addScreenTitle{font-size:20px;font-weight:700;color:var(--text);text-align:center;padding:16px 0 6px;font-family:var(--font);}
+#addMapHint{font-size:13px;color:var(--green);text-align:center;margin:0 0 12px;padding:10px;background:var(--green-l);border-radius:var(--rs);font-weight:500;}
+#addForm{display:flex;flex-direction:column;gap:10px;}
+#addForm input[type=text]{width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--card);font-size:14px;color:var(--text);outline:none;font-family:var(--font);}
+#addForm input[type=text]:focus{border-color:var(--green);}
+#addSubmitBtn{padding:14px;background:var(--green);color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);}
+
+/* Toast */
+#toast{
+  position:fixed;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 8px);
+  left:50%;transform:translateX(-50%) translateY(12px);
+  background:#1a1a2e;color:#fff;padding:10px 20px;border-radius:20px;
+  font-size:13px;font-weight:600;white-space:nowrap;
+  opacity:0;transition:opacity .3s,transform .3s;z-index:100;pointer-events:none;font-family:var(--font);
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+body.dark #toast{background:#e2e8f0;color:#1a1a2e;}
+</style>
+
 </head>
 <body>
 
-<!-- PHONE FRAME WRAPPER -->
-<div id="phoneFrame">
-<style>
-#phoneFrame{
-  position:fixed;top:0;left:0;right:0;bottom:0;
-  display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(135deg,#b8d5c4 0%,#8fbbaa 100%);
-  z-index:0;
-}
-@media(max-width:500px){
-  #phoneFrame{background:#f4f8f5;}
-  #appShell{width:100%!important;height:100%!important;border-radius:0!important;box-shadow:none!important;}
-  #phoneFrame::before,#phoneFrame::after{display:none!important;}
-}
-#appShell{
-  position:relative;
-  width:390px;height:844px;
-  border-radius:52px;
-  background:#f4f8f5;
-  box-shadow:0 30px 80px rgba(0,0,0,0.35),inset 0 0 0 1px rgba(255,255,255,0.2);
-  overflow:hidden;
-  display:flex;flex-direction:column;
-}
-/* Dynamic Island */
-#appShell::before{
-  content:'';
-  position:absolute;top:12px;left:50%;transform:translateX(-50%);
-  width:120px;height:34px;
-  background:#000;border-radius:20px;
-  z-index:200;pointer-events:none;
-}
-</style>
-
-<div id="appShell">
-
-<!-- MAP LAYER -->
+<!-- MAP -->
 <div id="map"></div>
-<style>
-#map{position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;}
-</style>
 
-<!-- HEADER -->
-<div id="header">
-<div id="headerTitle"><span id="headerDot">•</span> Toilet <span id="headerAdvisor">Advisor</span></div>
-<div id="langChips">
-  <button class="langChip" id="chipRU" onclick="setLang('ru')">RU</button>
-  <button class="langChip" id="chipUZ" onclick="setLang('uz')">UZ</button>
+<!-- ===== HEADER ===== -->
+<div id="headerPanel">
+  <div class="hRow1">
+    <div id="hTitle"><span id="hDot">•</span> Toilet <span id="hAdv">Advisor</span></div>
+    <div class="hControls">
+      <div class="langWrap">
+        <button id="langBtn" onclick="toggleLangDrop()">
+          <span id="langLabel">RU</span>
+          <svg id="langChevron" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="2,3 5,7 8,3"/></svg>
+        </button>
+        <div id="langDrop">
+          <div class="lOpt" onclick="setLang('ru')">RU</div>
+          <div class="lOpt" onclick="setLang('uz')">UZ</div>
+          <div class="lOpt" onclick="setLang('en')">EN</div>
+        </div>
+      </div>
+      <button id="themeBtn" onclick="toggleTheme()">🌙</button>
+      <button id="loginBtn" onclick="onLoginBtnClick()">→ Войти</button>
+    </div>
+  </div>
+  <div class="hRow2">
+    <div id="searchWrap">
+      <div id="searchIco">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+      <input type="text" id="searchInput" placeholder="Поиск туалета...">
+    </div>
+  </div>
+  <div class="hRow3">
+    <div id="categories">
+      <button class="catChip active" data-cat="all">🗺️ Все</button>
+      <button class="catChip" data-cat="taharatkhana">🕌 Тахаратхана</button>
+      <button class="catChip" data-cat="free">🆓 Бесплатно</button>
+      <button class="catChip" data-cat="soap">🧼 С мылом</button>
+      <button class="catChip" data-cat="paper">🧻 С бумагой</button>
+      <button class="catChip" data-cat="accessible">♿ Доступные</button>
+    </div>
+  </div>
 </div>
-<button id="loginBtn" onclick="onLoginBtnClick()"></button>
-</div>
-<style>
-#header{
-  position:absolute;top:56px;left:12px;right:12px;z-index:10;
-  display:flex;align-items:center;gap:8px;
-  background:rgba(255,255,255,0.95);
-  border-radius:26px;padding:10px 16px;
-  box-shadow:var(--shadow);
-  backdrop-filter:blur(12px);
-}
-#headerTitle{font-size:15px;font-weight:700;color:#1a1a1a;white-space:nowrap;flex-shrink:0;}
-#headerDot{color:var(--green);}
-#headerAdvisor{color:var(--green);}
-#langChips{display:flex;gap:4px;margin-left:auto;}
-.langChip{
-  padding:5px 11px;border-radius:14px;border:none;
-  background:#e9edf0;color:#555;font-size:12px;font-weight:600;cursor:pointer;
-  transition:all .2s;
-}
-.langChip.active{background:#4b5563;color:#fff;}
-#loginBtn{
-  flex-shrink:0;
-  padding:7px 14px;border:none;border-radius:16px;
-  background:var(--green);color:#fff;
-  font-size:12px;font-weight:700;cursor:pointer;
-  white-space:nowrap;transition:opacity .2s;
-}
-#loginBtn:hover{opacity:.85;}
-</style>
 
-<!-- SEARCH BAR -->
-<div id="searchWrap">
-  <span id="searchIcon">🔍</span>
-  <input type="text" id="searchInput" placeholder="Поиск туалета...">
-</div>
-<style>
-#searchWrap{
-  position:absolute;top:112px;left:12px;right:12px;z-index:10;
-  display:flex;align-items:center;gap:8px;
-  background:#fff;border-radius:22px;padding:0 14px;
-  box-shadow:var(--shadow);border:1.5px solid var(--border);
-}
-#searchIcon{font-size:16px;color:var(--text2);}
-#searchInput{
-  flex:1;border:none;background:transparent;padding:12px 4px;
-  font-size:14px;color:var(--text);outline:none;
-}
-#searchInput::placeholder{color:var(--text2);}
-</style>
+<!-- GEO BUTTON -->
+<button id="geoBtn" onclick="goToMyLocation()">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="3"/>
+    <path d="M12 2v3m0 14v3M2 12h3m14 0h3"/>
+    <circle cx="12" cy="12" r="8" stroke-dasharray="2 3" opacity=".4"/>
+  </svg>
+</button>
 
-<!-- CATEGORY CHIPS -->
-<div id="categories">
-  <button class="catChip active" data-cat="all">🗺️ Все</button>
-  <button class="catChip" data-cat="taharatkhana">🕌 Тахаратхана</button>
-  <button class="catChip" data-cat="free">🆓 Бесплатно</button>
-  <button class="catChip" data-cat="soap">🧼 С мылом</button>
-  <button class="catChip" data-cat="paper">🧻 С бумагой</button>
-  <button class="catChip" data-cat="accessible">♿ Доступные</button>
-</div>
-<style>
-#categories{
-  position:absolute;top:162px;left:12px;right:0;z-index:10;
-  display:flex;gap:8px;
-  overflow-x:auto;padding-bottom:4px;padding-right:12px;
-  -webkit-overflow-scrolling:touch;
-}
-.catChip{
-  flex-shrink:0;padding:8px 16px;border-radius:20px;
-  font-size:12.5px;font-weight:600;
-  background:#fff;color:var(--text2);
-  border:1.5px solid var(--border);cursor:pointer;
-  box-shadow:var(--shadow);white-space:nowrap;transition:all .2s;
-}
-.catChip.active{background:var(--green);color:#fff;border-color:var(--green);}
-</style>
+<!-- FIND NEAREST -->
+<button id="findNearestBtn" onclick="findNearest()">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+  <span id="fnLabel">Найти ближайший туалет</span>
+</button>
 
 <!-- BOTTOM NAV -->
 <div id="bottomNav">
   <button class="navBtn active" data-tab="map" onclick="switchTab('map')">
-    <span class="navIcon">🗺️</span>
+    <div class="navIco"><svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></div>
     <span class="navLabel">Карта</span>
   </button>
-  <button class="navBtn navCenter" data-tab="add" onclick="switchTab('add')">
-    <span class="navCenterCircle">＋</span>
-    <span class="navLabel">Добавить</span>
-  </button>
+  <div class="navCenter" onclick="switchTab('add')">
+    <div class="navCenterCircle">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </div>
+    <span class="navCenterLabel">Добавить</span>
+  </div>
   <button class="navBtn" data-tab="profile" onclick="switchTab('profile')">
-    <span class="navIcon">👤</span>
+    <div class="navIco"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
     <span class="navLabel">Профиль</span>
   </button>
 </div>
-<style>
-#bottomNav{
-  position:absolute;bottom:0;left:0;right:0;z-index:15;
-  display:flex;align-items:center;justify-content:space-around;
-  background:rgba(255,255,255,0.97);
-  border-top:1px solid var(--border);
-  padding:8px 0 16px;
-  backdrop-filter:blur(12px);
-}
-.navBtn{
-  display:flex;flex-direction:column;align-items:center;gap:2px;
-  background:none;border:none;cursor:pointer;
-  color:var(--text2);font-size:11px;font-weight:500;
-  padding:2px 20px;transition:color .2s;
-}
-.navBtn.active{color:var(--green);}
-.navIcon{font-size:22px;}
-.navLabel{font-size:10.5px;font-weight:600;}
-.navCenterCircle{
-  width:48px;height:48px;border-radius:50%;
-  background:var(--green);color:#fff;
-  font-size:26px;font-weight:300;
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 4px 16px rgba(1,148,81,0.4);
-  margin-top:-18px;
-}
-</style>
 
-<!-- PROFILE TAB SCREEN -->
-<div id="profileScreen" class="tabScreen hidden">
-  <div id="profileScreenHeader">Профиль</div>
-  <div id="profileScreenSub">Настройки профиля появятся здесь</div>
-  <div id="profileUserInfo"></div>
-  <button id="profileLogoutBtn" class="hidden" onclick="doLogout()">🚪 Выйти из аккаунта</button>
+<!-- SHEET BACKDROP -->
+<div id="sheetBackdrop" onclick="closeSheet()"></div>
+
+<!-- BOTTOM SHEET -->
+<div id="toiletSheet">
+  <div id="sDragZone"><div id="sHandle"></div></div>
+  <div id="sScroll">
+    <div id="sTopRow">
+      <div id="sTitle">Название</div>
+      <div id="sRatingPill"><span>⭐</span><span id="sRatingVal">—</span></div>
+    </div>
+    <div id="sPills">
+      <span class="mPill pBlue" id="sDistPill">▵ — км от вас</span>
+      <span class="mPill pGreen" id="sOpenPill">Открыто</span>
+      <span class="mPill pGreen2" id="sFreePill">🆓 Бесплатно</span>
+    </div>
+    <div id="taharatBlock" class="hidden">
+      <div id="taharatTitle">🕌 Тахоратхона / Тахаратхана</div>
+      <div id="taharatSub">Место для омовения перед намазом</div>
+      <div id="taharatGrid">
+        <div class="tItem">🔥 Горячая вода</div>
+        <div class="tItem">🧼 Мыло</div>
+        <div class="tItem">🧻 Полотенца</div>
+        <div class="tItem">🩴 Тапочки</div>
+      </div>
+      <div id="taharatNote">Специально оборудованное место для омовения. Чистые условия, горячая вода, мыло и одноразовые полотенца.</div>
+    </div>
+    <div id="sBadges"></div>
+    <div id="sDesc"></div>
+    <div id="reviewsTitle">Отзывы</div>
+    <div id="reviewsList"></div>
+    <div id="reviewForm">
+      <div id="starRow">
+        <span class="starBtn" data-s="1">☆</span><span class="starBtn" data-s="2">☆</span>
+        <span class="starBtn" data-s="3">☆</span><span class="starBtn" data-s="4">☆</span>
+        <span class="starBtn" data-s="5">☆</span>
+      </div>
+      <div id="authNotice" class="hidden">🔒 Чтобы оставить оценку, пожалуйста, войдите в систему</div>
+      <textarea id="reviewText" placeholder="Опишите ваши впечатления..."></textarea>
+      <div id="formBtns">
+        <button id="submitReviewBtn" onclick="submitReview()">▲ Отправить</button>
+        <button id="routeBtn" onclick="goRoute()">📍 Маршрут / Йўналиш</button>
+      </div>
+    </div>
+  </div>
 </div>
-<style>
-.tabScreen{
-  position:absolute;top:0;left:0;right:0;bottom:0;z-index:12;
-  background:var(--bg);
-  display:flex;flex-direction:column;align-items:center;
-  padding-top:100px;gap:8px;
-}
-.hidden{display:none!important;}
-#profileScreenHeader{font-size:22px;font-weight:700;color:var(--text);}
-#profileScreenSub{font-size:14px;color:var(--text2);margin-top:4px;}
-#profileUserInfo{
-  margin-top:16px;padding:14px 24px;background:#fff;
-  border-radius:var(--r);box-shadow:var(--shadow);
-  font-size:14px;color:var(--text);text-align:center;min-width:200px;
-}
-#profileLogoutBtn{
-  margin-top:12px;padding:12px 32px;
-  background:#ef4444;color:#fff;border:none;
-  border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;
-}
-</style>
 
-<!-- ADMIN ACCESS DENIED SCREEN -->
-<div id="adminDeniedScreen" class="tabScreen hidden">
-  <div id="adminDeniedIcon">🔒</div>
-  <div id="adminDeniedTitle">Доступ ограничен</div>
-  <div id="adminDeniedText">Эта вкладка предназначена только для администраторов Toilet Advisor.<br><br>Кириш тақиқланган. Бу бўлим фақат администраторлар учун.</div>
-  <button id="adminDeniedBtn" onclick="openAdminLogin()">⚙️ Войти как Админ</button>
+<!-- PROFILE SCREEN -->
+<div id="profileScreen" class="tScreen hidden">
+  <div id="pHeader">Профиль</div>
+  <div id="pSub">Настройки профиля появятся здесь</div>
+  <div id="pInfo"></div>
+  <button id="pLogoutBtn" class="hidden" onclick="doLogout()">🚪 Выйти из аккаунта</button>
 </div>
-<style>
-#adminDeniedIcon{font-size:52px;margin-bottom:8px;}
-#adminDeniedTitle{font-size:20px;font-weight:700;color:var(--text);text-align:center;}
-#adminDeniedText{font-size:13px;color:var(--text2);text-align:center;padding:0 24px;line-height:1.6;margin-top:8px;}
-#adminDeniedBtn{
-  margin-top:20px;padding:13px 28px;
-  background:var(--green);color:#fff;border:none;
-  border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;
-}
-</style>
 
-<!-- ADD TOILET ADMIN SCREEN -->
-<div id="addScreen" class="tabScreen hidden" style="padding-top:70px;overflow-y:auto;padding-bottom:80px;display:block;">
+<!-- ADMIN DENIED SCREEN -->
+<div id="adminDeniedScreen" class="tScreen hidden">
+  <div id="adIcon">🔒</div>
+  <div id="adTitle">Доступ ограничен</div>
+  <div id="adText">Эта вкладка предназначена только для администраторов Toilet Advisor.<br><br>Кириш тақиқланган. Бу бўлим фақат администраторлар учун.</div>
+  <button id="adBtn" onclick="openAdminLogin()">⚙️ Войти как Админ</button>
+</div>
+
+<!-- ADD TOILET SCREEN (admin) -->
+<div id="addScreen" class="tScreen hidden">
   <div id="addScreenTitle">➕ Добавить туалет</div>
   <div id="addMapHint">📍 Нажмите на карту, чтобы выбрать место</div>
   <div id="addForm">
     <input type="text" id="addTitle" placeholder="Название туалета">
     <input type="text" id="addDesc" placeholder="Описание (необязательно)">
     <input type="text" id="addPhoto" placeholder="Ссылка на фото (необязательно)">
-    <div class="checkGrid">
+    <div class="chkGrid">
       <label><input type="checkbox" id="addIsFree" checked> 🆓 Бесплатно</label>
       <label><input type="checkbox" id="addIsOpen" checked> 🟢 Открыто</label>
       <label><input type="checkbox" id="addHasSoap"> 🧼 Мыло</label>
@@ -269,284 +529,47 @@ html,body{width:100%;height:100%;overflow:hidden;background:#dde8e2;font-family:
     <button id="addSubmitBtn" onclick="submitAddToilet()">✅ Добавить</button>
   </div>
 </div>
-<style>
-#addScreenTitle{font-size:20px;font-weight:700;color:var(--text);text-align:center;padding:16px 0 6px;}
-#addMapHint{
-  font-size:13px;color:var(--green);text-align:center;
-  margin:0 16px 12px;padding:10px;
-  background:var(--green-light);border-radius:var(--rs);
-  font-weight:500;
-}
-#addForm{padding:0 16px;display:flex;flex-direction:column;gap:10px;}
-#addForm input[type="text"]{
-  width:100%;padding:13px 16px;
-  border:1.5px solid var(--border);border-radius:var(--rs);
-  background:#fff;font-size:14px;color:var(--text);outline:none;
-}
-#addForm input[type="text"]:focus{border-color:var(--green);}
-.checkGrid{display:flex;flex-wrap:wrap;gap:8px;}
-.checkGrid label{
-  display:flex;align-items:center;gap:6px;
-  font-size:13px;color:var(--text);cursor:pointer;
-  padding:8px 12px;background:#fff;
-  border-radius:var(--rs);border:1px solid var(--border);
-}
-.checkGrid input[type="checkbox"]{width:auto;accent-color:var(--green);}
-#addSubmitBtn{
-  padding:14px;background:var(--green);color:#fff;
-  border:none;border-radius:var(--rs);
-  font-size:15px;font-weight:700;cursor:pointer;
-  margin-top:4px;
-}
-</style>
-
-<!-- BOTTOM SHEET: TOILET DETAILS -->
-<div id="toiletSheet">
-  <div id="sheetHandle"></div>
-  <button id="sheetClose" onclick="closeSheet()">✕</button>
-  <div id="sheetScroll">
-
-    <!-- Title + Rating -->
-    <div id="sheetTopRow">
-      <div id="sheetTitle">Название</div>
-      <div id="sheetRatingPill"><span id="sheetRatingStar">⭐</span><span id="sheetRatingVal">—</span></div>
-    </div>
-
-    <!-- Meta pills -->
-    <div id="sheetPills">
-      <span class="metaPill pillBlue" id="sheetDistPill">▵ — км от вас</span>
-      <span class="metaPill pillGreen" id="sheetOpenPill">Открыто</span>
-      <span class="metaPill pillGreen2" id="sheetFreePill">🆓 Бесплатно</span>
-    </div>
-
-    <!-- Taharatkhana block (conditional) -->
-    <div id="taharatBlock" class="hidden">
-      <div id="taharatHeader">
-        <div id="taharatTitle">🕌 Тахоратхона / Тахаратхана</div>
-        <div id="taharatSub">Место для омовения перед намазом</div>
-      </div>
-      <div id="taharatGrid">
-        <div class="taharatItem">🔥 Горячая вода</div>
-        <div class="taharatItem">🧼 Мыло</div>
-        <div class="taharatItem">🧻 Полотенца</div>
-        <div class="taharatItem">🩴 Тапочки</div>
-      </div>
-      <div id="taharatNote">Специально оборудованное место для омовения. Чистые условия, горячая вода, мыло и одноразовые полотенца.</div>
-    </div>
-
-    <!-- Amenity badges -->
-    <div id="sheetBadges"></div>
-
-    <!-- Description -->
-    <div id="sheetDesc"></div>
-
-    <!-- Reviews section -->
-    <div id="reviewsTitle">Отзывы</div>
-    <div id="reviewsList"></div>
-
-    <!-- Review form -->
-    <div id="reviewForm">
-      <div id="starRow">
-        <span class="starBtn" data-s="1">☆</span>
-        <span class="starBtn" data-s="2">☆</span>
-        <span class="starBtn" data-s="3">☆</span>
-        <span class="starBtn" data-s="4">☆</span>
-        <span class="starBtn" data-s="5">☆</span>
-      </div>
-      <div id="authNotice" class="hidden">🔒 Чтобы оставить оценку, пожалуйста, войдите в систему</div>
-      <textarea id="reviewText" placeholder="Опишите ваши впечатления..."></textarea>
-      <div id="formBtns">
-        <button id="submitReviewBtn" onclick="submitReview()">▲ Отправить</button>
-        <button id="routeBtn" onclick="goRoute()">📍 Маршрут / Йўналиш</button>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<style>
-/* BOTTOM SHEET */
-#toiletSheet{
-  position:absolute;bottom:0;left:0;right:0;z-index:20;
-  background:#fff;border-radius:26px 26px 0 0;
-  max-height:78vh;
-  transform:translateY(100%);
-  transition:transform .35s cubic-bezier(.4,0,.2,1);
-  box-shadow:0 -8px 40px rgba(0,0,0,0.15);
-}
-#toiletSheet.open{transform:translateY(0);}
-#sheetHandle{
-  width:44px;height:4px;background:#ddd;border-radius:4px;
-  margin:14px auto 0;
-}
-#sheetClose{
-  position:absolute;top:14px;right:16px;
-  background:none;border:none;font-size:20px;
-  color:var(--text2);cursor:pointer;z-index:2;
-}
-#sheetScroll{
-  padding:16px 20px 110px;
-  max-height:calc(78vh - 30px);
-  overflow-y:auto;
-}
-#sheetTopRow{
-  display:flex;align-items:flex-start;justify-content:space-between;gap:8px;
-  margin-bottom:10px;
-}
-#sheetTitle{font-size:18px;font-weight:700;color:var(--text);flex:1;line-height:1.3;}
-#sheetRatingPill{
-  display:flex;align-items:center;gap:3px;
-  background:#fef3c7;border-radius:12px;
-  padding:5px 10px;font-weight:700;font-size:14px;
-  flex-shrink:0;color:#92400e;
-}
-#sheetPills{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px;}
-.metaPill{
-  padding:5px 12px;border-radius:14px;
-  font-size:12px;font-weight:600;white-space:nowrap;
-}
-.pillBlue{background:#dbeafe;color:#1e40af;}
-.pillGreen{background:#d1fae5;color:#065f46;}
-.pillGreen2{background:#dcfce7;color:#166534;}
-/* Taharatkhana block */
-#taharatBlock{
-  background:linear-gradient(135deg,#e6f5ee,#d0f0e0);
-  border-radius:var(--r);padding:14px;margin-bottom:14px;
-}
-#taharatTitle{font-size:14px;font-weight:700;color:#065f46;}
-#taharatSub{font-size:12px;color:#047857;margin-top:2px;}
-#taharatGrid{
-  display:grid;grid-template-columns:1fr 1fr;
-  gap:8px;margin:12px 0 10px;
-}
-.taharatItem{
-  background:rgba(255,255,255,0.7);border-radius:10px;
-  padding:8px 10px;font-size:12.5px;font-weight:600;color:#065f46;
-}
-#taharatNote{font-size:11.5px;color:#047857;line-height:1.5;}
-/* Badges */
-#sheetBadges{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px;}
-.sheetBadge{
-  padding:5px 12px;border-radius:14px;
-  font-size:12px;font-weight:500;
-  background:#f3f4f6;color:#4b5563;
-}
-/* Description */
-#sheetDesc{
-  font-size:13px;color:var(--text2);line-height:1.6;
-  padding:10px 14px;background:#f4f8f5;
-  border-radius:var(--rs);margin-bottom:16px;
-}
-/* Reviews */
-#reviewsTitle{font-size:16px;font-weight:700;color:var(--text);margin-bottom:10px;}
-.reviewItem{
-  display:flex;gap:12px;padding:12px 0;
-  border-bottom:1px solid var(--border);
-}
-.reviewItem:last-child{border-bottom:none;}
-.reviewAvatar{
-  width:40px;height:40px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-weight:700;font-size:13px;color:#fff;flex-shrink:0;
-}
-.reviewBody{flex:1;}
-.reviewName{font-weight:600;font-size:13px;color:var(--text);}
-.reviewDate{font-size:11px;color:var(--text2);margin-left:6px;}
-.reviewStars{color:var(--star);font-size:12px;letter-spacing:1px;margin:3px 0;}
-.reviewText{font-size:13px;color:var(--text2);line-height:1.5;}
-</style>
-
-<style>
-/* Review Form */
-#reviewForm{
-  margin-top:14px;padding-top:14px;
-  border-top:1px solid var(--border);
-}
-#starRow{display:flex;gap:6px;margin-bottom:10px;}
-.starBtn{
-  font-size:28px;color:#d1d5db;cursor:pointer;
-  transition:color .15s,transform .1s;
-  user-select:none;
-}
-.starBtn.lit{color:var(--star);}
-.starBtn:hover{transform:scale(1.15);}
-#authNotice{
-  padding:12px 14px;
-  background:#f0fdf4;border-radius:var(--rs);
-  font-size:13px;color:#166534;font-weight:500;
-  margin-bottom:10px;border:1px solid #bbf7d0;
-}
-#reviewText{
-  width:100%;padding:12px 14px;
-  border:1.5px solid var(--border);border-radius:var(--rs);
-  background:#f9fafb;color:var(--text);font-size:14px;
-  resize:none;min-height:80px;font-family:inherit;
-  outline:none;transition:border-color .2s;
-}
-#reviewText:focus{border-color:var(--green);}
-#formBtns{display:flex;flex-direction:column;gap:9px;margin-top:10px;}
-#submitReviewBtn{
-  padding:13px;background:var(--green);color:#fff;
-  border:none;border-radius:var(--rs);
-  font-size:14px;font-weight:700;cursor:pointer;
-  transition:opacity .2s;
-}
-#submitReviewBtn:hover{opacity:.88;}
-#routeBtn{
-  padding:13px;background:#fff;color:var(--green);
-  border:2px solid var(--green);border-radius:var(--rs);
-  font-size:14px;font-weight:700;cursor:pointer;
-  transition:background .2s;
-}
-#routeBtn:hover{background:var(--green-light);}
-</style>
 
 <!-- AUTH MODAL -->
-<div id="authOverlay" class="overlay hidden" onclick="overlayClickClose(event,'authOverlay')">
-  <div class="modalBox" onclick="event.stopPropagation()">
-    <div class="modalTitle">Добро пожаловать<br><span class="modalSubTitle">Toilet Advisor Tashkent</span></div>
-    <div class="reviewNotice">💬 Для отправки отзыва необходимо войти</div>
-    <div class="tabRow">
-      <button class="tabBtn active" id="tabLogin" onclick="setAuthTab('login')">Войти</button>
-      <button class="tabBtn" id="tabReg" onclick="setAuthTab('register')">Регистрация</button>
+<div id="authOverlay" class="overlay hidden" onclick="overlayBgClick(event,'authOverlay')">
+  <div class="mBox" id="authBox" onclick="event.stopPropagation()">
+    <div class="mDragZone" id="authDrag"><div class="mHandle"></div></div>
+    <div class="mTitle">Добро пожаловать<br><span class="mSub">Toilet Advisor Tashkent</span></div>
+    <div class="mNotice">💬 Для отправки отзыва необходимо войти</div>
+    <div class="mTabRow">
+      <button class="mTab active" id="tabLogin" onclick="setAuthTab('login')">Войти</button>
+      <button class="mTab" id="tabReg" onclick="setAuthTab('register')">Регистрация</button>
     </div>
-    <div id="phoneRow">
-      <span class="phoneCode">+998</span>
-      <input type="tel" id="authPhone" placeholder="901234567" maxlength="12">
-    </div>
-    <div id="passRow">
-      <input type="password" id="authPass" placeholder="Пароль" id="authPassInput">
-      <button id="eyeBtn" onclick="togglePassVis()">👁</button>
-    </div>
-    <button class="authMainBtn" id="authActionBtn" onclick="doAuth()">Войти</button>
-    <button class="adminSwitchBtn" onclick="openAdminLogin()">🔑 Войти как администратор / Расширенный доступ</button>
+    <div class="phoneRow"><span class="phoneCode">+998</span><input type="tel" id="authPhone" placeholder="901234567" maxlength="12"></div>
+    <div class="passRow"><input type="password" id="authPass" placeholder="Пароль"><button class="eyeBtn" onclick="toggleEye('authPass')">👁</button></div>
+    <button class="mainBtn" id="authActionBtn" onclick="doAuth()">Войти</button>
+    <button class="secBtn" onclick="openAdminLogin()">🔑 Войти как администратор / Расширенный доступ</button>
     <button class="cancelBtn" onclick="closeOverlay('authOverlay')">Отмена</button>
   </div>
 </div>
 
-<!-- ADMIN LOGIN MODAL -->
-<div id="adminOverlay" class="overlay hidden" onclick="overlayClickClose(event,'adminOverlay')">
-  <div class="modalBox" onclick="event.stopPropagation()">
-    <div class="modalTitle">🔐 Вход администратора</div>
-    <input class="plainInput" type="text" id="adminLogin" placeholder="Логин">
-    <div id="adminPassRow">
-      <input type="password" id="adminPass" placeholder="Пароль">
-      <button id="adminEyeBtn" onclick="toggleAdminPassVis()">👁</button>
-    </div>
-    <button class="authMainBtn" onclick="doAdminLogin()">Войти</button>
+<!-- ADMIN MODAL -->
+<div id="adminOverlay" class="overlay hidden" onclick="overlayBgClick(event,'adminOverlay')">
+  <div class="mBox" id="adminBox" onclick="event.stopPropagation()">
+    <div class="mDragZone" id="adminDrag"><div class="mHandle"></div></div>
+    <div class="mTitle">🔐 Вход администратора</div>
+    <input class="pInput" type="text" id="adminLogin" placeholder="Логин">
+    <div class="passRow"><input type="password" id="adminPass" placeholder="Пароль"><button class="eyeBtn" onclick="toggleEye('adminPass')">👁</button></div>
+    <button class="mainBtn" onclick="doAdminLogin()">Войти</button>
     <button class="cancelBtn" onclick="closeOverlay('adminOverlay')">Отмена</button>
   </div>
 </div>
 
-<!-- ADD TOILET MODAL (map click flow) -->
-<div id="addOverlay" class="overlay hidden" onclick="overlayClickClose(event,'addOverlay')">
-  <div class="modalBox" onclick="event.stopPropagation()">
-    <div class="modalTitle">➕ Добавить туалет</div>
-    <div id="addHintModal" style="font-size:12px;color:var(--green);text-align:center;margin-bottom:12px;">📍 Нажмите на карте, чтобы выбрать место</div>
-    <input class="plainInput" type="text" id="addTitleM" placeholder="Название туалета">
-    <input class="plainInput" type="text" id="addDescM" placeholder="Описание (необязательно)">
-    <input class="plainInput" type="text" id="addPhotoM" placeholder="Ссылка на фото (необязательно)">
-    <div class="checkGrid" style="margin:6px 0 12px;">
+<!-- ADD MODAL (map click flow) -->
+<div id="addOverlay" class="overlay hidden" onclick="overlayBgClick(event,'addOverlay')">
+  <div class="mBox" onclick="event.stopPropagation()">
+    <div class="mDragZone"><div class="mHandle"></div></div>
+    <div class="mTitle">➕ Добавить туалет</div>
+    <div id="addHintM" style="font-size:12px;color:var(--green);text-align:center;margin-bottom:12px;">📍 Нажмите на карте, чтобы выбрать место</div>
+    <input class="pInput" type="text" id="addTitleM" placeholder="Название туалета">
+    <input class="pInput" type="text" id="addDescM" placeholder="Описание (необязательно)">
+    <input class="pInput" type="text" id="addPhotoM" placeholder="Ссылка на фото (необязательно)">
+    <div class="chkGrid" style="margin:6px 0 12px;">
       <label><input type="checkbox" id="addIsFreeM" checked> 🆓 Бесплатно</label>
       <label><input type="checkbox" id="addIsOpenM" checked> 🟢 Открыто</label>
       <label><input type="checkbox" id="addHasSoapM"> 🧼 Мыло</label>
@@ -554,686 +577,511 @@ html,body{width:100%;height:100%;overflow:hidden;background:#dde8e2;font-family:
       <label><input type="checkbox" id="addIsAccessibleM"> ♿ Доступно</label>
       <label><input type="checkbox" id="addIsTaharatkhanaM"> 🕌 Тахаратхана</label>
     </div>
-    <button class="authMainBtn" onclick="submitAddToiletModal()">✅ Добавить</button>
+    <button class="mainBtn" onclick="submitAddToiletModal()">✅ Добавить</button>
     <button class="cancelBtn" onclick="closeOverlay('addOverlay')">Отмена</button>
   </div>
 </div>
 
-<style>
-/* OVERLAYS & MODALS */
-.overlay{
-  position:absolute;top:0;left:0;right:0;bottom:0;z-index:50;
-  background:rgba(0,0,0,0.48);
-  display:flex;align-items:flex-end;justify-content:center;
-  backdrop-filter:blur(4px);
-  animation:fadeIn .22s ease;
-}
-@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-.modalBox{
-  background:#fff;border-radius:26px 26px 0 0;
-  padding:24px 22px 32px;width:100%;
-  max-height:88vh;overflow-y:auto;
-  animation:slideUp .28s cubic-bezier(.4,0,.2,1);
-}
-@keyframes slideUp{from{transform:translateY(60px);opacity:0;}to{transform:translateY(0);opacity:1;}}
-.modalTitle{
-  font-size:18px;font-weight:700;color:var(--text);
-  text-align:center;margin-bottom:6px;line-height:1.4;
-}
-.modalSubTitle{font-size:13px;color:var(--text2);font-weight:400;}
-.reviewNotice{
-  background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;
-  padding:10px 14px;font-size:13px;color:#166534;
-  text-align:center;margin:10px 0 14px;
-}
-.tabRow{
-  display:flex;border-radius:var(--rs);overflow:hidden;
-  border:1.5px solid var(--border);margin-bottom:14px;
-}
-.tabBtn{
-  flex:1;padding:11px;font-size:13px;font-weight:600;
-  background:#f3f4f6;color:var(--text2);border:none;cursor:pointer;
-  transition:all .2s;
-}
-.tabBtn.active{background:var(--green);color:#fff;}
-#phoneRow{
-  display:flex;align-items:center;
-  border:1.5px solid var(--border);border-radius:var(--rs);
-  overflow:hidden;margin-bottom:10px;background:#f9fafb;
-}
-.phoneCode{
-  padding:13px 12px;font-size:14px;font-weight:600;
-  color:var(--text);background:#e9edf0;border-right:1px solid var(--border);
-  white-space:nowrap;
-}
-#authPhone{
-  flex:1;padding:13px 12px;border:none;background:transparent;
-  font-size:14px;color:var(--text);outline:none;
-}
-#passRow,#adminPassRow{
-  display:flex;align-items:center;
-  border:1.5px solid var(--border);border-radius:var(--rs);
-  overflow:hidden;margin-bottom:14px;background:#f9fafb;
-}
-#passRow input,#adminPassRow input{
-  flex:1;padding:13px 12px;border:none;background:transparent;
-  font-size:14px;color:var(--text);outline:none;
-}
-#eyeBtn,#adminEyeBtn{
-  padding:0 12px;background:none;border:none;
-  font-size:18px;cursor:pointer;color:var(--text2);
-}
-.plainInput{
-  width:100%;padding:13px 14px;
-  border:1.5px solid var(--border);border-radius:var(--rs);
-  background:#f9fafb;font-size:14px;color:var(--text);
-  outline:none;margin-bottom:10px;display:block;
-}
-.plainInput:focus{border-color:var(--green);}
-.authMainBtn{
-  width:100%;padding:14px;background:var(--green);color:#fff;
-  border:none;border-radius:var(--rs);font-size:15px;font-weight:700;
-  cursor:pointer;transition:opacity .2s;margin-bottom:8px;
-}
-.authMainBtn:hover{opacity:.88;}
-.adminSwitchBtn{
-  width:100%;padding:11px;background:none;
-  border:1.5px solid var(--border);border-radius:var(--rs);
-  font-size:12.5px;color:var(--text2);cursor:pointer;margin-bottom:8px;
-}
-.cancelBtn{
-  width:100%;padding:11px;background:#f3f4f6;border:none;
-  border-radius:var(--rs);font-size:14px;color:var(--text2);cursor:pointer;
-}
-</style>
-
 <!-- TOAST -->
 <div id="toast"></div>
-<style>
-#toast{
-  position:absolute;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);
-  background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:20px;
-  font-size:13px;font-weight:600;white-space:nowrap;
-  opacity:0;transition:opacity .3s,transform .3s;z-index:100;pointer-events:none;
-}
-#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-</style>
-
-</div><!-- /appShell -->
-</div><!-- /phoneFrame -->
 
 <script>
-// ============================================================
-// CONSTANTS & STATE
-// ============================================================
-const API = 'https://toiletadvisor-server.onrender.com/api';
-const COLORS = ['#019451','#3b82f6','#8b5cf6','#f59e0b','#ef4444','#06b6d4','#ec4899'];
-
-let currentLang = localStorage.getItem('ta_lang') || 'ru';
-let currentUser = null;
-let allToilets = [];
-let currentCat = 'all';
-let selectedToilet = null;
-let reviewRating = 0;
-let authTab = 'login';
-let addCoords = null;
-let myMap = null;
-let searchTimer = null;
-let localReviews = JSON.parse(localStorage.getItem('ta_reviews') || '{}');
-
-// Restore session
-const savedUser = localStorage.getItem('ta_user');
-if (savedUser) { try { currentUser = JSON.parse(savedUser); } catch(e){} }
-
-// ============================================================
-// LANG
-// ============================================================
-const T = {
-  ru: { search:'Поиск туалета...', loginBtn:'→ Войти', open:'Открыто', closed:'Закрыто', free:'🆓 Бесплатно', paid:'Платно', noReviews:'Пока нет отзывов', loginPrompt:'Войдите, чтобы оставить отзыв', success:'✓ Ваш отзыв добавлен!', kmAway:'км от вас', addHint:'📍 Нажмите на карте, чтобы выбрать место' },
-  uz: { search:'Hojatxona qidirish...', loginBtn:'→ Kirish', open:'Ochiq', closed:'Yopiq', free:'🆓 Bepul', paid:'Pullik', noReviews:'Sharhlar yoq', loginPrompt:'Sharh qoldirish uchun kiring', success:'✓ Sharhingiz qoshildi!', kmAway:'km uzoqda', addHint:'📍 Joyni tanlash uchun xaritaga bosing' }
+const API='https://toiletadvisor-server.onrender.com/api';
+const COLORS=['#019451','#3b82f6','#8b5cf6','#f59e0b','#ef4444','#06b6d4','#ec4899'];
+const TASHKENT=[41.2995,69.2401];
+const T={
+  ru:{search:'Поиск туалета...',loginBtn:'→ Войти',open:'Открыто',closed:'Закрыто',
+      free:'🆓 Бесплатно',paid:'Платно',noReviews:'Пока нет отзывов',
+      success:'✓ Ваш отзыв добавлен!',kmAway:'км от вас',mAway:'м от вас',
+      findNearest:'Найти ближайший туалет',addHint:'📍 Нажмите на карте, чтобы выбрать место',
+      distFallback:'(от центра)'},
+  uz:{search:'Hojatxona qidirish...',loginBtn:'→ Kirish',open:'Ochiq',closed:'Yopiq',
+      free:'🆓 Bepul',paid:'Pullik',noReviews:'Sharhlar yoq',
+      success:'✓ Sharhingiz qoshildi!',kmAway:'km uzoqda',mAway:'m uzoqda',
+      findNearest:'Eng yaqin hojatxonani topish',addHint:'📍 Xaritaga bosing',
+      distFallback:'(markazdan)'},
+  en:{search:'Search toilet...',loginBtn:'→ Login',open:'Open',closed:'Closed',
+      free:'🆓 Free',paid:'Paid',noReviews:'No reviews yet',
+      success:'✓ Review submitted!',kmAway:'km away',mAway:'m away',
+      findNearest:'Find nearest toilet',addHint:'📍 Tap map to select location',
+      distFallback:'(from center)'}
 };
-function t(k){ return (T[currentLang]||T.ru)[k] || k; }
+function t(k){return(T[currentLang]||T.ru)[k]||(T.ru[k]||k);}
+let currentLang=localStorage.getItem('ta_lang')||'ru';
+let currentTheme=localStorage.getItem('ta_theme')||'light';
+let currentUser=null,allToilets=[],currentCat='all';
+let selectedToilet=null,reviewRating=0,authTab='login';
+let addCoords=null,myMap=null,searchTimer=null;
+let userCoords=null,userPlacemark=null;
+let localReviews=JSON.parse(localStorage.getItem('ta_reviews')||'{}');
+try{const s=localStorage.getItem('ta_user');if(s)currentUser=JSON.parse(s);}catch(e){}
+</script>
 
+<script>
+// ── THEME ──
+function applyTheme(){
+  document.body.classList.toggle('dark',currentTheme==='dark');
+  document.getElementById('themeBtn').textContent=currentTheme==='dark'?'☀️':'🌙';
+}
+function toggleTheme(){
+  currentTheme=currentTheme==='dark'?'light':'dark';
+  localStorage.setItem('ta_theme',currentTheme);
+  applyTheme();
+}
+applyTheme();
+
+// ── LANG DROPDOWN ──
+function toggleLangDrop(){
+  const btn=document.getElementById('langBtn');
+  const dd=document.getElementById('langDrop');
+  const open=dd.classList.toggle('open');
+  btn.classList.toggle('open',open);
+  if(open)setTimeout(()=>document.addEventListener('click',closeLangOut,{once:true,capture:true}),10);
+}
+function closeLangOut(e){
+  if(!document.querySelector('.langWrap').contains(e.target)){
+    document.getElementById('langDrop').classList.remove('open');
+    document.getElementById('langBtn').classList.remove('open');
+  }
+}
 function setLang(l){
-  currentLang = l;
-  localStorage.setItem('ta_lang', l);
-  document.getElementById('chipRU').classList.toggle('active', l==='ru');
-  document.getElementById('chipUZ').classList.toggle('active', l==='uz');
-  document.getElementById('searchInput').placeholder = t('search');
+  currentLang=l;localStorage.setItem('ta_lang',l);
+  document.getElementById('langLabel').textContent=l.toUpperCase();
+  document.getElementById('langDrop').classList.remove('open');
+  document.getElementById('langBtn').classList.remove('open');
+  document.querySelectorAll('.lOpt').forEach(o=>o.classList.toggle('active',o.textContent.trim().toLowerCase()===l));
+  document.getElementById('searchInput').placeholder=t('search');
+  document.getElementById('fnLabel').textContent=t('findNearest');
   updateLoginBtn();
 }
 
+// ── LOGIN BTN ──
 function updateLoginBtn(){
-  const btn = document.getElementById('loginBtn');
+  const btn=document.getElementById('loginBtn');
   if(currentUser){
-    const label = currentUser.phone || currentUser.login || '';
-    const masked = currentUser.role==='admin' ? `⚙️ ${label}` : `👤 ${maskPhone(label)}`;
-    btn.textContent = masked;
-    btn.style.background = currentUser.role==='admin' ? '#7c3aed' : 'var(--green)';
+    const label=currentUser.phone||currentUser.login||'';
+    btn.textContent=currentUser.role==='admin'?`⚙️ ${label}`:`👤 ${maskPhone(label)}`;
+    btn.style.background=currentUser.role==='admin'?'#7c3aed':'var(--green)';
   } else {
-    btn.textContent = t('loginBtn');
-    btn.style.background = 'var(--green)';
+    btn.textContent=t('loginBtn');
+    btn.style.background='var(--green)';
   }
 }
+function maskPhone(p){return!p?'':p.length<=6?p:p.slice(0,6)+'***';}
+function onLoginBtnClick(){currentUser?switchTab('profile'):openAuthModal();}
 
-function maskPhone(p){
-  if(!p) return '';
-  if(p.length <= 6) return p;
-  return p.slice(0,6) + '***';
+// ── DISTANCE ──
+function haversine(lat1,lon1,lat2,lon2){
+  const R=6371000,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function formatDist(m,fallback){
+  const suf=fallback?` ${t('distFallback')}`:'';
+  return m<1000?`▵ ${Math.round(m)} ${t('mAway')}${suf}`:`▵ ${(m/1000).toFixed(1)} ${t('kmAway')}${suf}`;
 }
 </script>
 
 <script>
-// ============================================================
-// MAP INIT
-// ============================================================
+// ── MAP INIT ──
 function initMap(){
-  try {
-    myMap = new ymaps.Map('map',{
-      center:[41.2995,69.2401], zoom:13,
-      controls:['zoomControl','geolocationControl']
-    });
-    myMap.events.add('click', e => {
-      if(addCoords !== undefined && document.getElementById('addOverlay').classList.contains('hidden')===false){
-        addCoords = e.get('coords');
-        document.getElementById('addHintModal').textContent = `📍 Выбрано: ${addCoords[0].toFixed(4)}, ${addCoords[1].toFixed(4)}`;
-        document.getElementById('addHintModal').style.color = 'var(--green)';
+  try{
+    myMap=new ymaps.Map('map',{center:TASHKENT,zoom:13,controls:['zoomControl']});
+    myMap.controls.get('zoomControl').options.set({position:{left:14,bottom:160}});
+    myMap.events.add('click',e=>{
+      if(document.getElementById('toiletSheet').classList.contains('open')){closeSheet();return;}
+      if(!document.getElementById('addOverlay').classList.contains('hidden')){
+        addCoords=e.get('coords');
+        document.getElementById('addHintM').textContent=`📍 Выбрано: ${addCoords[0].toFixed(4)}, ${addCoords[1].toFixed(4)}`;
+        document.getElementById('addHintM').style.color='var(--green)';
       }
     });
     loadToilets();
-  } catch(err){ console.error('Map init error:',err); }
+    startGeo();
+  }catch(err){console.error('Map:',err);}
 }
+if(typeof ymaps!=='undefined')ymaps.ready(initMap);
 
-if(typeof ymaps !== 'undefined'){
-  ymaps.ready(initMap);
+// ── USER LOCATION ──
+function startGeo(){
+  if(!navigator.geolocation)return;
+  navigator.geolocation.watchPosition(pos=>{
+    userCoords=[pos.coords.latitude,pos.coords.longitude];
+    updateUserDot();
+  },null,{enableHighAccuracy:true,maximumAge:5000,timeout:10000});
 }
+function updateUserDot(){
+  if(!myMap||!userCoords)return;
+  if(userPlacemark)myMap.geoObjects.remove(userPlacemark);
+  const layout=ymaps.templateLayoutFactory.createClass(
+    '<div class="uDotWrap"><div class="uDotRing"></div><div class="uDotCore"></div></div>'
+  );
+  userPlacemark=new ymaps.Placemark(userCoords,{},{
+    iconLayout:layout,
+    iconShape:{type:'Circle',coordinates:[0,0],radius:12},
+    zIndex:500
+  });
+  myMap.geoObjects.add(userPlacemark);
+}
+function goToMyLocation(){
+  const go=c=>{myMap.setCenter(c,16,{duration:600});};
+  if(userCoords){go(userCoords);}
+  else navigator.geolocation.getCurrentPosition(
+    p=>{userCoords=[p.coords.latitude,p.coords.longitude];go(userCoords);updateUserDot();},
+    ()=>showToast('Геолокация недоступна')
+  );
+}
+function findNearest(){
+  if(!allToilets.length){showToast('Нет точек на карте');return;}
+  const ref=userCoords||TASHKENT;
+  let best=null,bd=Infinity;
+  allToilets.forEach(t=>{const d=haversine(ref[0],ref[1],t.lat,t.lon);if(d<bd){bd=d;best=t;}});
+  if(best){myMap.setCenter([best.lat,best.lon],17,{duration:700});setTimeout(()=>openSheet(best),750);}
+}
+</script>
 
-// ============================================================
-// TOILETS
-// ============================================================
+<script>
+// ── MARKERS ──
 async function loadToilets(){
-  try {
-    const r = await fetch(`${API}/toilets`);
-    allToilets = await r.json();
-  } catch(e){
-    allToilets = [];
-  }
+  try{const r=await fetch(`${API}/toilets`);allToilets=await r.json();}catch(e){allToilets=[];}
   renderMarkers();
 }
-
 function renderMarkers(){
-  if(!myMap) return;
+  if(!myMap)return;
   myMap.geoObjects.removeAll();
-  const q = document.getElementById('searchInput').value.toLowerCase().trim();
-  let list = allToilets.filter(t => {
-    if(q && !t.title.toLowerCase().includes(q)) return false;
-    if(currentCat==='taharatkhana') return t.isTaharatkhana;
-    if(currentCat==='free') return t.isFree;
-    if(currentCat==='soap') return t.hasSoap;
-    if(currentCat==='paper') return t.hasPaper;
-    if(currentCat==='accessible') return t.isAccessible;
+  if(userPlacemark)myMap.geoObjects.add(userPlacemark);
+  const q=document.getElementById('searchInput').value.toLowerCase().trim();
+  allToilets.filter(t=>{
+    if(q&&!t.title.toLowerCase().includes(q))return false;
+    if(currentCat==='taharatkhana')return t.isTaharatkhana;
+    if(currentCat==='free')return t.isFree;
+    if(currentCat==='soap')return t.hasSoap;
+    if(currentCat==='paper')return t.hasPaper;
+    if(currentCat==='accessible')return t.isAccessible;
     return true;
-  });
-  list.forEach(toilet => {
-    let pm;
-    if(toilet.isTaharatkhana){
-      pm = new ymaps.Placemark([toilet.lat,toilet.lon],
-        {hintContent: toilet.title},
-        {iconLayout:'default#image',
-         iconImageHref:'data:image/svg+xml;utf8,'+encodeURIComponent(mosqueMarkerSVG()),
-         iconImageSize:[44,54],iconImageOffset:[-22,-54]}
-      );
-    } else {
-      const color = toilet.isFree ? '#019451' : '#f59e0b';
-      pm = new ymaps.Placemark([toilet.lat,toilet.lon],
-        {hintContent: toilet.title},
-        {iconLayout:'default#image',
-         iconImageHref:'data:image/svg+xml;utf8,'+encodeURIComponent(toiletMarkerSVG(color)),
-         iconImageSize:[40,50],iconImageOffset:[-20,-50]}
-      );
-    }
-    pm.events.add('click', () => openSheet(toilet));
+  }).forEach(toilet=>{
+    const svg=toilet.isTaharatkhana?mosqueSVG():pinSVG(toilet.isFree?'#019451':'#f59e0b');
+    const sz=toilet.isTaharatkhana?[44,54]:[40,50];
+    const off=toilet.isTaharatkhana?[-22,-54]:[-20,-50];
+    const pm=new ymaps.Placemark([toilet.lat,toilet.lon],{hintContent:toilet.title},{
+      iconLayout:'default#image',
+      iconImageHref:'data:image/svg+xml;utf8,'+encodeURIComponent(svg),
+      iconImageSize:sz,iconImageOffset:off
+    });
+    pm.events.add('click',()=>openSheet(toilet));
     myMap.geoObjects.add(pm);
   });
 }
-
-function toiletMarkerSVG(color){
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="50" viewBox="0 0 40 50">
-    <ellipse cx="20" cy="48" rx="8" ry="3" fill="rgba(0,0,0,0.2)"/>
-    <path d="M20 46 L6 18 Q6 4 20 4 Q34 4 34 18 Z" fill="${color}"/>
-    <circle cx="20" cy="18" r="9" fill="white" opacity="0.95"/>
-    <text x="20" y="22" font-size="11" text-anchor="middle" fill="${color}">🚽</text>
-  </svg>`;
+function pinSVG(c){
+  return`<svg xmlns="http://www.w3.org/2000/svg" width="40" height="50" viewBox="0 0 40 50"><filter id="ds"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.2"/></filter><path filter="url(#ds)" d="M20 4C11.2 4 4 11.2 4 20c0 10 16 26 16 26s16-16 16-26C36 11.2 28.8 4 20 4z" fill="${c}"/><circle cx="20" cy="20" r="9" fill="rgba(255,255,255,0.95)"/><text x="20" y="24.5" font-size="11" text-anchor="middle" fill="${c}">🚽</text></svg>`;
 }
-
-function mosqueMarkerSVG(){
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="54" viewBox="0 0 44 54">
-    <ellipse cx="22" cy="52" rx="9" ry="3" fill="rgba(0,0,0,0.2)"/>
-    <path d="M22 50 L6 20 Q6 4 22 4 Q38 4 38 20 Z" fill="#7c3aed"/>
-    <circle cx="22" cy="20" r="10" fill="white" opacity="0.95"/>
-    <text x="22" y="24" font-size="13" text-anchor="middle" fill="#7c3aed">🕌</text>
-  </svg>`;
+function mosqueSVG(){
+  return`<svg xmlns="http://www.w3.org/2000/svg" width="44" height="54" viewBox="0 0 44 54"><filter id="ds"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.2"/></filter><path filter="url(#ds)" d="M22 4C12.6 4 5 11.6 5 21c0 11 17 29 17 29s17-18 17-29C39 11.6 31.4 4 22 4z" fill="#7c3aed"/><circle cx="22" cy="21" r="10" fill="rgba(255,255,255,0.95)"/><text x="22" y="25.5" font-size="13" text-anchor="middle" fill="#7c3aed">🕌</text></svg>`;
 }
 </script>
 
 <script>
-// ============================================================
-// BOTTOM SHEET
-// ============================================================
+// ── BOTTOM SHEET OPEN ──
 async function openSheet(toilet){
-  selectedToilet = toilet;
-  const sheet = document.getElementById('toiletSheet');
-  document.getElementById('sheetTitle').textContent = toilet.title;
-
-  // Reviews
-  const reviews = await getReviews(toilet.id);
-  const avg = reviews.length ? (reviews.reduce((s,r)=>s+r.rating,0)/reviews.length) : 0;
-  document.getElementById('sheetRatingVal').textContent = avg>0 ? avg.toFixed(1) : '—';
-
-  // Distance
-  if(myMap){
-    const center = myMap.getCenter();
-    try {
-      const dist = ymaps.coordSystem.geo.getDistance([toilet.lat,toilet.lon],[center[0],center[1]]);
-      document.getElementById('sheetDistPill').textContent = `▵ ${(dist/1000).toFixed(1)} ${t('kmAway')}`;
-    } catch(e) {}
-  }
-
+  selectedToilet=toilet;
+  document.getElementById('sTitle').textContent=toilet.title;
+  // Distance from real GPS or fallback
+  const ref=userCoords||TASHKENT;
+  const isFallback=!userCoords;
+  document.getElementById('sDistPill').textContent=formatDist(haversine(ref[0],ref[1],toilet.lat,toilet.lon),isFallback);
   // Status pills
-  document.getElementById('sheetOpenPill').textContent = toilet.isOpen ? t('open') : t('closed');
-  document.getElementById('sheetOpenPill').style.background = toilet.isOpen ? '#d1fae5' : '#fee2e2';
-  document.getElementById('sheetOpenPill').style.color = toilet.isOpen ? '#065f46' : '#991b1b';
-  document.getElementById('sheetFreePill').textContent = toilet.isFree ? t('free') : t('paid');
-  document.getElementById('sheetFreePill').style.background = toilet.isFree ? '#dcfce7' : '#fef3c7';
-  document.getElementById('sheetFreePill').style.color = toilet.isFree ? '#166534' : '#92400e';
-
-  // Taharatkhana block
-  const tBlock = document.getElementById('taharatBlock');
-  toilet.isTaharatkhana ? tBlock.classList.remove('hidden') : tBlock.classList.add('hidden');
-
-  // Amenity badges
-  const bads = [];
-  if(toilet.hasSoap) bads.push('🧼 Мыло');
-  if(toilet.hasPaper) bads.push('🧻 Бумага');
-  if(toilet.isAccessible) bads.push('♿ Доступность');
-  document.getElementById('sheetBadges').innerHTML = bads.map(b=>`<span class="sheetBadge">${b}</span>`).join('');
-
-  // Description
-  document.getElementById('sheetDesc').textContent = toilet.description || '';
-  document.getElementById('sheetDesc').style.display = toilet.description ? 'block' : 'none';
-
+  const op=document.getElementById('sOpenPill');
+  op.textContent=toilet.isOpen?t('open'):t('closed');
+  op.className='mPill '+(toilet.isOpen?'pGreen':'pRed');
+  const fp=document.getElementById('sFreePill');
+  fp.textContent=toilet.isFree?t('free'):t('paid');
+  fp.className='mPill '+(toilet.isFree?'pGreen2':'pBlue');
+  // Taharatkhana
+  document.getElementById('taharatBlock').classList.toggle('hidden',!toilet.isTaharatkhana);
+  // Badges
+  const bads=[];
+  if(toilet.hasSoap)bads.push('🧼 Мыло');
+  if(toilet.hasPaper)bads.push('🧻 Бумага');
+  if(toilet.isAccessible)bads.push('♿ Доступность');
+  document.getElementById('sBadges').innerHTML=bads.map(b=>`<span class="sBadge">${b}</span>`).join('');
+  // Desc
+  const desc=document.getElementById('sDesc');
+  desc.textContent=toilet.description||'';
+  desc.style.display=toilet.description?'block':'none';
   // Reviews
+  const reviews=await getReviews(toilet.id);
+  const avg=reviews.length?(reviews.reduce((s,r)=>s+r.rating,0)/reviews.length):0;
+  document.getElementById('sRatingVal').textContent=avg>0?avg.toFixed(1):'—';
   renderReviews(reviews);
-
-  // Review form state
   resetReviewForm();
-
-  sheet.classList.add('open');
+  // Open sheet + backdrop
+  document.getElementById('toiletSheet').classList.add('open');
+  document.getElementById('sheetBackdrop').classList.add('vis');
 }
-
 function closeSheet(){
   document.getElementById('toiletSheet').classList.remove('open');
-  selectedToilet = null;
+  document.getElementById('sheetBackdrop').classList.remove('vis');
+  selectedToilet=null;
 }
-
 function resetReviewForm(){
-  reviewRating = 0;
-  document.querySelectorAll('.starBtn').forEach(s => s.classList.remove('lit'));
-  document.getElementById('reviewText').value = '';
-  const notice = document.getElementById('authNotice');
+  reviewRating=0;
+  document.querySelectorAll('.starBtn').forEach(s=>{s.classList.remove('lit');s.textContent='☆';});
+  document.getElementById('reviewText').value='';
+  const notice=document.getElementById('authNotice');
   if(currentUser){
     notice.classList.add('hidden');
-    document.getElementById('reviewText').style.display = 'block';
-    document.getElementById('submitReviewBtn').style.display = 'block';
+    document.getElementById('reviewText').style.display='block';
+    document.getElementById('submitReviewBtn').style.display='block';
   } else {
     notice.classList.remove('hidden');
-    document.getElementById('reviewText').style.display = 'none';
-    document.getElementById('submitReviewBtn').style.display = 'none';
+    document.getElementById('reviewText').style.display='none';
+    document.getElementById('submitReviewBtn').style.display='none';
   }
-}
-
-// ============================================================
-// REVIEWS
-// ============================================================
-async function getReviews(toiletId){
-  const local = localReviews[toiletId] || [];
-  try {
-    const r = await fetch(`${API}/reviews/${toiletId}`);
-    const remote = await r.json();
-    const remoteIds = new Set(remote.map(x=>x.id));
-    const extras = local.filter(x=>!remoteIds.has(x.id));
-    return [...extras, ...remote];
-  } catch(e){
-    return local;
-  }
-}
-
-function renderReviews(reviews){
-  const c = document.getElementById('reviewsList');
-  if(!reviews.length){ c.innerHTML=`<p style="color:var(--text2);font-size:13px;padding:8px 0;">${t('noReviews')}</p>`; return; }
-  c.innerHTML = [...reviews].reverse().map(r => {
-    const name = r.userPhone || r.userLogin || 'Аноним';
-    const seed = name.charCodeAt(0)||0;
-    const col = COLORS[seed%COLORS.length];
-    const initials = name.replace(/\+/g,'').slice(0,2).toUpperCase();
-    const stars = '★'.repeat(r.rating)+'☆'.repeat(5-r.rating);
-    const date = new Date(r.createdAt);
-    const dateStr = `${date.getDate()} ${['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'][date.getMonth()]} ${date.getFullYear()}`;
-    return `<div class="reviewItem">
-      <div class="reviewAvatar" style="background:${col}">${initials}</div>
-      <div class="reviewBody">
-        <span class="reviewName">${name}</span><span class="reviewDate">${dateStr}</span>
-        <div class="reviewStars">${stars}</div>
-        <div class="reviewText">${r.text}</div>
-      </div>
-    </div>`;
-  }).join('');
 }
 </script>
 
 <script>
-// ============================================================
-// STAR RATING INPUT
-// ============================================================
-document.querySelectorAll('.starBtn').forEach(btn => {
-  btn.addEventListener('click', function(){
-    if(!currentUser){ openAuthModal(); return; }
-    reviewRating = parseInt(this.dataset.s);
-    document.querySelectorAll('.starBtn').forEach((s,i) => {
-      s.classList.toggle('lit', i < reviewRating);
-      s.textContent = i < reviewRating ? '★' : '☆';
-    });
-  });
-  btn.addEventListener('mouseover', function(){
-    if(!currentUser) return;
-    const s = parseInt(this.dataset.s);
-    document.querySelectorAll('.starBtn').forEach((el,i) => {
-      el.style.color = i < s ? 'var(--star)' : '#d1d5db';
-    });
-  });
-  btn.addEventListener('mouseout', function(){
-    document.querySelectorAll('.starBtn').forEach((el,i) => {
-      el.style.color = i < reviewRating ? 'var(--star)' : '#d1d5db';
+// ── REVIEWS ──
+async function getReviews(id){
+  const local=localReviews[id]||[];
+  try{
+    const r=await fetch(`${API}/reviews/${id}`);
+    const remote=await r.json();
+    const ids=new Set(remote.map(x=>x.id));
+    return[...(local.filter(x=>!ids.has(x.id))),...remote];
+  }catch(e){return local;}
+}
+function renderReviews(reviews){
+  const c=document.getElementById('reviewsList');
+  if(!reviews.length){c.innerHTML=`<p style="color:var(--text2);font-size:13px;padding:8px 0;">${t('noReviews')}</p>`;return;}
+  c.innerHTML=[...reviews].reverse().map(r=>{
+    const name=r.userPhone||r.userLogin||'Аноним';
+    const col=COLORS[name.charCodeAt(0)%COLORS.length];
+    const ini=name.replace(/\+/g,'').slice(0,2).toUpperCase();
+    const stars='★'.repeat(r.rating)+'☆'.repeat(5-r.rating);
+    const d=new Date(r.createdAt);
+    const ds=`${d.getDate()} ${['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'][d.getMonth()]} ${d.getFullYear()}`;
+    return`<div class="rvItem"><div class="rvAvatar" style="background:${col}">${ini}</div><div class="rvBody"><span class="rvName">${name}</span><span class="rvDate">${ds}</span><div class="rvStars">${stars}</div><div class="rvText">${r.text}</div></div></div>`;
+  }).join('');
+}
+// ── STAR INPUT ──
+document.querySelectorAll('.starBtn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    if(!currentUser){openAuthModal();return;}
+    reviewRating=parseInt(this.dataset.s);
+    document.querySelectorAll('.starBtn').forEach((s,i)=>{
+      s.classList.toggle('lit',i<reviewRating);
+      s.textContent=i<reviewRating?'★':'☆';
     });
   });
 });
-
-// ============================================================
-// SUBMIT REVIEW
-// ============================================================
+// ── SUBMIT REVIEW ──
 async function submitReview(){
-  if(!currentUser){ openAuthModal(); return; }
-  if(!selectedToilet) return;
-  const text = document.getElementById('reviewText').value.trim();
-  if(!text || !reviewRating){ showToast('Введите текст и поставьте оценку'); return; }
-
-  const newRev = {
-    id: 'local_'+Date.now(),
-    toiletId: selectedToilet.id,
-    userId: currentUser.id,
-    userPhone: currentUser.phone || currentUser.login || 'Пользователь',
-    text, rating: reviewRating,
-    createdAt: new Date().toISOString()
-  };
-
-  try {
-    const r = await fetch(`${API}/reviews`, {
-      method:'POST',
+  if(!currentUser){openAuthModal();return;}
+  if(!selectedToilet)return;
+  const text=document.getElementById('reviewText').value.trim();
+  if(!text||!reviewRating){showToast('Введите текст и поставьте оценку');return;}
+  const nRev={id:'l_'+Date.now(),toiletId:selectedToilet.id,userId:currentUser.id,
+    userPhone:currentUser.phone||currentUser.login||'Пользователь',
+    text,rating:reviewRating,createdAt:new Date().toISOString()};
+  try{
+    const r=await fetch(`${API}/reviews`,{method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+currentUser.token},
-      body: JSON.stringify({toiletId:selectedToilet.id, text, rating:reviewRating})
-    });
-    if(r.ok){ const d=await r.json(); newRev.id=d.id; }
-  } catch(e){}
-
-  // Save locally
-  if(!localReviews[selectedToilet.id]) localReviews[selectedToilet.id]=[];
-  localReviews[selectedToilet.id].unshift(newRev);
-  localStorage.setItem('ta_reviews', JSON.stringify(localReviews));
-
+      body:JSON.stringify({toiletId:selectedToilet.id,text,rating:reviewRating})});
+    if(r.ok){const d=await r.json();nRev.id=d.id;}
+  }catch(e){}
+  if(!localReviews[selectedToilet.id])localReviews[selectedToilet.id]=[];
+  localReviews[selectedToilet.id].unshift(nRev);
+  localStorage.setItem('ta_reviews',JSON.stringify(localReviews));
   showToast(t('success'));
   resetReviewForm();
-  const reviews = await getReviews(selectedToilet.id);
+  const reviews=await getReviews(selectedToilet.id);
   renderReviews(reviews);
-  const avg = reviews.length ? (reviews.reduce((s,r)=>s+r.rating,0)/reviews.length) : 0;
-  document.getElementById('sheetRatingVal').textContent = avg.toFixed(1);
+  const avg=reviews.length?(reviews.reduce((s,r)=>s+r.rating,0)/reviews.length):0;
+  document.getElementById('sRatingVal').textContent=avg.toFixed(1);
 }
-
-// ============================================================
-// ROUTE
-// ============================================================
+// ── ROUTE ──
 function goRoute(){
-  if(!selectedToilet) return;
+  if(!selectedToilet)return;
   navigator.geolocation.getCurrentPosition(
-    p => window.open(`https://yandex.ru/maps/?rtext=${p.coords.latitude},${p.coords.longitude}~${selectedToilet.lat},${selectedToilet.lon}&rtt=pd`,'_blank'),
-    () => window.open(`https://yandex.ru/maps/?rtext=~${selectedToilet.lat},${selectedToilet.lon}`,'_blank')
+    p=>window.open(`https://yandex.ru/maps/?rtext=${p.coords.latitude},${p.coords.longitude}~${selectedToilet.lat},${selectedToilet.lon}&rtt=pd`,'_blank'),
+    ()=>window.open(`https://yandex.ru/maps/?rtext=~${selectedToilet.lat},${selectedToilet.lon}`,'_blank')
   );
 }
+document.getElementById('authNotice').addEventListener('click',openAuthModal);
 </script>
 
 <script>
-// ============================================================
-// AUTH
-// ============================================================
-function onLoginBtnClick(){
-  if(currentUser){ switchTab('profile'); }
-  else { openAuthModal(); }
+// ── iOS DRAG-TO-DISMISS (sheet + modals) ──
+function initDrag(dragZone,panel,onDismiss){
+  let startY=0,startT=0,curY=0,dragging=false;
+  const isMobile=()=>window.matchMedia('(pointer:coarse)').matches;
+  function onStart(clientY){
+    startY=clientY;startT=Date.now();curY=0;dragging=true;
+    panel.style.transition='none';
+  }
+  function onMove(clientY){
+    if(!dragging)return;
+    curY=Math.max(0,clientY-startY);
+    panel.style.transform=`translateY(${curY}px)`;
+  }
+  function onEnd(){
+    if(!dragging)return;dragging=false;
+    panel.style.transition='';
+    const vel=(curY)/(Date.now()-startT);
+    if(curY>panel.offsetHeight*0.45||vel>0.6){
+      panel.style.transform='translateY(100%)';
+      setTimeout(onDismiss,320);
+    } else {
+      panel.style.transform='';
+    }
+  }
+  dragZone.addEventListener('touchstart',e=>{onStart(e.touches[0].clientY);},{passive:true});
+  dragZone.addEventListener('touchmove',e=>{onMove(e.touches[0].clientY);},{passive:true});
+  dragZone.addEventListener('touchend',onEnd);
+  dragZone.addEventListener('mousedown',e=>{onStart(e.clientY);});
+  document.addEventListener('mousemove',e=>{if(dragging)onMove(e.clientY);});
+  document.addEventListener('mouseup',()=>{if(dragging)onEnd();});
 }
+// Sheet drag
+initDrag(document.getElementById('sDragZone'),document.getElementById('toiletSheet'),closeSheet);
+// Auth modal drag
+initDrag(document.getElementById('authDrag'),document.getElementById('authBox'),()=>closeOverlay('authOverlay'));
+// Admin modal drag
+initDrag(document.getElementById('adminDrag'),document.getElementById('adminBox'),()=>closeOverlay('adminOverlay'));
+</script>
 
-function openAuthModal(){
-  document.getElementById('authOverlay').classList.remove('hidden');
-}
-
-function openAdminLogin(){
-  closeOverlay('authOverlay');
-  document.getElementById('adminOverlay').classList.remove('hidden');
-}
-
-function closeOverlay(id){
-  document.getElementById(id).classList.add('hidden');
-}
-
-function overlayClickClose(e, id){
-  if(e.target.id===id) closeOverlay(id);
-}
-
+<script>
+// ── AUTH ──
+function openAuthModal(){document.getElementById('authOverlay').classList.remove('hidden');}
+function openAdminLogin(){closeOverlay('authOverlay');document.getElementById('adminOverlay').classList.remove('hidden');}
+function closeOverlay(id){document.getElementById(id).classList.add('hidden');}
+function overlayBgClick(e,id){if(e.target.id===id)closeOverlay(id);}
+function toggleEye(id){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password';}
 function setAuthTab(tab){
-  authTab = tab;
-  document.getElementById('tabLogin').classList.toggle('active', tab==='login');
-  document.getElementById('tabReg').classList.toggle('active', tab==='register');
-  document.getElementById('authActionBtn').textContent = tab==='login' ? 'Войти' : 'Зарегистрироваться';
+  authTab=tab;
+  document.getElementById('tabLogin').classList.toggle('active',tab==='login');
+  document.getElementById('tabReg').classList.toggle('active',tab==='register');
+  document.getElementById('authActionBtn').textContent=tab==='login'?'Войти':'Зарегистрироваться';
 }
-
-function togglePassVis(){
-  const inp = document.getElementById('authPass');
-  inp.type = inp.type==='password' ? 'text' : 'password';
-}
-function toggleAdminPassVis(){
-  const inp = document.getElementById('adminPass');
-  inp.type = inp.type==='password' ? 'text' : 'password';
-}
-
 async function doAuth(){
-  const phone = '+998' + document.getElementById('authPhone').value.trim().replace(/\D/g,'');
-  const pass = document.getElementById('authPass').value.trim();
-  if(!phone || !pass){ showToast('Заполните все поля'); return; }
-  const endpoint = authTab==='login' ? '/login' : '/register';
-  try {
-    const r = await fetch(`${API}${endpoint}`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({phone, password:pass})
-    });
-    const d = await r.json();
+  const phone='+998'+document.getElementById('authPhone').value.trim().replace(/\D/g,'');
+  const pass=document.getElementById('authPass').value.trim();
+  if(!phone||!pass){showToast('Заполните все поля');return;}
+  try{
+    const r=await fetch(`${API}${authTab==='login'?'/login':'/register'}`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({phone,password:pass})});
+    const d=await r.json();
     if(r.ok){
-      currentUser = {...d.user, token:d.token};
-      localStorage.setItem('ta_user', JSON.stringify(currentUser));
-      closeOverlay('authOverlay');
-      updateLoginBtn();
-      resetReviewForm();
-      showToast(authTab==='login' ? '✓ Вы вошли в систему' : '✓ Регистрация успешна');
-    } else { showToast(d.error||'Ошибка'); }
-  } catch(e){ showToast('Ошибка соединения с сервером'); }
+      currentUser={...d.user,token:d.token};
+      localStorage.setItem('ta_user',JSON.stringify(currentUser));
+      closeOverlay('authOverlay');updateLoginBtn();resetReviewForm();
+      showToast(authTab==='login'?'✓ Вы вошли в систему':'✓ Регистрация успешна');
+    } else showToast(d.error||'Ошибка');
+  }catch(e){showToast('Ошибка соединения с сервером');}
 }
-
 async function doAdminLogin(){
-  const login = document.getElementById('adminLogin').value.trim();
-  const pass = document.getElementById('adminPass').value.trim();
-  if(!login||!pass){ showToast('Заполните все поля'); return; }
-  try {
-    const r = await fetch(`${API}/admin/login`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({login, password:pass})
-    });
-    const d = await r.json();
+  const login=document.getElementById('adminLogin').value.trim();
+  const pass=document.getElementById('adminPass').value.trim();
+  if(!login||!pass){showToast('Заполните все поля');return;}
+  try{
+    const r=await fetch(`${API}/admin/login`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({login,password:pass})});
+    const d=await r.json();
     if(r.ok){
-      currentUser = {...d.user, token:d.token};
-      localStorage.setItem('ta_user', JSON.stringify(currentUser));
-      closeOverlay('adminOverlay');
-      updateLoginBtn();
-      renderBottomNav();
+      currentUser={...d.user,token:d.token};
+      localStorage.setItem('ta_user',JSON.stringify(currentUser));
+      closeOverlay('adminOverlay');updateLoginBtn();
       showToast('✓ Вы вошли как администратор');
-    } else { showToast(d.error||'Неверные данные'); }
-  } catch(e){ showToast('Ошибка соединения с сервером'); }
+    } else showToast(d.error||'Неверные данные');
+  }catch(e){showToast('Ошибка соединения с сервером');}
 }
-
 function doLogout(){
-  currentUser = null;
-  localStorage.removeItem('ta_user');
-  updateLoginBtn();
-  renderBottomNav();
-  switchTab('map');
-  showToast('Вы вышли из аккаунта');
+  currentUser=null;localStorage.removeItem('ta_user');
+  updateLoginBtn();switchTab('map');showToast('Вы вышли из аккаунта');
 }
 </script>
 
 <script>
-// ============================================================
-// TABS / NAVIGATION
-// ============================================================
+// ── TABS ──
 function switchTab(tab){
-  // Close sheet if open
   closeSheet();
-
-  // Update active nav button
-  document.querySelectorAll('.navBtn').forEach(b => b.classList.toggle('active', b.dataset.tab===tab));
-
-  // Hide all screens
+  document.querySelectorAll('.navBtn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
   document.getElementById('profileScreen').classList.add('hidden');
   document.getElementById('adminDeniedScreen').classList.add('hidden');
   document.getElementById('addScreen').classList.add('hidden');
-
-  if(tab==='map'){
-    // Nothing extra — map is always underneath
-  } else if(tab==='add'){
-    if(currentUser && currentUser.role==='admin'){
+  if(tab==='add'){
+    if(currentUser&&currentUser.role==='admin'){
       document.getElementById('addScreen').classList.remove('hidden');
-      addCoords = null;
-      document.getElementById('addHintModal').textContent = t('addHint');
+      addCoords=null;
     } else {
       document.getElementById('adminDeniedScreen').classList.remove('hidden');
     }
   } else if(tab==='profile'){
-    const ps = document.getElementById('profileScreen');
+    const ps=document.getElementById('profileScreen');
     ps.classList.remove('hidden');
-    const ui = document.getElementById('profileUserInfo');
-    const logoutBtn = document.getElementById('profileLogoutBtn');
     if(currentUser){
-      ui.textContent = `${currentUser.phone||currentUser.login||''} (${currentUser.role})`;
-      logoutBtn.classList.remove('hidden');
+      document.getElementById('pInfo').textContent=`${currentUser.phone||currentUser.login||''} (${currentUser.role})`;
+      document.getElementById('pLogoutBtn').classList.remove('hidden');
     } else {
-      ui.textContent = 'Не авторизован';
-      logoutBtn.classList.add('hidden');
+      document.getElementById('pInfo').textContent='Не авторизован';
+      document.getElementById('pLogoutBtn').classList.add('hidden');
     }
   }
 }
 
-function renderBottomNav(){
-  // Admin gets "add" tab; normal users see it but get denied screen
-  // Nav is always visible — no changes needed structurally
-}
-
-// ============================================================
-// ADD TOILET (admin flow)
-// ============================================================
+// ── ADD TOILET ──
 function submitAddToilet(){
-  // Inline screen version — trigger the modal flow
-  addCoords = null;
+  addCoords=null;
   document.getElementById('addOverlay').classList.remove('hidden');
 }
-
 async function submitAddToiletModal(){
-  if(!currentUser||currentUser.role!=='admin'){ showToast('Требуются права администратора'); return; }
-  const title = document.getElementById('addTitleM').value.trim();
-  if(!title){ showToast('Введите название'); return; }
-  if(!addCoords){ showToast('Выберите место на карте'); return; }
-  const body = {
-    lat:addCoords[0], lon:addCoords[1], title,
-    description: document.getElementById('addDescM').value.trim()||'',
-    photo: document.getElementById('addPhotoM').value.trim()||'',
-    isOpen: document.getElementById('addIsOpenM').checked,
-    isFree: document.getElementById('addIsFreeM').checked,
-    hasSoap: document.getElementById('addHasSoapM').checked,
-    hasPaper: document.getElementById('addHasPaperM').checked,
-    isAccessible: document.getElementById('addIsAccessibleM').checked,
-    isTaharatkhana: document.getElementById('addIsTaharatkhanaM').checked
-  };
-  try {
-    const r = await fetch(`${API}/toilets`,{
-      method:'POST',
+  if(!currentUser||currentUser.role!=='admin'){showToast('Требуются права администратора');return;}
+  const title=document.getElementById('addTitleM').value.trim();
+  if(!title){showToast('Введите название');return;}
+  if(!addCoords){showToast('Выберите место на карте');return;}
+  const body={lat:addCoords[0],lon:addCoords[1],title,
+    description:document.getElementById('addDescM').value.trim()||'',
+    photo:document.getElementById('addPhotoM').value.trim()||'',
+    isOpen:document.getElementById('addIsOpenM').checked,
+    isFree:document.getElementById('addIsFreeM').checked,
+    hasSoap:document.getElementById('addHasSoapM').checked,
+    hasPaper:document.getElementById('addHasPaperM').checked,
+    isAccessible:document.getElementById('addIsAccessibleM').checked,
+    isTaharatkhana:document.getElementById('addIsTaharatkhanaM').checked};
+  try{
+    const r=await fetch(`${API}/toilets`,{method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+currentUser.token},
-      body:JSON.stringify(body)
-    });
-    if(r.ok){
-      closeOverlay('addOverlay');
-      addCoords=null;
-      await loadToilets();
-      showToast('✅ Туалет добавлен!');
-      switchTab('map');
-    } else { const d=await r.json(); showToast(d.error||'Ошибка'); }
-  } catch(e){ showToast('Ошибка соединения'); }
+      body:JSON.stringify(body)});
+    if(r.ok){closeOverlay('addOverlay');addCoords=null;await loadToilets();showToast('✅ Туалет добавлен!');switchTab('map');}
+    else{const d=await r.json();showToast(d.error||'Ошибка');}
+  }catch(e){showToast('Ошибка соединения');}
 }
-</script>
 
-<script>
-// ============================================================
-// SEARCH & CATEGORY FILTER
-// ============================================================
-document.getElementById('searchInput').addEventListener('input', () => {
-  clearTimeout(searchTimer);
-  searchTimer = setTimeout(renderMarkers, 300);
+// ── SEARCH & CHIPS ──
+document.getElementById('searchInput').addEventListener('input',()=>{
+  clearTimeout(searchTimer);searchTimer=setTimeout(renderMarkers,300);
 });
-
-document.querySelectorAll('.catChip').forEach(chip => {
-  chip.addEventListener('click', function(){
+document.querySelectorAll('.catChip').forEach(chip=>{
+  chip.addEventListener('click',function(){
     document.querySelectorAll('.catChip').forEach(c=>c.classList.remove('active'));
-    this.classList.add('active');
-    currentCat = this.dataset.cat;
-    renderMarkers();
+    this.classList.add('active');currentCat=this.dataset.cat;renderMarkers();
   });
 });
 
-// ============================================================
-// TOAST
-// ============================================================
+// ── TOAST ──
 let toastTimer;
 function showToast(msg){
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2800);
 }
 
-// ============================================================
-// AUTH NOTICE click to open login
-// ============================================================
-document.getElementById('authNotice').addEventListener('click', openAuthModal);
-
-// ============================================================
-// INIT
-// ============================================================
+// ── INIT ──
 setLang(currentLang);
+applyTheme();
 updateLoginBtn();
 </script>
 </body>
