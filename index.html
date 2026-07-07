@@ -466,7 +466,7 @@ body.dark .phoneCode{background:#2d3142;}
 /* ===== OFFLINE PILL ===== */
 #offlineBanner{
   position:fixed;
-  top:calc(env(safe-area-inset-top,0px) + var(--header-h) + 16px);
+  top:160px;
   left:50%;transform:translateX(-50%) translateY(-20px);
   z-index:201;
   display:flex;align-items:center;gap:8px;
@@ -666,7 +666,7 @@ body.dark #toast{
 <div id="profileScreen" class="tScreen hidden">
   <div id="pAvatarWrap"><span id="pAvatarLetter">?</span></div>
   <div id="pHeader">Профиль</div>
-  <div id="pSub" id="pSubText">Войдите чтобы увидеть данные</div>
+  <div id="pSub">Войдите чтобы увидеть данные</div>
   <div id="pInfoCard" class="hidden">
     <div class="pInfoRow">
       <span class="pInfoLabel">Аккаунт</span>
@@ -1345,8 +1345,11 @@ function adjustControlsPosition(){
   const bottom=rect.bottom+8;
   const zc=document.getElementById('zoomControls');
   const gb=document.getElementById('geoBtn');
+  const ob=document.getElementById('offlineBanner');
   if(zc)zc.style.top=bottom+'px';
   if(gb)gb.style.top=(bottom+44+8+44+16)+'px';
+  // offlineBanner — плавает под headerCard
+  if(ob)ob.style.top=(rect.bottom+10)+'px';
   // tScreen padding-top под headerPanel
   const hh=document.getElementById('headerPanel').getBoundingClientRect().bottom+12;
   document.querySelectorAll('.tScreen').forEach(s=>s.style.paddingTop=hh+'px');
@@ -1358,6 +1361,7 @@ window.addEventListener('resize',adjustControlsPosition);
 setLang(currentLang);
 applyTheme();
 updateLoginBtn();
+switchTab('map');
 </script>
 </body>
 </html>
