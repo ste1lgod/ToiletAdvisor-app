@@ -75,6 +75,7 @@ body.dark .headerCard{
   padding:10px 14px 8px;
 }
 #hTitle{font-size:17px;font-weight:700;letter-spacing:-.3px;white-space:nowrap;flex-shrink:0;}
+#hDot,#hAdv{color:var(--green);}
 .hControls{display:flex;align-items:center;gap:6px;margin-left:auto;}
 
 /* Lang dropdown */
@@ -221,13 +222,20 @@ body.dark #geoBtn{border-color:rgba(255,255,255,0.12);}
 body.dark #findNearestBtn{border-color:rgba(255,255,255,0.12);}
 #findNearestBtn:active{transform:translateX(-50%) scale(.96);opacity:.85;}
 
-/* ===== BOTTOM NAV ===== */
+/* ===== BOTTOM NAV — glassmorphism floating ===== */
 #bottomNav{
   position:fixed;bottom:0;left:0;right:0;z-index:20;
-  background:var(--card);border-top:1px solid var(--border);
+  background:var(--glass-bg);
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
+  border-top:1px solid rgba(255,255,255,0.45);
   display:flex;align-items:flex-end;justify-content:space-around;
   padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px));
-  box-shadow:0 -2px 16px rgba(0,0,0,0.06);
+  box-shadow:0 -4px 24px rgba(0,0,0,0.08);
+}
+body.dark #bottomNav{
+  border-top-color:rgba(255,255,255,0.08);
+  box-shadow:0 -4px 24px rgba(0,0,0,0.3);
 }
 .navBtn{
   flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
@@ -384,25 +392,72 @@ body.dark .phoneCode{background:#2d3142;}
 .chkGrid input[type=checkbox]{width:auto;accent-color:var(--green);}
 
 /* Tab screens */
-.tScreen{position:fixed;top:0;left:0;right:0;bottom:0;z-index:12;background:var(--bg);display:flex;flex-direction:column;align-items:center;overflow-y:auto;}
+.tScreen{
+  position:fixed;top:0;left:0;right:0;bottom:0;z-index:12;
+  background:var(--bg);display:flex;flex-direction:column;align-items:center;
+  overflow-y:auto;
+  /* padding-top задаётся JS после рендера headerCard */
+  padding-top:180px;
+  padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 16px);
+}
 .tScreen.hidden{display:none!important;}
 .hidden{display:none!important;}
 
-#profileScreen{padding-top:100px;gap:8px;}
-#pHeader{font-size:22px;font-weight:700;color:var(--text);font-family:var(--font);}
-#pSub{font-size:14px;color:var(--text2);margin-top:4px;}
-#pInfo{margin-top:16px;padding:14px 24px;background:var(--card);border-radius:var(--r);box-shadow:var(--sh);font-size:14px;color:var(--text);text-align:center;min-width:200px;}
-#pLogoutBtn{margin-top:12px;padding:12px 32px;background:#ef4444;color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);}
+/* ===== PROFILE SCREEN ===== */
+#profileScreen{gap:0;padding-left:16px;padding-right:16px;}
 
-#adminDeniedScreen{padding-top:120px;gap:8px;text-align:center;}
-#adIcon{font-size:52px;margin-bottom:8px;}
+/* Profile avatar block */
+#pAvatarWrap{
+  width:80px;height:80px;border-radius:50%;
+  background:var(--green);
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;font-weight:700;color:#fff;
+  box-shadow:0 4px 20px rgba(1,148,81,0.3);
+  margin-bottom:12px;
+  flex-shrink:0;
+}
+#pHeader{font-size:20px;font-weight:700;color:var(--text);font-family:var(--font);text-align:center;}
+#pSub{font-size:13px;color:var(--text2);margin-top:4px;text-align:center;}
+#pInfoCard{
+  width:100%;margin-top:20px;
+  background:var(--card);border-radius:var(--r);
+  box-shadow:var(--sh);
+  overflow:hidden;
+}
+.pInfoRow{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 18px;border-bottom:1px solid var(--border);
+  font-size:14px;color:var(--text);
+}
+.pInfoRow:last-child{border-bottom:none;}
+.pInfoLabel{font-size:12px;font-weight:600;color:var(--text2);min-width:72px;}
+.pInfoVal{font-weight:600;color:var(--text);flex:1;}
+#pLogoutBtn{
+  margin-top:16px;width:100%;padding:14px;
+  background:#ef4444;color:#fff;border:none;
+  border-radius:var(--rs);font-size:14px;font-weight:700;
+  cursor:pointer;font-family:var(--font);
+  box-shadow:0 4px 14px rgba(239,68,68,0.3);
+}
+#pLogoutBtn:active{opacity:.85;}
+
+/* Admin denied */
+#adminDeniedScreen{padding-left:24px;padding-right:24px;gap:0;text-align:center;}
+#adIcon{font-size:56px;margin-bottom:12px;}
 #adTitle{font-size:20px;font-weight:700;color:var(--text);font-family:var(--font);}
-#adText{font-size:13px;color:var(--text2);padding:0 24px;line-height:1.6;margin-top:8px;}
-#adBtn{margin-top:20px;padding:13px 28px;background:var(--green);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);}
+#adText{font-size:13px;color:var(--text2);line-height:1.6;margin-top:8px;}
+#adBtn{
+  margin-top:24px;padding:14px 32px;
+  background:var(--green);color:#fff;border:none;
+  border-radius:var(--rs);font-size:14px;font-weight:700;
+  cursor:pointer;font-family:var(--font);
+  box-shadow:0 4px 14px rgba(1,148,81,0.3);
+}
 
-#addScreen{padding:80px 16px 100px;align-items:stretch;}
-#addScreenTitle{font-size:20px;font-weight:700;color:var(--text);text-align:center;padding:16px 0 6px;font-family:var(--font);}
-#addMapHint{font-size:13px;color:var(--green);text-align:center;margin:0 0 12px;padding:10px;background:var(--green-l);border-radius:var(--rs);font-weight:500;}
+/* Add screen */
+#addScreen{padding-left:16px;padding-right:16px;align-items:stretch;}
+#addScreenTitle{font-size:20px;font-weight:700;color:var(--text);text-align:center;padding:0 0 10px;font-family:var(--font);}
+#addMapHint{font-size:13px;color:var(--green);text-align:center;margin:0 0 14px;padding:11px;background:var(--green-l);border-radius:var(--rs);font-weight:500;}
 #addForm{display:flex;flex-direction:column;gap:10px;}
 #addForm input[type=text]{width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--card);font-size:14px;color:var(--text);outline:none;font-family:var(--font);}
 #addForm input[type=text]:focus{border-color:var(--green);}
@@ -609,10 +664,21 @@ body.dark #toast{
 
 <!-- PROFILE SCREEN -->
 <div id="profileScreen" class="tScreen hidden">
+  <div id="pAvatarWrap"><span id="pAvatarLetter">?</span></div>
   <div id="pHeader">Профиль</div>
-  <div id="pSub">Настройки профиля появятся здесь</div>
-  <div id="pInfo"></div>
+  <div id="pSub" id="pSubText">Войдите чтобы увидеть данные</div>
+  <div id="pInfoCard" class="hidden">
+    <div class="pInfoRow">
+      <span class="pInfoLabel">Аккаунт</span>
+      <span class="pInfoVal" id="pInfoPhone">—</span>
+    </div>
+    <div class="pInfoRow">
+      <span class="pInfoLabel">Роль</span>
+      <span class="pInfoVal" id="pInfoRole">—</span>
+    </div>
+  </div>
   <button id="pLogoutBtn" class="hidden" onclick="doLogout()">🚪 Выйти из аккаунта</button>
+  <button id="pLoginPromptBtn" onclick="openAuthModal()" style="margin-top:20px;padding:14px 32px;background:var(--green);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 14px rgba(1,148,81,0.3);">→ Войти в аккаунт</button>
 </div>
 
 <!-- ADMIN DENIED SCREEN -->
@@ -820,6 +886,7 @@ function initMap(){
     });
     loadToilets();
     startGeo();
+    setTimeout(adjustControlsPosition,200);
   }catch(err){console.error('Map:',err);}
 }
 if(typeof ymaps!=='undefined')ymaps.ready(initMap);
@@ -1170,12 +1237,30 @@ function switchTab(tab){
   } else if(tab==='profile'){
     const ps=document.getElementById('profileScreen');
     ps.classList.remove('hidden');
+    adjustControlsPosition(); // пересчитываем т.к. tScreen перекрывает
     if(currentUser){
-      document.getElementById('pInfo').textContent=`${currentUser.phone||currentUser.login||''} (${currentUser.role})`;
+      // Аватар — первая буква телефона/логина
+      const label=currentUser.phone||currentUser.login||'?';
+      document.getElementById('pAvatarLetter').textContent=label.replace(/\+/g,'').slice(0,1).toUpperCase();
+      document.getElementById('pAvatarWrap').style.background=
+        currentUser.role==='admin'?'#7c3aed':'var(--green)';
+      document.getElementById('pHeader').textContent=
+        currentUser.role==='admin'?'Администратор':'Профиль';
+      document.getElementById('pSub').textContent=label;
+      document.getElementById('pInfoCard').classList.remove('hidden');
+      document.getElementById('pInfoPhone').textContent=label;
+      document.getElementById('pInfoRole').textContent=
+        currentUser.role==='admin'?'⚙️ Администратор':'👤 Пользователь';
       document.getElementById('pLogoutBtn').classList.remove('hidden');
+      document.getElementById('pLoginPromptBtn').classList.add('hidden');
     } else {
-      document.getElementById('pInfo').textContent='Не авторизован';
+      document.getElementById('pAvatarLetter').textContent='?';
+      document.getElementById('pAvatarWrap').style.background='#9ca3af';
+      document.getElementById('pHeader').textContent='Профиль';
+      document.getElementById('pSub').textContent='Войдите чтобы увидеть данные';
+      document.getElementById('pInfoCard').classList.add('hidden');
       document.getElementById('pLogoutBtn').classList.add('hidden');
+      document.getElementById('pLoginPromptBtn').classList.remove('hidden');
     }
   }
 }
@@ -1251,6 +1336,23 @@ window.addEventListener('online',()=>{
 window.addEventListener('offline',()=>showOfflineBanner());
 // Проверка при старте
 if(!navigator.onLine)showOfflineBanner();
+
+// ── ADJUST FLOATING CONTROLS POSITION ──
+function adjustControlsPosition(){
+  const card=document.querySelector('.headerCard');
+  if(!card)return;
+  const rect=card.getBoundingClientRect();
+  const bottom=rect.bottom+8;
+  const zc=document.getElementById('zoomControls');
+  const gb=document.getElementById('geoBtn');
+  if(zc)zc.style.top=bottom+'px';
+  if(gb)gb.style.top=(bottom+44+8+44+16)+'px';
+  // tScreen padding-top под headerPanel
+  const hh=document.getElementById('headerPanel').getBoundingClientRect().bottom+12;
+  document.querySelectorAll('.tScreen').forEach(s=>s.style.paddingTop=hh+'px');
+}
+window.addEventListener('load',()=>setTimeout(adjustControlsPosition,400));
+window.addEventListener('resize',adjustControlsPosition);
 
 // ── INIT ──
 setLang(currentLang);
