@@ -12,8 +12,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Туалеты">
 
-    <!-- Яндекс.Карты -->
-    <script src="https://api-maps.yandex.ru/2.1/?apikey=45bd36a1-ed61-4910-bba7-c4c36f55877b&lang=ru_RU" type="text/javascript"></script>
+    <!-- Яндекс.Карты (Исправлено подключение модулей) -->
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=45bd36a1-ed61-4910-bba7-c4c36f55877b&lang=ru_RU&load=package.full" type="text/javascript"></script>
 
     <style>
         /* ========== RESET & BASE ========== */
@@ -183,7 +183,7 @@
             font-size: 18px;
         }
 
-        /* ========== КАТЕГОРИИ (чипсы) ========== */
+        /* ========== К КАТЕГОРИИ (чипсы) ========== */
         .categories {
             position: absolute;
             top: 124px;
@@ -224,7 +224,7 @@
             margin-right: 4px;
         }
 
-        /* ========== КАРТОЧКА ТУАЛЕТА (нижний лист) ========== */
+        /* ========== КАРТОЧКА ТУАЛЕТА ========== */
         .toilet-sheet {
             position: absolute;
             bottom: 0;
@@ -246,12 +246,8 @@
         }
 
         @keyframes slideUp {
-            from {
-                transform: translateY(100%);
-            }
-            to {
-                transform: translateY(0);
-            }
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
         }
 
         .sheet-handle {
@@ -326,38 +322,15 @@
             align-items: center;
             gap: 4px;
         }
-        .sheet-badge.open {
-            background: #d1fae5;
-            color: #065f46;
-        }
-        .sheet-badge.closed {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-        .sheet-badge.free {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-        .sheet-badge.paid {
-            background: #fef3c7;
-            color: #92400e;
-        }
-        body.dark .sheet-badge.open {
-            background: #064e3b;
-            color: #a7f3d0;
-        }
-        body.dark .sheet-badge.closed {
-            background: #7f1d1d;
-            color: #fca5a5;
-        }
-        body.dark .sheet-badge.free {
-            background: #1e3a5f;
-            color: #93c5fd;
-        }
-        body.dark .sheet-badge.paid {
-            background: #78350f;
-            color: #fcd34d;
-        }
+        .sheet-badge.open { background: #d1fae5; color: #065f46; }
+        .sheet-badge.closed { background: #fee2e2; color: #991b1b; }
+        .sheet-badge.free { background: #dbeafe; color: #1e40af; }
+        .sheet-badge.paid { background: #fef3c7; color: #92400e; }
+
+        body.dark .sheet-badge.open { background: #064e3b; color: #a7f3d0; }
+        body.dark .sheet-badge.closed { background: #7f1d1d; color: #fca5a5; }
+        body.dark .sheet-badge.free { background: #1e3a5f; color: #93c5fd; }
+        body.dark .sheet-badge.paid { background: #78350f; color: #fcd34d; }
 
         .sheet-description {
             color: var(--text-secondary);
@@ -383,9 +356,7 @@
             padding: 12px 0;
             border-bottom: 1px solid var(--border);
         }
-        .sheet-review:last-child {
-            border-bottom: none;
-        }
+        .sheet-review:last-child { border-bottom: none; }
 
         .review-avatar {
             width: 40px;
@@ -400,33 +371,12 @@
             font-size: 14px;
             flex-shrink: 0;
         }
-        .review-avatar.gray {
-            background: var(--text-secondary);
-        }
 
-        .review-body {
-            flex: 1;
-        }
-        .review-name {
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--text);
-        }
-        .review-date {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-        .review-stars {
-            color: var(--star-color);
-            font-size: 13px;
-            letter-spacing: 1px;
-        }
-        .review-text {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-top: 4px;
-            line-height: 1.5;
-        }
+        .review-body { flex: 1; }
+        .review-name { font-weight: 600; font-size: 14px; color: var(--text); }
+        .review-date { font-size: 12px; color: var(--text-secondary); }
+        .review-stars { color: var(--star-color); font-size: 13px; letter-spacing: 1px; }
+        .review-text { font-size: 14px; color: var(--text-secondary); margin-top: 4px; line-height: 1.5; }
 
         /* ========== ФОРМА ОТЗЫВА ========== */
         .review-form {
@@ -446,31 +396,13 @@
             min-height: 70px;
             font-family: inherit;
         }
-        .review-form textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
+        .review-form textarea:focus { outline: none; border-color: var(--primary); }
 
-        .review-form .star-select {
-            display: flex;
-            gap: 4px;
-            margin: 10px 0;
-            font-size: 24px;
-            cursor: pointer;
-        }
-        .review-form .star-select span {
-            color: var(--border);
-            transition: color 0.2s;
-        }
-        .review-form .star-select span.active {
-            color: var(--star-color);
-        }
+        .review-form .star-select { display: flex; gap: 4px; margin: 10px 0; font-size: 24px; cursor: pointer; }
+        .review-form .star-select span { color: var(--border); transition: color 0.2s; }
+        .review-form .star-select span.active { color: var(--star-color); }
 
-        .review-form .submit-row {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
+        .review-form .submit-row { display: flex; gap: 10px; margin-top: 10px; }
         .review-form .submit-row button {
             flex: 1;
             padding: 12px;
@@ -481,29 +413,12 @@
             cursor: pointer;
             transition: opacity 0.2s;
         }
-        .review-form .submit-row button:hover {
-            opacity: 0.85;
-        }
-        .review-form .submit-row .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-        .review-form .submit-row .btn-route {
-            background: var(--input-bg);
-            color: var(--text);
-        }
-        .review-form .hint {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-top: 6px;
-            text-align: center;
-        }
-        .review-form .hint.error {
-            color: #ef4444;
-        }
-        .review-form .hint.success {
-            color: var(--primary);
-        }
+        .review-form .submit-row button:hover { opacity: 0.85; }
+        .review-form .submit-row .btn-primary { background: var(--primary); color: white; }
+        .review-form .submit-row .btn-route { background: var(--input-bg); color: var(--text); }
+        .review-form .hint { font-size: 12px; color: var(--text-secondary); margin-top: 6px; text-align: center; }
+        .review-form .hint.error { color: #ef4444; }
+        .review-form .hint.success { color: var(--primary); }
 
         /* ========== НИЖНЯЯ НАВИГАЦИЯ ========== */
         .bottom-nav {
@@ -520,9 +435,7 @@
             backdrop-filter: blur(8px);
             background: rgba(255, 255, 255, 0.95);
         }
-        body.dark .bottom-nav {
-            background: rgba(26, 26, 46, 0.95);
-        }
+        body.dark .bottom-nav { background: rgba(26, 26, 46, 0.95); }
 
         .nav-item {
             display: flex;
@@ -538,33 +451,14 @@
             transition: color 0.2s;
             position: relative;
         }
-        .nav-item.active {
-            color: var(--primary);
-        }
-        .nav-item .nav-icon {
-            font-size: 22px;
-        }
-        .nav-item .nav-label {
-            font-weight: 500;
-        }
-        .nav-item .badge-dot {
-            position: absolute;
-            top: 2px;
-            right: 8px;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #ef4444;
-            border: 2px solid var(--nav-bg);
-        }
+        .nav-item.active { color: var(--primary); }
+        .nav-item .nav-icon { font-size: 22px; }
+        .nav-item .nav-label { font-weight: 500; }
 
         /* ========== МОДАЛЬНЫЕ ОКНА ========== */
         .modal-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             z-index: 30;
             background: rgba(0, 0, 0, 0.5);
             display: none;
@@ -572,9 +466,7 @@
             align-items: center;
             backdrop-filter: blur(4px);
         }
-        .modal-overlay.active {
-            display: flex;
-        }
+        .modal-overlay.active { display: flex; }
 
         .modal-box {
             background: var(--card-bg);
@@ -587,30 +479,12 @@
             animation: modalIn 0.25s ease;
         }
         @keyframes modalIn {
-            from {
-                transform: scale(0.95);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
-        .modal-box .modal-title {
-            font-size: 22px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 20px;
-            color: var(--text);
-        }
-        .modal-box .modal-sub {
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin-bottom: 16px;
-        }
-
+        .modal-box .modal-title { font-size: 22px; font-weight: 700; text-align: center; margin-bottom: 20px; color: var(--text); }
+        .modal-box .modal-sub { text-align: center; color: var(--text-secondary); font-size: 14px; margin-bottom: 16px; }
         .modal-box input {
             width: 100%;
             padding: 14px 16px;
@@ -620,12 +494,8 @@
             color: var(--text);
             font-size: 14px;
             margin-bottom: 12px;
-            transition: border-color 0.2s;
         }
-        .modal-box input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
+        .modal-box input:focus { outline: none; border-color: var(--primary); }
 
         .modal-box .modal-btn {
             width: 100%;
@@ -638,115 +508,23 @@
             transition: opacity 0.2s;
             margin-bottom: 8px;
         }
-        .modal-box .modal-btn:hover {
-            opacity: 0.85;
-        }
-        .modal-box .modal-btn.primary {
-            background: var(--primary);
-            color: white;
-        }
-        .modal-box .modal-btn.secondary {
-            background: var(--input-bg);
-            color: var(--text);
-        }
-        .modal-box .modal-btn.danger {
-            background: #ef4444;
-            color: white;
-        }
+        .modal-box .modal-btn.primary { background: var(--primary); color: white; }
+        .modal-box .modal-btn.secondary { background: var(--input-bg); color: var(--text); }
+        .modal-box .modal-btn.danger { background: #ef4444; color: white; }
 
-        .modal-box .modal-tabs {
-            display: flex;
-            margin-bottom: 16px;
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            border: 1px solid var(--border);
-        }
-        .modal-box .modal-tab {
-            flex: 1;
-            text-align: center;
-            padding: 12px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            background: var(--input-bg);
-            color: var(--text-secondary);
-            transition: all 0.2s;
-        }
-        .modal-box .modal-tab.active {
-            background: var(--primary);
-            color: white;
-        }
+        .modal-box .modal-tabs { display: flex; margin-bottom: 16px; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); }
+        .modal-box .modal-tab { flex: 1; text-align: center; padding: 12px; font-weight: 600; font-size: 14px; cursor: pointer; background: var(--input-bg); color: var(--text-secondary); }
+        .modal-box .modal-tab.active { background: var(--primary); color: white; }
+        .modal-box .modal-link { display: block; text-align: center; color: var(--primary); font-size: 13px; cursor: pointer; margin-top: 8px; font-weight: 500; }
 
-        .modal-box .modal-link {
-            display: block;
-            text-align: center;
-            color: var(--primary);
-            font-size: 13px;
-            cursor: pointer;
-            margin-top: 8px;
-            font-weight: 500;
-        }
-        .modal-box .modal-link:hover {
-            text-decoration: underline;
-        }
+        .modal-box .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+        .modal-box .checkbox-group label { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text); cursor: pointer; padding: 6px 12px; border-radius: var(--radius-sm); background: var(--input-bg); }
+        .modal-box .checkbox-group input[type="checkbox"] { width: auto; margin: 0; }
 
-        .modal-box .checkbox-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-        .modal-box .checkbox-group label {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            color: var(--text);
-            cursor: pointer;
-            padding: 6px 12px;
-            border-radius: var(--radius-sm);
-            background: var(--input-bg);
-        }
-        .modal-box .checkbox-group input[type="checkbox"] {
-            width: auto;
-            margin: 0;
-        }
-
-        /* ========== АДАПТИВ ========== */
         @media (max-width: 480px) {
-            .header-title {
-                font-size: 14px;
-            }
-            .category-chip {
-                font-size: 12px;
-                padding: 6px 14px;
-            }
-            .sheet-title {
-                font-size: 18px;
-            }
-        }
-
-        /* ========== ЗАГРУЗКА ========== */
-        .loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        /* ========== АДМИН БАДЖ ========== */
-        .admin-badge {
-            background: #ef4444;
-            color: white;
-            font-size: 9px;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-left: 6px;
+            .header-title { font-size: 14px; }
+            .category-chip { font-size: 12px; padding: 6px 14px; }
+            .sheet-title { font-size: 18px; }
         }
     </style>
 </head>
@@ -785,7 +563,7 @@
         <button class="category-chip" data-category="open">🟢 Открыто</button>
     </div>
 
-    <!-- ===== КАРТОЧКА ТУАЛЕТА (нижний лист) ===== -->
+    <!-- ===== КАРТОЧКА ТУАЛЕТА ===== -->
     <div class="toilet-sheet" id="toiletSheet">
         <div class="sheet-handle"></div>
         <button class="sheet-close" id="sheetClose">✕</button>
@@ -826,7 +604,7 @@
             <span class="nav-icon">🗺️</span>
             <span class="nav-label">Карта</span>
         </button>
-        <button class="nav-item" data-tab="add" id="navAdd">
+        <button class="nav-item" data-tab="add" id="navAdd" style="display: none;">
             <span class="nav-icon">➕</span>
             <span class="nav-label">Добавить</span>
         </button>
@@ -839,8 +617,8 @@
     <!-- ===== МОДАЛ: АВТОРИЗАЦИЯ ===== -->
     <div class="modal-overlay" id="authModal">
         <div class="modal-box">
-            <div class="modal-title">Добро пожаловать</div>
-            <div class="modal-sub">Toilet Advisor Tashkent</div>
+            <div class="modal-title" id="authModalTitle">Добро пожаловать</div>
+            <div class="modal-sub" id="authModalSub">Toilet Advisor Tashkent</div>
 
             <div class="modal-tabs">
                 <div class="modal-tab active" id="tabLogin">Вход</div>
@@ -907,189 +685,20 @@
     </div>
 
     <script>
-        // ============================================================
-        //  КОНФИГУРАЦИЯ
-        // ============================================================
         const API_URL = 'https://toiletadvisor-server.onrender.com/api';
-        const YANDEX_API_KEY = '45bd36a1-ed61-4910-bba7-c4c36f55877b';
 
-        // ============================================================
-        //  ПЕРЕВОДЫ
-        // ============================================================
         const LANG = {
             ru: {
-                title: '🚽 ToiletAdvisor',
-                search: 'Поиск туалета...',
-                all: '📋 Всем',
-                taharatkhana: '🕌 Тахаратхана',
-                free: '🆓 Бесплатно',
-                soap: '🧼 С мылом',
-                paper: '🧻 С бумагой',
-                accessible: '♿ Доступные',
-                open: '🟢 Открыто',
-                openStatus: 'Открыто',
-                closedStatus: 'Закрыто',
-                freeLabel: 'Бесплатно',
-                paidLabel: 'Платно',
-                reviews: 'Отзывы',
-                writeReview: 'Опишите ваши впечатления...',
-                submit: '📝 Отправить',
-                route: '🚗 Маршрут',
-                login: 'Вход',
-                register: 'Регистрация',
-                welcome: 'Добро пожаловать',
-                subtitle: 'Toilet Advisor Tashkent',
-                phone: 'Номер телефона',
-                password: 'Пароль',
-                cancel: 'Отмена',
-                adminLogin: '🔑 Войти как администратор',
-                adminTitle: '🔐 Вход администратора',
-                adminLoginLabel: 'Логин',
-                adminPasswordLabel: 'Пароль',
-                addTitle: '➕ Добавить туалет',
-                addName: 'Название',
-                addDesc: 'Описание (необязательно)',
-                addPhoto: 'Ссылка на фото (необязательно)',
-                addFree: '🆓 Бесплатно',
-                addOpen: '🟢 Открыто',
-                addSoap: '🧼 Мыло',
-                addPaper: '🧻 Бумага',
-                addAccessible: '♿ Доступно',
-                addTaharatkhana: '🕌 Тахаратхана',
-                addSubmit: '✅ Добавить',
-                addHint: 'Нажмите на карте, чтобы выбрать место',
-                profile: '👤 Профиль',
-                notAuth: 'Не авторизован',
-                loginBtn: 'Войти',
-                logoutBtn: '🚪 Выйти',
-                close: 'Закрыть',
-                kmAway: 'км от вас',
-                noReviews: 'Нет отзывов',
-                pleaseLogin: 'Войдите, чтобы оставить отзыв',
-                success: '✅ Отзыв отправлен!',
-                error: '❌ Ошибка',
-                adminOnly: 'Доступ только для администраторов',
-                map: 'Карта',
-                add: 'Добавить',
-                profileLabel: 'Профиль',
+                title: '🚽 ToiletAdvisor', search: 'Поиск туалета...', all: '📋 Всем', taharatkhana: '🕌 Тахаратхана', free: '🆓 Бесплатно', soap: '🧼 С мылом', paper: '🧻 С бумагой', accessible: '♿ Доступные', open: '🟢 Открыто', openStatus: 'Открыто', closedStatus: 'Закрыто', freeLabel: 'Бесплатно', paidLabel: 'Платно', reviews: 'Отзывы', writeReview: 'Опишите ваши впечатления...', submit: '📝 Отправить', route: '🚗 Маршрут', login: 'Вход', register: 'Регистрация', welcome: 'Добро пожаловать', subtitle: 'Toilet Advisor Tashkent', phone: 'Номер телефона', password: 'Пароль', cancel: 'Отмена', adminLogin: '🔑 Войти как администратор', adminTitle: '🔐 Вход администратора', adminLoginLabel: 'Логин', adminPasswordLabel: 'Пароль', addTitle: '➕ Добавить туалет', addName: 'Название', addDesc: 'Описание (необязательно)', addPhoto: 'Ссылка на фото (необязательно)', addFree: '🆓 Бесплатно', addOpen: '🟢 Открыто', addSoap: '🧼 Мыло', addPaper: '🧻 Бумага', addAccessible: '♿ Доступно', addTaharatkhana: '🕌 Тахаратхана', addSubmit: '✅ Добавить', addHint: 'Нажмите на карте, чтобы выбрать место', profile: '👤 Профиль', notAuth: 'Не авторизован', loginBtn: 'Войти', logoutBtn: '🚪 Выйти', close: 'Закрыть', kmAway: 'км от вас', noReviews: 'Нет отзывов', pleaseLogin: 'Войдите, чтобы оставить отзыв', success: '✅ Отзыв отправлен!', error: '❌ Ошибка', adminOnly: 'Доступ только для администраторов', map: 'Карта', add: 'Добавить', profileLabel: 'Профиль'
             },
             en: {
-                title: '🚽 ToiletAdvisor',
-                search: 'Search toilet...',
-                all: '📋 All',
-                taharatkhana: '🕌 Taharatkhana',
-                free: '🆓 Free',
-                soap: '🧼 With soap',
-                paper: '🧻 With paper',
-                accessible: '♿ Accessible',
-                open: '🟢 Open',
-                openStatus: 'Open',
-                closedStatus: 'Closed',
-                freeLabel: 'Free',
-                paidLabel: 'Paid',
-                reviews: 'Reviews',
-                writeReview: 'Write your impression...',
-                submit: '📝 Submit',
-                route: '🚗 Route',
-                login: 'Login',
-                register: 'Register',
-                welcome: 'Welcome',
-                subtitle: 'Toilet Advisor Tashkent',
-                phone: 'Phone number',
-                password: 'Password',
-                cancel: 'Cancel',
-                adminLogin: '🔑 Login as admin',
-                adminTitle: '🔐 Admin Login',
-                adminLoginLabel: 'Login',
-                adminPasswordLabel: 'Password',
-                addTitle: '➕ Add toilet',
-                addName: 'Name',
-                addDesc: 'Description (optional)',
-                addPhoto: 'Photo URL (optional)',
-                addFree: '🆓 Free',
-                addOpen: '🟢 Open',
-                addSoap: '🧼 Soap',
-                addPaper: '🧻 Paper',
-                addAccessible: '♿ Accessible',
-                addTaharatkhana: '🕌 Taharatkhana',
-                addSubmit: '✅ Add',
-                addHint: 'Tap on map to select location',
-                profile: '👤 Profile',
-                notAuth: 'Not authorized',
-                loginBtn: 'Login',
-                logoutBtn: '🚪 Logout',
-                close: 'Close',
-                kmAway: 'km away',
-                noReviews: 'No reviews',
-                pleaseLogin: 'Please login to leave a review',
-                success: '✅ Review sent!',
-                error: '❌ Error',
-                adminOnly: 'Admin only',
-                map: 'Map',
-                add: 'Add',
-                profileLabel: 'Profile',
+                title: '🚽 ToiletAdvisor', search: 'Search toilet...', all: '📋 All', taharatkhana: '🕌 Taharatkhana', free: '🆓 Free', soap: '🧼 With soap', paper: '🧻 With paper', accessible: '♿ Accessible', open: '🟢 Open', openStatus: 'Open', closedStatus: 'Closed', freeLabel: 'Free', paidLabel: 'Paid', reviews: 'Reviews', writeReview: 'Write your impression...', submit: '📝 Submit', route: '🚗 Route', login: 'Login', register: 'Register', welcome: 'Welcome', subtitle: 'Toilet Advisor Tashkent', phone: 'Phone number', password: 'Password', cancel: 'Cancel', adminLogin: '🔑 Login as admin', adminTitle: '🔐 Admin Login', adminLoginLabel: 'Login', adminPasswordLabel: 'Password', addTitle: '➕ Add toilet', addName: 'Name', addDesc: 'Description (optional)', addPhoto: 'Photo URL (optional)', addFree: '🆓 Free', addOpen: '🟢 Open', addSoap: '🧼 Soap', addPaper: '🧻 Paper', addAccessible: '♿ Accessible', addTaharatkhana: '🕌 Taharatkhana', addSubmit: '✅ Add', addHint: 'Tap on map to select location', profile: '👤 Profile', notAuth: 'Not authorized', loginBtn: 'Login', logoutBtn: '🚪 Logout', close: 'Close', kmAway: 'km away', noReviews: 'No reviews', pleaseLogin: 'Please login to leave a review', success: '✅ Review sent!', error: '❌ Error', adminOnly: 'Admin only', map: 'Map', add: 'Add', profileLabel: 'Profile'
             },
             uzb: {
-                title: '🚽 ToiletAdvisor',
-                search: 'Hojatxona qidirish...',
-                all: '📋 Hammasi',
-                taharatkhana: '🕌 Tahoratxona',
-                free: '🆓 Bepul',
-                soap: '🧼 Sovun bor',
-                paper: '🧻 Qog\'oz bor',
-                accessible: '♿ Qulay',
-                open: '🟢 Ochiq',
-                openStatus: 'Ochiq',
-                closedStatus: 'Yopiq',
-                freeLabel: 'Bepul',
-                paidLabel: 'Pullik',
-                reviews: 'Sharhlar',
-                writeReview: 'Taassurotlaringizni yozing...',
-                submit: '📝 Yuborish',
-                route: '🚗 Marshrut',
-                login: 'Kirish',
-                register: "Ro'yxatdan o'tish",
-                welcome: 'Xush kelibsiz',
-                subtitle: 'Toilet Advisor Tashkent',
-                phone: 'Telefon raqam',
-                password: 'Parol',
-                cancel: 'Bekor qilish',
-                adminLogin: '🔑 Administrator sifatida kirish',
-                adminTitle: '🔐 Admin kirish',
-                adminLoginLabel: 'Login',
-                adminPasswordLabel: 'Parol',
-                addTitle: '➕ Hojatxona qo\'shish',
-                addName: 'Nomi',
-                addDesc: 'Tavsif (ixtiyoriy)',
-                addPhoto: 'Rasm URL (ixtiyoriy)',
-                addFree: '🆓 Bepul',
-                addOpen: '🟢 Ochiq',
-                addSoap: '🧼 Sovun',
-                addPaper: '🧻 Qog\'oz',
-                addAccessible: '♿ Qulay',
-                addTaharatkhana: '🕌 Tahoratxona',
-                addSubmit: '✅ Qo\'shish',
-                addHint: 'Xaritani tanlash uchun bosing',
-                profile: '👤 Profil',
-                notAuth: 'Tizimga kirmagan',
-                loginBtn: 'Kirish',
-                logoutBtn: '🚪 Chiqish',
-                close: 'Yopish',
-                kmAway: 'km uzoqlikda',
-                noReviews: 'Sharhlar yo\'q',
-                pleaseLogin: 'Sharh qoldirish uchun tizimga kiring',
-                success: '✅ Sharh yuborildi!',
-                error: '❌ Xatolik',
-                adminOnly: 'Faqat administratorlar uchun',
-                map: 'Xarita',
-                add: 'Qo\'shish',
-                profileLabel: 'Profil',
+                title: '🚽 ToiletAdvisor', search: 'Hojatxona qidirish...', all: '📋 Hammasi', taharatkhana: '🕌 Tahoratxona', free: '🆓 Bepul', soap: '🧼 Sovun bor', paper: '🧻 Qog\'oz bor', accessible: '♿ Qulay', open: '🟢 Ochiq', openStatus: 'Ochiq', closedStatus: 'Yopiq', freeLabel: 'Bepul', paidLabel: 'Pullik', reviews: 'Sharhlar', writeReview: 'Taassurotlaringizni yozing...', submit: '📝 Yuborish', route: '🚗 Marshrut', login: 'Kirish', register: "Ro'yxatdan o'tish", welcome: 'Xush kelibsiz', subtitle: 'Toilet Advisor Tashkent', phone: 'Telefon raqam', password: 'Parol', cancel: 'Bekor qilish', adminLogin: '🔑 Administrator sifatida kirish', adminTitle: '🔐 Admin kirish', adminLoginLabel: 'Login', adminPasswordLabel: 'Parol', addTitle: '➕ Hojatxona qo\'shish', addName: 'Nomi', addDesc: 'Tavsif (ixtiyoriy)', addPhoto: 'Rasm URL (ixtiyoriy)', addFree: '🆓 Bepul', addOpen: '🟢 Ochiq', addSoap: '🧼 Sovun', addPaper: '🧻 Qog\'oz', addAccessible: '♿ Qulay', addTaharatkhana: '🕌 Tahoratxona', addSubmit: '✅ Qo\'shish', addHint: 'Xaritani tanlash uchun bosing', profile: '👤 Profil', notAuth: 'Tizimga kirmagan', loginBtn: 'Kirish', logoutBtn: '🚪 Chiqish', close: 'Yopish', kmAway: 'km uzoqlikda', noReviews: 'Sharhlar yo\'q', pleaseLogin: 'Sharh qoldirish uchun tizimga kiring', success: '✅ Sharh yuborildi!', error: '❌ Xatolik', adminOnly: 'Faqat administratorlar uchun', map: 'Xarita', add: 'Qo\'shish', profileLabel: 'Profil'
             }
         };
 
-        // ============================================================
-        //  СОСТОЯНИЕ
-        // ============================================================
         let currentLang = localStorage.getItem('lang') || 'ru';
         let currentTheme = localStorage.getItem('theme') || 'light';
         let currentUser = null;
@@ -1102,48 +711,14 @@
         let myMap = null;
         let searchTimeout = null;
 
-        // ============================================================
-        //  ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
-        // ============================================================
-        function t(key) {
-            return LANG[currentLang]?.[key] || LANG.ru[key] || key;
-        }
+        function t(key) { return LANG[currentLang]?.[key] || LANG.ru[key] || key; }
+        function getInitials(name) { if (!name) return '?'; const parts = name.trim().split(' '); return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.slice(0, 2).toUpperCase(); }
+        function formatDate(dateStr) { const d = new Date(dateStr); const months = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек']; return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`; }
+        function getStarString(rating) { const full = Math.floor(rating); const half = rating - full >= 0.5 ? 1 : 0; return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(5 - full - half); }
+        function getRandomColor(seed) { const colors = ['#2ecc71', '#3498db', '#9b59b6', '#e67e22', '#1abc9c', '#e74c3c', '#f39c12']; return colors[seed % colors.length]; }
 
-        function getInitials(name) {
-            if (!name) return '?';
-            const parts = name.trim().split(' ');
-            if (parts.length >= 2) {
-                return (parts[0][0] + parts[1][0]).toUpperCase();
-            }
-            return name.slice(0, 2).toUpperCase();
-        }
-
-        function formatDate(dateStr) {
-            const d = new Date(dateStr);
-            const months = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
-            return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
-        }
-
-        function getStarString(rating) {
-            const full = Math.floor(rating);
-            const half = rating - full >= 0.5 ? 1 : 0;
-            const empty = 5 - full - half;
-            return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(empty);
-        }
-
-        function getRandomColor(seed) {
-            const colors = ['#2ecc71', '#3498db', '#9b59b6', '#e67e22', '#1abc9c', '#e74c3c', '#f39c12'];
-            return colors[seed % colors.length];
-        }
-
-        // ============================================================
-        //  ИНИЦИАЛИЗАЦИЯ ТЕМЫ
-        // ============================================================
-        if (currentTheme === 'dark') {
-            document.body.classList.add('dark');
-            document.getElementById('themeToggle').textContent = '☀️';
-        }
-
+        // ТЕМА
+        if (currentTheme === 'dark') { document.body.classList.add('dark'); document.getElementById('themeToggle').textContent = '☀️'; }
         document.getElementById('themeToggle').addEventListener('click', () => {
             document.body.classList.toggle('dark');
             const isDark = document.body.classList.contains('dark');
@@ -1151,9 +726,7 @@
             document.getElementById('themeToggle').textContent = isDark ? '☀️' : '🌙';
         });
 
-        // ============================================================
-        //  ИНИЦИАЛИЗАЦИЯ ЯЗЫКА
-        // ============================================================
+        // ЯЗЫК
         document.getElementById('langSelect').value = currentLang;
         document.getElementById('langSelect').addEventListener('change', (e) => {
             currentLang = e.target.value;
@@ -1163,20 +736,7 @@
         });
 
         function updateUI() {
-            // Поиск
             document.getElementById('searchInput').placeholder = t('search');
-
-            // Категории
-            const cats = document.querySelectorAll('.category-chip');
-            const catMap = ['all', 'taharatkhana', 'free', 'soap', 'paper', 'accessible', 'open'];
-            const catKeys = ['all', 'taharatkhana', 'free', 'soap', 'paper', 'accessible', 'open'];
-            cats.forEach((el, i) => {
-                if (i < catKeys.length) {
-                    el.innerHTML = LANG[currentLang]?.[catKeys[i]] || el.textContent;
-                }
-            });
-
-            // Нижняя навигация
             document.querySelectorAll('.nav-item .nav-label').forEach(el => {
                 const tab = el.closest('.nav-item').dataset.tab;
                 if (tab === 'map') el.textContent = t('map');
@@ -1184,18 +744,16 @@
                 if (tab === 'profile') el.textContent = t('profileLabel');
             });
 
-            // Модалки
-            document.querySelector('.modal-title')?.textContent = t('welcome');
-            document.querySelector('.modal-sub')?.textContent = t('subtitle');
-            document.getElementById('tabLogin').textContent = t('login');
-            document.getElementById('tabRegister').textContent = t('register');
-            document.getElementById('authSubmit').textContent = authMode === 'login' ? t('login') : t('register');
-            document.getElementById('authClose').textContent = t('cancel');
-            document.getElementById('adminLoginLink').textContent = t('adminLogin');
-            document.getElementById('adminClose').textContent = t('cancel');
-            document.getElementById('adminSubmit').textContent = t('login');
+            if(document.getElementById('authModalTitle')) document.getElementById('authModalTitle').textContent = t('welcome');
+            if(document.getElementById('authModalSub')) document.getElementById('authModalSub').textContent = t('subtitle');
+            if(document.getElementById('tabLogin')) document.getElementById('tabLogin').textContent = t('login');
+            if(document.getElementById('tabRegister')) document.getElementById('tabRegister').textContent = t('register');
+            if(document.getElementById('authSubmit')) document.getElementById('authSubmit').textContent = authMode === 'login' ? t('login') : t('register');
+            if(document.getElementById('authClose')) document.getElementById('authClose').textContent = t('cancel');
+            if(document.getElementById('adminLoginLink')) document.getElementById('adminLoginLink').textContent = t('adminLogin');
+            if(document.getElementById('adminClose')) document.getElementById('adminClose').textContent = t('cancel');
+            if(document.getElementById('adminSubmit')) document.getElementById('adminSubmit').textContent = t('login');
 
-            // Добавить
             document.getElementById('addClose').textContent = t('cancel');
             document.getElementById('addSubmit').textContent = t('addSubmit');
             document.getElementById('addHint').textContent = t('addHint');
@@ -1204,7 +762,6 @@
             document.getElementById('addDescription').placeholder = t('addDesc');
             document.getElementById('addPhoto').placeholder = t('addPhoto');
 
-            // Профиль
             document.querySelector('#profileModal .modal-title').textContent = t('profile');
             document.getElementById('profileLoginBtn').textContent = t('loginBtn');
             document.getElementById('profileLogoutBtn').textContent = t('logoutBtn');
@@ -1213,9 +770,7 @@
             updateAuthUI();
         }
 
-        // ============================================================
-        //  АВТОРИЗАЦИЯ
-        // ============================================================
+        // АВТОРИЗАЦИЯ И СЕССИЯ
         function updateAuthUI() {
             const btn = document.getElementById('authBtn');
             if (currentUser) {
@@ -1237,19 +792,13 @@
         }
 
         document.getElementById('authBtn').addEventListener('click', () => {
-            if (currentUser) {
-                document.getElementById('profileModal').classList.add('active');
-                return;
-            }
-            document.getElementById('authModal').classList.add('active');
+            if (currentUser) { document.getElementById('profileModal').classList.add('active'); } 
+            else { document.getElementById('authModal').classList.add('active'); }
         });
 
-        document.getElementById('authClose').addEventListener('click', () => {
-            document.getElementById('authModal').classList.remove('active');
-        });
-
-        document.getElementById('tabLogin').addEventListener('click', () => setAuthMode('login'));
-        document.getElementById('tabRegister').addEventListener('click', () => setAuthMode('register'));
+        document.getElementById('authClose').addEventListener('click', () => { document.getElementById('authModal').remove('active'); });
+        if(document.getElementById('tabLogin')) document.getElementById('tabLogin').addEventListener('click', () => setAuthMode('login'));
+        if(document.getElementById('tabRegister')) document.getElementById('tabRegister').addEventListener('click', () => setAuthMode('register'));
 
         function setAuthMode(mode) {
             authMode = mode;
@@ -1262,7 +811,6 @@
             const phone = document.getElementById('authPhone').value.trim();
             const password = document.getElementById('authPassword').value.trim();
             if (!phone || !password) return alert('Заполните все поля');
-
             const endpoint = authMode === 'login' ? '/login' : '/register';
             try {
                 const res = await fetch(`${API_URL}${endpoint}`, {
@@ -1277,31 +825,20 @@
                     document.getElementById('authModal').classList.remove('active');
                     updateAuthUI();
                     alert(data.message);
-                } else {
-                    alert(data.error);
-                }
-            } catch (err) {
-                alert('Ошибка соединения');
-            }
+                } else { alert(data.error); }
+            } catch (err) { alert('Ошибка соединения'); }
         });
 
-        // ============================================================
-        //  АДМИН ВХОД
-        // ============================================================
         document.getElementById('adminLoginLink').addEventListener('click', () => {
             document.getElementById('authModal').classList.remove('active');
             document.getElementById('adminModal').classList.add('active');
         });
-
-        document.getElementById('adminClose').addEventListener('click', () => {
-            document.getElementById('adminModal').classList.remove('active');
-        });
+        document.getElementById('adminClose').addEventListener('click', () => { document.getElementById('adminModal').classList.remove('active'); });
 
         document.getElementById('adminSubmit').addEventListener('click', async () => {
             const login = document.getElementById('adminLogin').value.trim();
             const password = document.getElementById('adminPassword').value.trim();
             if (!login || !password) return alert('Заполните все поля');
-
             try {
                 const res = await fetch(`${API_URL}/admin/login`, {
                     method: 'POST',
@@ -1315,173 +852,82 @@
                     document.getElementById('adminModal').classList.remove('active');
                     updateAuthUI();
                     alert(data.message);
-                } else {
-                    alert(data.error);
-                }
-            } catch (err) {
-                alert('Ошибка соединения');
-            }
+                } else { alert(data.error); }
+            } catch (err) { alert('Ошибка соединения'); }
         });
 
-        // ============================================================
-        //  ПРОФИЛЬ
-        // ============================================================
-        document.querySelector('.nav-item[data-tab="profile"]').addEventListener('click', () => {
-            document.getElementById('profileModal').classList.add('active');
-        });
+        document.querySelector('.nav-item[data-tab="profile"]').addEventListener('click', () => { document.getElementById('profileModal').classList.add('active'); });
+        document.getElementById('profileClose').addEventListener('click', () => { document.getElementById('profileModal').classList.remove('active'); });
+        document.getElementById('profileLoginBtn').addEventListener('click', () => { document.getElementById('profileModal').classList.remove('active'); document.getElementById('authModal').classList.add('active'); });
+        document.getElementById('profileLogoutBtn').addEventListener('click', () => { currentUser = null; localStorage.removeItem('currentUser'); updateAuthUI(); document.getElementById('profileModal').classList.remove('active'); alert('Вы вышли из системы'); });
 
-        document.getElementById('profileClose').addEventListener('click', () => {
-            document.getElementById('profileModal').classList.remove('active');
-        });
-
-        document.getElementById('profileLoginBtn').addEventListener('click', () => {
-            document.getElementById('profileModal').classList.remove('active');
-            document.getElementById('authModal').classList.add('active');
-        });
-
-        document.getElementById('profileLogoutBtn').addEventListener('click', () => {
-            currentUser = null;
-            localStorage.removeItem('currentUser');
-            updateAuthUI();
-            document.getElementById('profileModal').classList.remove('active');
-            alert('Вы вышли из системы');
-        });
-
-        // ============================================================
-        //  ВОССТАНОВЛЕНИЕ СЕССИИ
-        // ============================================================
         const savedUser = localStorage.getItem('currentUser');
-        if (savedUser) {
-            currentUser = JSON.parse(savedUser);
-            updateAuthUI();
+        if (savedUser) { currentUser = JSON.parse(savedUser); }
+
+        // КАРТА
+        function initMap() {
+            try {
+                myMap = new ymaps.Map('map', {
+                    center: [41.2995, 69.2401], 
+                    zoom: 12,
+                    controls: ['zoomControl', 'fullscreenControl']
+                });
+                loadToilets();
+
+                myMap.events.add('click', (e) => {
+                    if (document.getElementById('addModal').classList.contains('active')) {
+                        addToiletCoords = e.get('coords');
+                        document.getElementById('addHint').textContent = `📍 Выбрано: ${addToiletCoords[0].toFixed(5)}, ${addToiletCoords[1].toFixed(5)}`;
+                        document.getElementById('addHint').style.color = 'var(--primary)';
+                    }
+                });
+            } catch (err) {
+                console.error('Ошибка создания инстанса карт:', err);
+            }
         }
 
-        // ============================================================
-        //  КАРТА
-        // ============================================================
-// Инициализация карты с задержкой и повторной попыткой
-function initMap() {
-    try {
-        myMap = new ymaps.Map('map', {
-            center: [41.2995, 69.2401],  // Ташкент
-            zoom: 12,
-            controls: ['zoomControl', 'fullscreenControl']
-        });
-        console.log('✅ Карта инициализирована');
-
-        loadToilets();
-
-        // Клик по карте для добавления (админ)
-        myMap.events.add('click', (e) => {
-            if (document.getElementById('addModal').classList.contains('active')) {
-                addToiletCoords = e.get('coords');
-                document.getElementById('addHint').textContent = `📍 Выбрано: ${addToiletCoords[0].toFixed(5)}, ${addToiletCoords[1].toFixed(5)}`;
-                document.getElementById('addHint').style.color = 'var(--primary)';
-            }
-        });
-
-        // Долгий клик для админа
-        let longPressTimer = null;
-        myMap.events.add('pressstart', (e) => {
-            if (!currentUser || currentUser.role !== 'admin') return;
-            longPressTimer = setTimeout(() => {
-                addToiletCoords = e.get('coords');
-                document.getElementById('addModal').classList.add('active');
-                document.getElementById('addHint').textContent = `📍 ${addToiletCoords[0].toFixed(5)}, ${addToiletCoords[1].toFixed(5)}`;
-                document.getElementById('addHint').style.color = 'var(--primary)';
-            }, 600);
-        });
-        myMap.events.add('pressend', () => {
-            clearTimeout(longPressTimer);
-        });
-
-    } catch (err) {
-        console.error('❌ Ошибка инициализации карты:', err);
-        setTimeout(initMap, 1000);
-    }
-}
-
-// Запуск карты
-if (typeof ymaps !== 'undefined') {
-    ymaps.ready(initMap);
-} else {
-    console.warn('⚠️ Яндекс.Карты не загружены, повторная попытка...');
-    setTimeout(() => {
         if (typeof ymaps !== 'undefined') {
             ymaps.ready(initMap);
         }
-    }, 2000);
-}
 
-        // ============================================================
-        //  ЗАГРУЗКА ТУАЛЕТОВ
-        // ============================================================
         async function loadToilets() {
             try {
                 const res = await fetch(`${API_URL}/toilets`);
                 allToilets = await res.json();
                 renderMarkers();
-            } catch (err) {
-                console.error('Ошибка загрузки:', err);
-            }
+            } catch (err) { console.error('Ошибка загрузки туалетов:', err); }
         }
 
         function renderMarkers() {
             if (!myMap) return;
             myMap.geoObjects.removeAll();
-
             let filtered = allToilets;
 
-            // Поиск
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
-            if (query) {
-                filtered = filtered.filter(t => t.title.toLowerCase().includes(query));
-            }
+            if (query) { filtered = filtered.filter(t => t.title.toLowerCase().includes(query)); }
 
-            // Категория
-            if (currentCategory === 'taharatkhana') {
-                filtered = filtered.filter(t => t.isTaharatkhana);
-            } else if (currentCategory === 'free') {
-                filtered = filtered.filter(t => t.isFree);
-            } else if (currentCategory === 'soap') {
-                filtered = filtered.filter(t => t.hasSoap);
-            } else if (currentCategory === 'paper') {
-                filtered = filtered.filter(t => t.hasPaper);
-            } else if (currentCategory === 'accessible') {
-                filtered = filtered.filter(t => t.isAccessible);
-            } else if (currentCategory === 'open') {
-                filtered = filtered.filter(t => t.isOpen);
-            }
+            if (currentCategory === 'taharatkhana') { filtered = filtered.filter(t => t.isTaharatkhana); } 
+            else if (currentCategory === 'free') { filtered = filtered.filter(t => t.isFree); } 
+            else if (currentCategory === 'soap') { filtered = filtered.filter(t => t.hasSoap); } 
+            else if (currentCategory === 'paper') { filtered = filtered.filter(t => t.hasPaper); } 
+            else if (currentCategory === 'accessible') { filtered = filtered.filter(t => t.isAccessible); } 
+            else if (currentCategory === 'open') { filtered = filtered.filter(t => t.isOpen); }
 
             filtered.forEach(toilet => {
                 const color = toilet.isFree ? 'green' : 'orange';
                 const placemark = new ymaps.Placemark(
-                    [toilet.lat, toilet.lon], {
-                        balloonContent: toilet.title,
-                        hintContent: toilet.title
-                    }, {
-                        preset: `islands#${color}DotIcon`,
-                        iconColor: toilet.isTaharatkhana ? '#8B5CF6' : undefined
-                    }
+                    [toilet.lat, toilet.lon], { balloonContent: toilet.title, hintContent: toilet.title }, { preset: `islands#${color}DotIcon`, iconColor: toilet.isTaharatkhana ? '#8B5CF6' : undefined }
                 );
                 placemark.events.add('click', () => showToiletSheet(toilet));
                 myMap.geoObjects.add(placemark);
             });
         }
 
-        // ============================================================
-        //  ПОИСК (с debounce)
-        // ============================================================
         document.getElementById('searchInput').addEventListener('input', () => {
             clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                renderMarkers();
-            }, 300);
+            searchTimeout = setTimeout(() => { renderMarkers(); }, 300);
         });
 
-        // ============================================================
-        //  КАТЕГОРИИ
-        // ============================================================
         document.querySelectorAll('.category-chip').forEach(chip => {
             chip.addEventListener('click', function() {
                 document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
@@ -1491,124 +937,66 @@ if (typeof ymaps !== 'undefined') {
             });
         });
 
-        // ============================================================
-        //  КАРТОЧКА ТУАЛЕТА
-        // ============================================================
+        // КАРТОЧКА ТУАЛЕТА И ОТЗЫВЫ
         async function showToiletSheet(toilet) {
             selectedToilet = toilet;
             const sheet = document.getElementById('toiletSheet');
             sheet.classList.add('active');
-
             document.getElementById('sheetTitle').textContent = toilet.title;
 
-            // Рейтинг
             const reviews = await loadReviews(toilet.id);
-            const avg = reviews.length > 0 ?
-                (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) :
-                0;
+            const avg = reviews.length > 0 ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) : 0;
             document.getElementById('sheetStars').textContent = getStarString(avg);
             document.getElementById('sheetRatingValue').textContent = avg > 0 ? avg.toFixed(1) : '—';
-            document.getElementById('sheetRatingCount').textContent =
-                reviews.length > 0 ? `(${reviews.length} ${t('reviews')})` : t('noReviews');
+            document.getElementById('sheetRatingCount').textContent = reviews.length > 0 ? `(${reviews.length} ${t('reviews')})` : t('noReviews');
 
-            // Расстояние
             if (myMap) {
                 const center = myMap.getCenter();
-                const dist = ymaps.coordSystem.geo.getDistance(
-                    [toilet.lat, toilet.lon],
-                    [center[0], center[1]]
-                );
-                const km = (dist / 1000).toFixed(1);
-                document.getElementById('sheetDistance').textContent = `📍 ${km} ${t('kmAway')}`;
+                const dist = ymaps.coordSystem.geo.getDistance([toilet.lat, toilet.lon], [center[0], center[1]]);
+                document.getElementById('sheetDistance').textContent = `📍 ${(dist / 1000).toFixed(1)} ${t('kmAway')}`;
             }
 
-            // Бейджи
             const badges = [];
-            badges.push({
-                text: toilet.isOpen ? t('openStatus') : t('closedStatus'),
-                cls: toilet.isOpen ? 'open' : 'closed'
-            });
-            badges.push({
-                text: toilet.isFree ? t('freeLabel') : t('paidLabel'),
-                cls: toilet.isFree ? 'free' : 'paid'
-            });
+            badges.push({ text: toilet.isOpen ? t('openStatus') : t('closedStatus'), cls: toilet.isOpen ? 'open' : 'closed' });
+            badges.push({ text: toilet.isFree ? t('freeLabel') : t('paidLabel'), cls: toilet.isFree ? 'free' : 'paid' });
             if (toilet.hasSoap) badges.push({ text: '🧼 Мыло', cls: '' });
             if (toilet.hasPaper) badges.push({ text: '🧻 Бумага', cls: '' });
             if (toilet.isAccessible) badges.push({ text: '♿ Доступно', cls: '' });
             if (toilet.isTaharatkhana) badges.push({ text: '🕌 Тахаратхана', cls: '' });
 
-            document.getElementById('sheetBadges').innerHTML = badges.map(b =>
-                `<span class="sheet-badge ${b.cls}">${b.text}</span>`
-            ).join('');
+            document.getElementById('sheetBadges').innerHTML = badges.map(b => `<span class="sheet-badge ${b.cls}">${b.text}</span>`).join('');
+            document.getElementById('sheetDescription').textContent = toilet.description || 'Нет описания';
 
-            // Описание
-            document.getElementById('sheetDescription').textContent =
-                toilet.description || 'Нет описания';
-
-            // Отзывы
             renderReviews(reviews);
 
-            // Сброс формы
             document.getElementById('reviewText').value = '';
             reviewRating = 0;
-            document.querySelectorAll('.star-select span').forEach(s => s.textContent = '☆');
-            document.getElementById('reviewHint').textContent = '';
-            document.getElementById('reviewHint').className = 'hint';
-
-            // Проверка авторизации для отзыва
-            if (!currentUser) {
-                document.getElementById('reviewHint').textContent = t('pleaseLogin');
-                document.getElementById('reviewHint').className = 'hint error';
-            }
+            document.querySelectorAll('.star-select span').forEach(s => { s.textContent = '☆'; s.style.color = 'var(--border)'; });
+            document.getElementById('reviewHint').textContent = currentUser ? '' : t('pleaseLogin');
+            document.getElementById('reviewHint').className = currentUser ? 'hint' : 'hint error';
         }
 
+        async function loadReviews(toiletId) { try { const res = await fetch(`${API_URL}/reviews/${toiletId}`); return await res.json(); } catch { return []; } }
+        
         function renderReviews(reviews) {
             const container = document.getElementById('sheetReviews');
-            if (!reviews || reviews.length === 0) {
-                container.innerHTML = `<p style="color:var(--text-secondary);font-size:14px;">${t('noReviews')}</p>`;
-                return;
-            }
-
+            if (!reviews || reviews.length === 0) { container.innerHTML = `<p style="color:var(--text-secondary);font-size:14px;">${t('noReviews')}</p>`; return; }
             container.innerHTML = reviews.slice().reverse().map(r => {
                 const name = r.userPhone || 'Аноним';
-                const initials = getInitials(name);
-                const color = getRandomColor(name.length);
                 return `
                     <div class="sheet-review">
-                        <div class="review-avatar" style="background:${color}">${initials}</div>
+                        <div class="review-avatar" style="background:${getRandomColor(name.length)}">${getInitials(name)}</div>
                         <div class="review-body">
-                            <div>
-                                <span class="review-name">${name}</span>
-                                <span class="review-date">${formatDate(r.createdAt)}</span>
-                            </div>
+                            <div><span class="review-name">${name}</span> <span class="review-date">${formatDate(r.createdAt)}</span></div>
                             <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
                             <div class="review-text">${r.text}</div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             }).join('');
         }
 
-        async function loadReviews(toiletId) {
-            try {
-                const res = await fetch(`${API_URL}/reviews/${toiletId}`);
-                return await res.json();
-            } catch {
-                return [];
-            }
-        }
+        document.getElementById('sheetClose').addEventListener('click', () => { document.getElementById('toiletSheet').classList.remove('active'); selectedToilet = null; });
 
-        // ============================================================
-        //  ЗАКРЫТИЕ КАРТОЧКИ
-        // ============================================================
-        document.getElementById('sheetClose').addEventListener('click', () => {
-            document.getElementById('toiletSheet').classList.remove('active');
-            selectedToilet = null;
-        });
-
-        // ============================================================
-        //  ЗВЁЗДЫ ДЛЯ ОТЗЫВА
-        // ============================================================
         document.querySelectorAll('.star-select span').forEach(el => {
             el.addEventListener('click', function() {
                 reviewRating = parseInt(this.dataset.star);
@@ -1619,102 +1007,45 @@ if (typeof ymaps !== 'undefined') {
             });
         });
 
-        // ============================================================
-        //  ОТПРАВКА ОТЗЫВА
-        // ============================================================
         document.getElementById('reviewSubmit').addEventListener('click', async () => {
-            if (!currentUser) {
-                document.getElementById('reviewHint').textContent = t('pleaseLogin');
-                document.getElementById('reviewHint').className = 'hint error';
-                return;
-            }
+            if (!currentUser) return;
             if (!selectedToilet) return;
-
             const text = document.getElementById('reviewText').value.trim();
-            if (!text || reviewRating === 0) {
-                document.getElementById('reviewHint').textContent = 'Введите текст и поставьте оценку';
-                document.getElementById('reviewHint').className = 'hint error';
-                return;
-            }
-
+            if (!text || reviewRating === 0) { document.getElementById('reviewHint').textContent = 'Введите текст и поставьте оценку'; document.getElementById('reviewHint').className = 'hint error'; return; }
             try {
                 const res = await fetch(`${API_URL}/reviews`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${currentUser.token}`
-                    },
-                    body: JSON.stringify({
-                        toiletId: selectedToilet.id,
-                        text,
-                        rating: reviewRating
-                    })
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentUser.token}` },
+                    body: JSON.stringify({ toiletId: selectedToilet.id, text, rating: reviewRating })
                 });
-                if (res.ok) {
-                    document.getElementById('reviewHint').textContent = t('success');
-                    document.getElementById('reviewHint').className = 'hint success';
-                    showToiletSheet(selectedToilet);
-                } else {
-                    document.getElementById('reviewHint').textContent = t('error');
-                    document.getElementById('reviewHint').className = 'hint error';
-                }
-            } catch {
-                document.getElementById('reviewHint').textContent = t('error');
-                document.getElementById('reviewHint').className = 'hint error';
-            }
+                if (res.ok) { document.getElementById('reviewHint').textContent = t('success'); document.getElementById('reviewHint').className = 'hint success'; showToiletSheet(selectedToilet); } 
+                else { document.getElementById('reviewHint').textContent = t('error'); document.getElementById('reviewHint').className = 'hint error'; }
+            } catch { document.getElementById('reviewHint').textContent = t('error'); document.getElementById('reviewHint').className = 'hint error'; }
         });
 
-        // ============================================================
-        //  МАРШРУТ
-        // ============================================================
         document.getElementById('routeBtn').addEventListener('click', () => {
             if (!selectedToilet) return;
             navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    const url =
-                        `https://yandex.ru/maps/?rtext=${pos.coords.latitude},${pos.coords.longitude}~${selectedToilet.lat},${selectedToilet.lon}&rtt=pd`;
-                    window.open(url, '_blank');
-                },
-                () => {
-                    const url =
-                        `https://yandex.ru/maps/?rtext=~${selectedToilet.lat},${selectedToilet.lon}&rtt=pd`;
-                    window.open(url, '_blank');
-                }
+                (pos) => { window.open(`https://yandex.ru/maps/?rtext=${pos.coords.latitude},${pos.coords.longitude}~${selectedToilet.lat},${selectedToilet.lon}&rtt=pd`, '_blank'); },
+                () => { window.open(`https://yandex.ru/maps/?rtext=~${selectedToilet.lat},${selectedToilet.lon}&rtt=pd`, '_blank'); }
             );
         });
 
-        // ============================================================
-        //  ДОБАВЛЕНИЕ ТУАЛЕТА (АДМИН)
-        // ============================================================
+        // ДОБАВЛЕНИЕ (АДМИН)
         document.querySelector('.nav-item[data-tab="add"]').addEventListener('click', () => {
-            if (!currentUser || currentUser.role !== 'admin') {
-                alert(t('adminOnly'));
-                return;
-            }
+            if (!currentUser || currentUser.role !== 'admin') { alert(t('adminOnly')); return; }
             document.getElementById('addModal').classList.add('active');
-            document.getElementById('addHint').textContent = t('addHint');
-            document.getElementById('addHint').style.color = 'var(--text-secondary)';
         });
-
-        document.getElementById('addClose').addEventListener('click', () => {
-            document.getElementById('addModal').classList.remove('active');
-            addToiletCoords = null;
-        });
+        document.getElementById('addClose').addEventListener('click', () => { document.getElementById('addModal').classList.remove('active'); addToiletCoords = null; });
 
         document.getElementById('addSubmit').addEventListener('click', async () => {
-            if (!currentUser || currentUser.role !== 'admin') {
-                alert(t('adminOnly'));
-                return;
-            }
-
+            if (!currentUser || currentUser.role !== 'admin') return;
             const title = document.getElementById('addTitle').value.trim();
             if (!title) return alert('Введите название');
             if (!addToiletCoords) return alert('Нажмите на карте, чтобы выбрать место');
 
             const toiletData = {
-                lat: addToiletCoords[0],
-                lon: addToiletCoords[1],
-                title: title,
+                lat: addToiletCoords[0], lon: addToiletCoords[1], title: title,
                 description: document.getElementById('addDescription').value.trim() || '',
                 photo: document.getElementById('addPhoto').value.trim() || '',
                 isOpen: document.getElementById('addIsOpen').checked,
@@ -1728,54 +1059,15 @@ if (typeof ymaps !== 'undefined') {
             try {
                 const res = await fetch(`${API_URL}/toilets`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${currentUser.token}`
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentUser.token}` },
                     body: JSON.stringify(toiletData)
                 });
-                if (res.ok) {
-                    document.getElementById('addModal').classList.remove('active');
-                    addToiletCoords = null;
-                    await loadToilets();
-                    alert('✅ Туалет добавлен!');
-                } else {
-                    const data = await res.json();
-                    alert(data.error || 'Ошибка');
-                }
-            } catch {
-                alert('Ошибка соединения');
-            }
+                if (res.ok) { document.getElementById('addModal').classList.remove('active'); addToiletCoords = null; await loadToilets(); alert('✅ Туалет добавлен!'); } 
+                else { const data = await res.json(); alert(data.error || 'Ошибка'); }
+            } catch { alert('Ошибка соединения'); }
         });
 
-        // ============================================================
-        //  КНОПКА "НАЙТИ РЯДОМ" (через поиск)
-        // ============================================================
-        document.getElementById('searchInput').addEventListener('focus', function() {
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    if (myMap) {
-                        myMap.setCenter([pos.coords.latitude, pos.coords.longitude], 14);
-                    }
-                },
-                () => {}
-            );
-        });
-
-        // ============================================================
-        //  ИНИЦИАЛИЗАЦИЯ UI
-        // ============================================================
         updateUI();
-
-        // Показываем/скрываем кнопку "Добавить" в навигации
-        if (currentUser && currentUser.role === 'admin') {
-            document.getElementById('navAdd').style.display = 'flex';
-        } else {
-            document.getElementById('navAdd').style.display = 'none';
-        }
-
-        console.log('🚽 ToiletAdvisor v2.0 загружен!');
-        console.log('👤 Текущий пользователь:', currentUser || 'не авторизован');
     </script>
 </body>
 </html>
