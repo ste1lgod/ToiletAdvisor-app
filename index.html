@@ -63,7 +63,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
   border-radius:20px;
   border:1px solid rgba(255,255,255,0.6);
   box-shadow:var(--sh-float);
-  overflow:hidden;
+  /* overflow:hidden убран — иначе langDrop клипается */
   padding-top:0;
 }
 body.dark .headerCard{
@@ -89,11 +89,12 @@ body.dark #langBtn{background:#2d3142;}
 #langChevron{width:10px;height:10px;transition:transform .18s;color:var(--text2);}
 #langBtn.open #langChevron{transform:rotate(180deg);}
 #langDrop{
-  position:absolute;top:calc(100%+6px);right:0;min-width:72px;
+  position:absolute;top:calc(100% + 6px);right:0;min-width:80px;
   background:var(--card);border-radius:var(--rs);box-shadow:var(--sh2);
-  border:1px solid var(--border);overflow:hidden;z-index:200;
+  border:1px solid var(--border);z-index:9999;
   opacity:0;transform:translateY(-4px) scale(.97);pointer-events:none;
   transition:opacity .16s,transform .16s;
+  overflow:hidden;
 }
 #langDrop.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;}
 .lOpt{padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text);transition:background .12s;}
@@ -147,7 +148,7 @@ body.dark .catChip{background:#1c1f26;}
 #zoomControls{
   position:fixed;
   left:var(--side-gap);
-  top:calc(env(safe-area-inset-top,0px) + var(--header-h) + 16px);
+  top:var(--controls-top, 170px);
   z-index:15;
   display:flex;flex-direction:column;gap:8px;
 }
@@ -172,7 +173,7 @@ body.dark .zoomBtn{border-color:rgba(255,255,255,0.12);}
 #geoBtn{
   position:fixed;
   left:var(--side-gap);
-  top:calc(env(safe-area-inset-top,0px) + var(--header-h) + 16px + 44px + 8px + 44px + 16px);
+  top:var(--geo-top, 286px);
   z-index:15;width:44px;height:44px;border-radius:50%;
   background:var(--glass-bg);
   backdrop-filter:var(--glass-blur);
@@ -237,7 +238,6 @@ body.dark #bottomNav{
   border-top-color:rgba(255,255,255,0.08);
   box-shadow:0 -4px 24px rgba(0,0,0,0.3);
 }
-.navBtn{
   flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
   background:none;border:none;cursor:pointer;color:var(--text2);
   padding:2px 0;transition:color .18s;font-family:var(--font);
@@ -393,11 +393,10 @@ body.dark .phoneCode{background:#2d3142;}
 
 /* Tab screens */
 .tScreen{
-  position:fixed;top:0;left:0;right:0;bottom:0;z-index:12;
+  position:fixed;top:0;left:0;right:0;bottom:0;z-index:18;
   background:var(--bg);display:flex;flex-direction:column;align-items:center;
   overflow-y:auto;
-  /* padding-top задаётся JS после рендера headerCard */
-  padding-top:180px;
+  padding-top:80px; /* fallback, JS обновляет динамически */
   padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 16px);
 }
 .tScreen.hidden{display:none!important;}
@@ -1024,8 +1023,13 @@ async function openSheet(toilet){
   document.getElementById('sheetBackdrop').classList.add('vis');
 }
 function closeSheet(){
-  document.getElementById('toiletSheet').classList.remove('open');
-  document.getElementById('sheetBackdrop').classList.remove('vis');
+  const sheet=document.getElementById('toiletSheet');
+  const backdrop=document.getElementById('sheetBackdrop');
+  sheet.classList.remove('open');
+  sheet.style.transform='';        // сбрасываем inline transform от drag
+  sheet.style.transition='';       // восстанавливаем transition после drag
+  backdrop.classList.remove('vis');
+  backdrop.style.pointerEvents='none'; // гарантируем снятие pointer-events
   selectedToilet=null;
 }
 function resetReviewForm(){
@@ -1132,11 +1136,11 @@ function initDrag(dragZone,panel,onDismiss){
   }
   function onEnd(){
     if(!dragging)return;dragging=false;
-    panel.style.transition='';
+    panel.style.transition='';  // восстанавливаем до проверки
     const vel=(curY)/(Date.now()-startT);
     if(curY>panel.offsetHeight*0.45||vel>0.6){
       panel.style.transform='translateY(100%)';
-      setTimeout(onDismiss,320);
+      setTimeout(()=>{onDismiss();panel.style.transform='';},320);
     } else {
       panel.style.transform='';
     }
@@ -1215,13 +1219,25 @@ function switchTab(tab){
   closeSheet();
   document.querySelectorAll('.navBtn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
 
-  // Показываем/скрываем map-специфичные элементы
-  const mapOnly=['mapControls','zoomControls','geoBtn','findNearestBtn'];
   const isMap=tab==='map';
+
+  // Показываем/скрываем map-специфичные элементы включая весь headerPanel
+  const mapOnly=['mapControls','zoomControls','geoBtn','findNearestBtn'];
   mapOnly.forEach(id=>{
     const el=document.getElementById(id);
     if(el)el.style.display=isMap?'':'none';
   });
+
+  // headerPanel: на карте — полный, на других вкладках — скрыт полностью
+  const hp=document.getElementById('headerPanel');
+  if(hp)hp.style.display=isMap?'':'none';
+
+  if(isMap){
+    // Возврат на карту — пересчитываем позиции контролов
+    setTimeout(adjustControlsPosition,50);
+  } else {
+    setScreenPaddingTop();
+  }
 
   document.getElementById('profileScreen').classList.add('hidden');
   document.getElementById('adminDeniedScreen').classList.add('hidden');
@@ -1237,7 +1253,6 @@ function switchTab(tab){
   } else if(tab==='profile'){
     const ps=document.getElementById('profileScreen');
     ps.classList.remove('hidden');
-    adjustControlsPosition(); // пересчитываем т.к. tScreen перекрывает
     if(currentUser){
       // Аватар — первая буква телефона/логина
       const label=currentUser.phone||currentUser.login||'?';
@@ -1340,22 +1355,35 @@ if(!navigator.onLine)showOfflineBanner();
 // ── ADJUST FLOATING CONTROLS POSITION ──
 function adjustControlsPosition(){
   const card=document.querySelector('.headerCard');
-  if(!card)return;
+  const hp=document.getElementById('headerPanel');
+  if(!card||!hp||hp.style.display==='none')return;
   const rect=card.getBoundingClientRect();
+  if(rect.height===0)return;
   const bottom=rect.bottom+8;
-  const zc=document.getElementById('zoomControls');
-  const gb=document.getElementById('geoBtn');
+  const geoTop=bottom+44+8+44+16;
+  document.documentElement.style.setProperty('--controls-top', bottom+'px');
+  document.documentElement.style.setProperty('--geo-top', geoTop+'px');
   const ob=document.getElementById('offlineBanner');
-  if(zc)zc.style.top=bottom+'px';
-  if(gb)gb.style.top=(bottom+44+8+44+16)+'px';
-  // offlineBanner — плавает под headerCard
   if(ob)ob.style.top=(rect.bottom+10)+'px';
-  // tScreen padding-top под headerPanel
-  const hh=document.getElementById('headerPanel').getBoundingClientRect().bottom+12;
-  document.querySelectorAll('.tScreen').forEach(s=>s.style.paddingTop=hh+'px');
 }
-window.addEventListener('load',()=>setTimeout(adjustControlsPosition,400));
-window.addEventListener('resize',adjustControlsPosition);
+
+function setScreenPaddingTop(){
+  // Для tScreen (profile/add/denied) — используем env safe-area + отступ сверху
+  const safeTop=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--safe-top')||'0')||0;
+  const pt=Math.max(60, safeTop+60);
+  document.querySelectorAll('.tScreen').forEach(s=>s.style.paddingTop=pt+'px');
+}
+
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    adjustControlsPosition();
+    setScreenPaddingTop();
+  },400);
+});
+window.addEventListener('resize',()=>{
+  adjustControlsPosition();
+  setScreenPaddingTop();
+});
 
 // ── INIT ──
 setLang(currentLang);
