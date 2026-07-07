@@ -645,12 +645,12 @@ body.dark #toast{background:#e2e8f0;color:#1a1a2e;}
 </div>
 
 <!-- TEST PANEL (убери после теста) -->
-<div id="testPanelWrap">
-  <div id="testPanel">
-    <p>🧪 ТЕСТ УВЕДОМЛЕНИЙ</p>
-    <button class="testBtn" id="tbBanner" onclick="showOfflineBanner()">📵 Показать Offline баннер</button>
-    <button class="testBtn" id="tbToast" onclick="showToast('⚠️ Сервер недоступен — показаны сохранённые данные')">⚠️ Показать Toast сервера</button>
-    <button class="testBtn" id="tbHide" onclick="hideOfflineBanner()">✕ Скрыть баннер</button>
+<div id="testPanelWrap" style="position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;background:rgba(0,0,0,0.6)!important;">
+  <div id="testPanel" style="display:flex!important;flex-direction:column!important;gap:14px!important;background:#fff!important;border-radius:24px!important;border:4px solid #f59e0b!important;padding:32px!important;box-shadow:0 20px 60px rgba(0,0,0,0.8)!important;min-width:300px!important;">
+    <p style="font-size:15px!important;font-weight:800!important;color:#f59e0b!important;text-align:center!important;margin:0!important;font-family:sans-serif!important;">🧪 ТЕСТ УВЕДОМЛЕНИЙ</p>
+    <button onclick="showOfflineBanner()" style="padding:14px!important;border:none!important;border-radius:12px!important;background:#ef4444!important;color:#fff!important;font-size:14px!important;font-weight:700!important;cursor:pointer!important;font-family:sans-serif!important;">📵 Показать Offline баннер</button>
+    <button onclick="showToast('⚠️ Сервер недоступен — показаны сохранённые данные')" style="padding:14px!important;border:none!important;border-radius:12px!important;background:#f59e0b!important;color:#fff!important;font-size:14px!important;font-weight:700!important;cursor:pointer!important;font-family:sans-serif!important;">⚠️ Показать Toast сервера</button>
+    <button onclick="hideOfflineBanner();this.closest('#testPanelWrap').style.display='none'" style="padding:14px!important;border:none!important;border-radius:12px!important;background:#e5e7eb!important;color:#374151!important;font-size:14px!important;font-weight:700!important;cursor:pointer!important;font-family:sans-serif!important;">✕ Закрыть панель</button>
   </div>
 </div>
 
