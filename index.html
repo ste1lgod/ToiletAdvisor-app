@@ -370,40 +370,6 @@ body.dark .phoneCode{background:#2d3142;}
 #offlineBanner.show{transform:translateY(0);}
 #offlineBanner svg{flex-shrink:0;opacity:.9;}
 
-/* ===== TEST PANEL (убери после теста) ===== */
-#testPanelWrap{
-  position:fixed !important;
-  top:0 !important;left:0 !important;right:0 !important;bottom:0 !important;
-  z-index:2147483647 !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  background:rgba(0,0,0,0.55) !important;
-  backdrop-filter:blur(4px) !important;
-}
-#testPanel{
-  display:flex !important;flex-direction:column !important;gap:12px !important;
-  background:#ffffff !important;
-  border-radius:24px !important;
-  border:4px solid #f59e0b !important;
-  padding:28px 32px !important;
-  box-shadow:0 0 0 4px rgba(245,158,11,.3), 0 20px 60px rgba(0,0,0,0.7) !important;
-  min-width:280px !important;
-}
-#testPanel p{
-  font-size:14px !important;font-weight:800 !important;color:#f59e0b !important;
-  text-align:center !important;margin:0 0 6px !important;
-  font-family:sans-serif !important;
-}
-.testBtn{
-  padding:14px 20px !important;border:none !important;border-radius:14px !important;
-  font-size:14px !important;font-weight:700 !important;cursor:pointer !important;
-  font-family:sans-serif !important;white-space:nowrap !important;
-}
-#tbBanner{background:#ef4444 !important;color:#fff !important;}
-#tbToast{background:#f59e0b !important;color:#fff !important;}
-#tbHide{background:#e5e7eb !important;color:#374151 !important;}
-
 /* Toast */
 #toast{
   position:fixed;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 8px);
