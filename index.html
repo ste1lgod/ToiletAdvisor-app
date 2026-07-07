@@ -834,7 +834,7 @@ async function loadToilets(){
     console.warn('Сервер недоступен, используются локальные данные:',e.message);
     allToilets=FALLBACK_TOILETS;
     if(!navigator.onLine)showOfflineBanner();
-    else showToast('⚠️ Сервер недоступен — показаны сохранённые данные');
+    // toast убран — фолбэк работает тихо
   }
   renderMarkers();
 }
