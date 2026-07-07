@@ -370,6 +370,31 @@ body.dark .phoneCode{background:#2d3142;}
 #offlineBanner.show{transform:translateY(0);}
 #offlineBanner svg{flex-shrink:0;opacity:.9;}
 
+/* ===== TEST PANEL (убери после теста) ===== */
+#testPanel{
+  position:fixed;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  z-index:9999;
+  display:flex;flex-direction:column;gap:10px;
+  background:#fff;border-radius:20px;
+  border:3px dashed #f59e0b;
+  padding:20px 24px;
+  box-shadow:0 8px 40px rgba(0,0,0,0.35);
+  min-width:240px;
+}
+body.dark #testPanel{background:#1c1f26;}
+#testPanel p{font-size:11px;font-weight:800;color:#f59e0b;text-align:center;margin-bottom:4px;font-family:var(--font);letter-spacing:.5px;}
+.testBtn{
+  padding:11px 16px;border:none;border-radius:12px;
+  font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);
+  white-space:nowrap;transition:opacity .15s;
+}
+.testBtn:active{opacity:.8;}
+#tbBanner{background:#ef4444;color:#fff;}
+#tbToast{background:#f59e0b;color:#fff;}
+#tbHide{background:#e5e7eb;color:#374151;}
+
 /* Toast */
 #toast{
   position:fixed;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 8px);
@@ -608,6 +633,14 @@ body.dark #toast{background:#e2e8f0;color:#1a1a2e;}
     <button class="mainBtn" onclick="submitAddToiletModal()">✅ Добавить</button>
     <button class="cancelBtn" onclick="closeOverlay('addOverlay')">Отмена</button>
   </div>
+</div>
+
+<!-- TEST PANEL (убери после теста) -->
+<div id="testPanel">
+  <p>🧪 ТЕСТ</p>
+  <button class="testBtn" id="tbBanner" onclick="showOfflineBanner()">📵 Offline баннер</button>
+  <button class="testBtn" id="tbToast" onclick="showToast('⚠️ Сервер недоступен — показаны сохранённые данные')">⚠️ Toast сервера</button>
+  <button class="testBtn" id="tbHide" onclick="hideOfflineBanner()">✕ Скрыть баннер</button>
 </div>
 
 <!-- TOAST -->
@@ -1154,6 +1187,11 @@ window.addEventListener('online',()=>{
 window.addEventListener('offline',()=>showOfflineBanner());
 // Проверка при старте
 if(!navigator.onLine)showOfflineBanner();
+
+// ── TEST HELPERS (убери после теста) ──
+window.__testOfflineBanner=()=>showOfflineBanner();
+window.__testServerToast=()=>showToast('⚠️ Сервер недоступен — показаны сохранённые данные');
+window.__hideOfflineBanner=()=>hideOfflineBanner();
 
 // ── INIT ──
 setLang(currentLang);
