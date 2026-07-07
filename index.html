@@ -1,1073 +1,1240 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>ToiletAdvisor</title>
-
-    <!-- PWA -->
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" href="icon.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Туалеты">
-
-    <!-- Яндекс.Карты (Исправлено подключение модулей) -->
-    <script src="https://api-maps.yandex.ru/2.1/?apikey=45bd36a1-ed61-4910-bba7-c4c36f55877b&lang=ru_RU&load=package.full" type="text/javascript"></script>
-
-    <style>
-        /* ========== RESET & BASE ========== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        html,
-        body {
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f7fa;
-            color: #1a1a2e;
-        }
-
-        /* ========== ЦВЕТОВАЯ СХЕМА ========== */
-        :root {
-            --primary: #2ecc71;
-            --primary-dark: #27ae60;
-            --primary-light: #e8f8ef;
-            --bg: #f5f7fa;
-            --card-bg: #ffffff;
-            --text: #1a1a2e;
-            --text-secondary: #6b7280;
-            --border: #e5e7eb;
-            --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-            --radius: 16px;
-            --radius-sm: 10px;
-            --header-bg: #ffffff;
-            --nav-bg: #ffffff;
-            --input-bg: #f3f4f6;
-            --star-color: #f59e0b;
-            --badge-open: #10b981;
-            --badge-closed: #ef4444;
-        }
-
-        body.dark {
-            --bg: #0f0f1a;
-            --card-bg: #1e1e2e;
-            --text: #e8e8f0;
-            --text-secondary: #9ca3af;
-            --border: #2d2d44;
-            --shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
-            --header-bg: #1a1a2e;
-            --nav-bg: #1a1a2e;
-            --input-bg: #2d2d44;
-            --star-color: #f59e0b;
-        }
-
-        /* ========== КАРТА ========== */
-        #map {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 1;
-        }
-
-        /* ========== ВЕРХНЯЯ ПАНЕЛЬ ========== */
-        .header {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            right: 12px;
-            z-index: 10;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--header-bg);
-            padding: 8px 16px;
-            border-radius: 24px;
-            box-shadow: var(--shadow);
-            backdrop-filter: blur(8px);
-            background: rgba(255, 255, 255, 0.92);
-        }
-        body.dark .header {
-            background: rgba(26, 26, 46, 0.92);
-        }
-
-        .header-title {
-            font-weight: 700;
-            font-size: 16px;
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .header-title span {
-            color: var(--primary);
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .header-btn {
-            background: none;
-            border: none;
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            font-size: 16px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text);
-            transition: background 0.2s;
-        }
-        .header-btn:hover {
-            background: var(--input-bg);
-        }
-
-        .lang-select {
-            background: none;
-            border: none;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text);
-            cursor: pointer;
-            padding: 4px 6px;
-            border-radius: 8px;
-        }
-        .lang-select:hover {
-            background: var(--input-bg);
-        }
-        .lang-select option {
-            background: var(--card-bg);
-            color: var(--text);
-        }
-
-        /* ========== ПОИСК ========== */
-        .search-bar {
-            position: absolute;
-            top: 72px;
-            left: 12px;
-            right: 12px;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            background: var(--card-bg);
-            border-radius: 24px;
-            padding: 0 16px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-        }
-        .search-bar input {
-            flex: 1;
-            border: none;
-            background: transparent;
-            padding: 12px 8px;
-            font-size: 14px;
-            color: var(--text);
-            outline: none;
-        }
-        .search-bar input::placeholder {
-            color: var(--text-secondary);
-        }
-        .search-bar .search-icon {
-            color: var(--text-secondary);
-            font-size: 18px;
-        }
-
-        /* ========== К КАТЕГОРИИ (чипсы) ========== */
-        .categories {
-            position: absolute;
-            top: 124px;
-            left: 12px;
-            right: 12px;
-            z-index: 10;
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding-bottom: 4px;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-        }
-        .categories::-webkit-scrollbar {
-            display: none;
-        }
-
-        .category-chip {
-            flex-shrink: 0;
-            padding: 8px 18px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            background: var(--card-bg);
-            color: var(--text-secondary);
-            border: 1px solid var(--border);
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: var(--shadow);
-            white-space: nowrap;
-        }
-        .category-chip.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-        .category-chip .emoji {
-            margin-right: 4px;
-        }
-
-        /* ========== КАРТОЧКА ТУАЛЕТА ========== */
-        .toilet-sheet {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 20;
-            background: var(--card-bg);
-            border-radius: 24px 24px 0 0;
-            padding: 20px 20px 100px;
-            max-height: 75vh;
-            overflow-y: auto;
-            box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.15);
-            display: none;
-            transition: transform 0.3s ease;
-        }
-        .toilet-sheet.active {
-            display: block;
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
-
-        .sheet-handle {
-            width: 40px;
-            height: 4px;
-            background: var(--border);
-            border-radius: 4px;
-            margin: 0 auto 16px;
-        }
-
-        .sheet-close {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: none;
-            border: none;
-            font-size: 22px;
-            cursor: pointer;
-            color: var(--text-secondary);
-        }
-
-        .sheet-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 6px;
-            color: var(--text);
-        }
-
-        .sheet-rating {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-        .sheet-rating .stars {
-            color: var(--star-color);
-            font-size: 18px;
-            letter-spacing: 2px;
-        }
-        .sheet-rating .rating-value {
-            font-weight: 600;
-            color: var(--text);
-        }
-        .sheet-rating .rating-count {
-            color: var(--text-secondary);
-            font-size: 13px;
-        }
-
-        .sheet-distance {
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .sheet-badges {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-        .sheet-badge {
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-            background: var(--input-bg);
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .sheet-badge.open { background: #d1fae5; color: #065f46; }
-        .sheet-badge.closed { background: #fee2e2; color: #991b1b; }
-        .sheet-badge.free { background: #dbeafe; color: #1e40af; }
-        .sheet-badge.paid { background: #fef3c7; color: #92400e; }
-
-        body.dark .sheet-badge.open { background: #064e3b; color: #a7f3d0; }
-        body.dark .sheet-badge.closed { background: #7f1d1d; color: #fca5a5; }
-        body.dark .sheet-badge.free { background: #1e3a5f; color: #93c5fd; }
-        body.dark .sheet-badge.paid { background: #78350f; color: #fcd34d; }
-
-        .sheet-description {
-            color: var(--text-secondary);
-            font-size: 14px;
-            line-height: 1.6;
-            margin-bottom: 16px;
-            padding: 12px 16px;
-            background: var(--input-bg);
-            border-radius: var(--radius-sm);
-        }
-
-        /* ========== ОТЗЫВЫ ========== */
-        .sheet-reviews-title {
-            font-weight: 600;
-            font-size: 16px;
-            margin-bottom: 12px;
-            color: var(--text);
-        }
-
-        .sheet-review {
-            display: flex;
-            gap: 12px;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border);
-        }
-        .sheet-review:last-child { border-bottom: none; }
-
-        .review-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 14px;
-            flex-shrink: 0;
-        }
-
-        .review-body { flex: 1; }
-        .review-name { font-weight: 600; font-size: 14px; color: var(--text); }
-        .review-date { font-size: 12px; color: var(--text-secondary); }
-        .review-stars { color: var(--star-color); font-size: 13px; letter-spacing: 1px; }
-        .review-text { font-size: 14px; color: var(--text-secondary); margin-top: 4px; line-height: 1.5; }
-
-        /* ========== ФОРМА ОТЗЫВА ========== */
-        .review-form {
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
-        }
-        .review-form textarea {
-            width: 100%;
-            padding: 12px 16px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border);
-            background: var(--input-bg);
-            color: var(--text);
-            font-size: 14px;
-            resize: vertical;
-            min-height: 70px;
-            font-family: inherit;
-        }
-        .review-form textarea:focus { outline: none; border-color: var(--primary); }
-
-        .review-form .star-select { display: flex; gap: 4px; margin: 10px 0; font-size: 24px; cursor: pointer; }
-        .review-form .star-select span { color: var(--border); transition: color 0.2s; }
-        .review-form .star-select span.active { color: var(--star-color); }
-
-        .review-form .submit-row { display: flex; gap: 10px; margin-top: 10px; }
-        .review-form .submit-row button {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: var(--radius-sm);
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        .review-form .submit-row button:hover { opacity: 0.85; }
-        .review-form .submit-row .btn-primary { background: var(--primary); color: white; }
-        .review-form .submit-row .btn-route { background: var(--input-bg); color: var(--text); }
-        .review-form .hint { font-size: 12px; color: var(--text-secondary); margin-top: 6px; text-align: center; }
-        .review-form .hint.error { color: #ef4444; }
-        .review-form .hint.success { color: var(--primary); }
-
-        /* ========== НИЖНЯЯ НАВИГАЦИЯ ========== */
-        .bottom-nav {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 15;
-            background: var(--nav-bg);
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0 env(safe-area-inset-bottom, 8px) 0;
-            backdrop-filter: blur(8px);
-            background: rgba(255, 255, 255, 0.95);
-        }
-        body.dark .bottom-nav { background: rgba(26, 26, 46, 0.95); }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 11px;
-            cursor: pointer;
-            padding: 4px 16px;
-            transition: color 0.2s;
-            position: relative;
-        }
-        .nav-item.active { color: var(--primary); }
-        .nav-item .nav-icon { font-size: 22px; }
-        .nav-item .nav-label { font-weight: 500; }
-
-        /* ========== МОДАЛЬНЫЕ ОКНА ========== */
-        .modal-overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            z-index: 30;
-            background: rgba(0, 0, 0, 0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(4px);
-        }
-        .modal-overlay.active { display: flex; }
-
-        .modal-box {
-            background: var(--card-bg);
-            border-radius: 24px;
-            padding: 28px 24px;
-            width: 92%;
-            max-width: 400px;
-            max-height: 85vh;
-            overflow-y: auto;
-            animation: modalIn 0.25s ease;
-        }
-        @keyframes modalIn {
-            from { transform: scale(0.95); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .modal-box .modal-title { font-size: 22px; font-weight: 700; text-align: center; margin-bottom: 20px; color: var(--text); }
-        .modal-box .modal-sub { text-align: center; color: var(--text-secondary); font-size: 14px; margin-bottom: 16px; }
-        .modal-box input {
-            width: 100%;
-            padding: 14px 16px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border);
-            background: var(--input-bg);
-            color: var(--text);
-            font-size: 14px;
-            margin-bottom: 12px;
-        }
-        .modal-box input:focus { outline: none; border-color: var(--primary); }
-
-        .modal-box .modal-btn {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: var(--radius-sm);
-            font-weight: 600;
-            font-size: 15px;
-            cursor: pointer;
-            transition: opacity 0.2s;
-            margin-bottom: 8px;
-        }
-        .modal-box .modal-btn.primary { background: var(--primary); color: white; }
-        .modal-box .modal-btn.secondary { background: var(--input-bg); color: var(--text); }
-        .modal-box .modal-btn.danger { background: #ef4444; color: white; }
-
-        .modal-box .modal-tabs { display: flex; margin-bottom: 16px; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); }
-        .modal-box .modal-tab { flex: 1; text-align: center; padding: 12px; font-weight: 600; font-size: 14px; cursor: pointer; background: var(--input-bg); color: var(--text-secondary); }
-        .modal-box .modal-tab.active { background: var(--primary); color: white; }
-        .modal-box .modal-link { display: block; text-align: center; color: var(--primary); font-size: 13px; cursor: pointer; margin-top: 8px; font-weight: 500; }
-
-        .modal-box .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-        .modal-box .checkbox-group label { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text); cursor: pointer; padding: 6px 12px; border-radius: var(--radius-sm); background: var(--input-bg); }
-        .modal-box .checkbox-group input[type="checkbox"] { width: auto; margin: 0; }
-
-        @media (max-width: 480px) {
-            .header-title { font-size: 14px; }
-            .category-chip { font-size: 12px; padding: 6px 14px; }
-            .sheet-title { font-size: 18px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+<title>ToiletAdvisor</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Туалеты">
+<script src="https://api-maps.yandex.ru/2.1/?apikey=45bd36a1-ed61-4910-bba7-c4c36f55877b&lang=ru_RU&load=package.full" type="text/javascript"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+*::-webkit-scrollbar{display:none;}
+*{scrollbar-width:none;}
+:root{
+  --green:#019451;
+  --green-light:#e6f5ee;
+  --green-mid:#c8eedd;
+  --bg:#f4f8f5;
+  --card:#ffffff;
+  --text:#1a1a1a;
+  --text2:#6b7280;
+  --border:#e5e7eb;
+  --shadow:0 2px 16px rgba(0,0,0,0.10);
+  --shadow2:0 8px 32px rgba(0,0,0,0.13);
+  --r:18px;
+  --rs:12px;
+  --star:#f59e0b;
+  --purple:#7c3aed;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:#dde8e2;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Rounded','Segoe UI',Roboto,sans-serif;}
+</style>
 </head>
 <body>
 
-    <div id="map"></div>
+<!-- PHONE FRAME WRAPPER -->
+<div id="phoneFrame">
+<style>
+#phoneFrame{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#b8d5c4 0%,#8fbbaa 100%);
+  z-index:0;
+}
+@media(max-width:500px){
+  #phoneFrame{background:#f4f8f5;}
+  #appShell{width:100%!important;height:100%!important;border-radius:0!important;box-shadow:none!important;}
+  #phoneFrame::before,#phoneFrame::after{display:none!important;}
+}
+#appShell{
+  position:relative;
+  width:390px;height:844px;
+  border-radius:52px;
+  background:#f4f8f5;
+  box-shadow:0 30px 80px rgba(0,0,0,0.35),inset 0 0 0 1px rgba(255,255,255,0.2);
+  overflow:hidden;
+  display:flex;flex-direction:column;
+}
+/* Dynamic Island */
+#appShell::before{
+  content:'';
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:120px;height:34px;
+  background:#000;border-radius:20px;
+  z-index:200;pointer-events:none;
+}
+</style>
 
-    <!-- ===== ВЕРХНЯЯ ПАНЕЛЬ ===== -->
-    <div class="header" id="header">
-        <div class="header-title">🚽 Toilet<span>Advisor</span></div>
-        <div class="header-right">
-            <select class="lang-select" id="langSelect">
-                <option value="ru">RU</option>
-                <option value="en">EN</option>
-                <option value="uzb">UZB</option>
-            </select>
-            <button class="header-btn" id="themeToggle" title="Тема">🌙</button>
-            <button class="header-btn" id="authBtn" title="Войти">👤</button>
-        </div>
+<div id="appShell">
+
+<!-- MAP LAYER -->
+<div id="map"></div>
+<style>
+#map{position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;}
+</style>
+
+<!-- HEADER -->
+<div id="header">
+<div id="headerTitle"><span id="headerDot">•</span> Toilet <span id="headerAdvisor">Advisor</span></div>
+<div id="langChips">
+  <button class="langChip" id="chipRU" onclick="setLang('ru')">RU</button>
+  <button class="langChip" id="chipUZ" onclick="setLang('uz')">UZ</button>
+</div>
+<button id="loginBtn" onclick="onLoginBtnClick()"></button>
+</div>
+<style>
+#header{
+  position:absolute;top:56px;left:12px;right:12px;z-index:10;
+  display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,0.95);
+  border-radius:26px;padding:10px 16px;
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(12px);
+}
+#headerTitle{font-size:15px;font-weight:700;color:#1a1a1a;white-space:nowrap;flex-shrink:0;}
+#headerDot{color:var(--green);}
+#headerAdvisor{color:var(--green);}
+#langChips{display:flex;gap:4px;margin-left:auto;}
+.langChip{
+  padding:5px 11px;border-radius:14px;border:none;
+  background:#e9edf0;color:#555;font-size:12px;font-weight:600;cursor:pointer;
+  transition:all .2s;
+}
+.langChip.active{background:#4b5563;color:#fff;}
+#loginBtn{
+  flex-shrink:0;
+  padding:7px 14px;border:none;border-radius:16px;
+  background:var(--green);color:#fff;
+  font-size:12px;font-weight:700;cursor:pointer;
+  white-space:nowrap;transition:opacity .2s;
+}
+#loginBtn:hover{opacity:.85;}
+</style>
+
+<!-- SEARCH BAR -->
+<div id="searchWrap">
+  <span id="searchIcon">🔍</span>
+  <input type="text" id="searchInput" placeholder="Поиск туалета...">
+</div>
+<style>
+#searchWrap{
+  position:absolute;top:112px;left:12px;right:12px;z-index:10;
+  display:flex;align-items:center;gap:8px;
+  background:#fff;border-radius:22px;padding:0 14px;
+  box-shadow:var(--shadow);border:1.5px solid var(--border);
+}
+#searchIcon{font-size:16px;color:var(--text2);}
+#searchInput{
+  flex:1;border:none;background:transparent;padding:12px 4px;
+  font-size:14px;color:var(--text);outline:none;
+}
+#searchInput::placeholder{color:var(--text2);}
+</style>
+
+<!-- CATEGORY CHIPS -->
+<div id="categories">
+  <button class="catChip active" data-cat="all">🗺️ Все</button>
+  <button class="catChip" data-cat="taharatkhana">🕌 Тахаратхана</button>
+  <button class="catChip" data-cat="free">🆓 Бесплатно</button>
+  <button class="catChip" data-cat="soap">🧼 С мылом</button>
+  <button class="catChip" data-cat="paper">🧻 С бумагой</button>
+  <button class="catChip" data-cat="accessible">♿ Доступные</button>
+</div>
+<style>
+#categories{
+  position:absolute;top:162px;left:12px;right:0;z-index:10;
+  display:flex;gap:8px;
+  overflow-x:auto;padding-bottom:4px;padding-right:12px;
+  -webkit-overflow-scrolling:touch;
+}
+.catChip{
+  flex-shrink:0;padding:8px 16px;border-radius:20px;
+  font-size:12.5px;font-weight:600;
+  background:#fff;color:var(--text2);
+  border:1.5px solid var(--border);cursor:pointer;
+  box-shadow:var(--shadow);white-space:nowrap;transition:all .2s;
+}
+.catChip.active{background:var(--green);color:#fff;border-color:var(--green);}
+</style>
+
+<!-- BOTTOM NAV -->
+<div id="bottomNav">
+  <button class="navBtn active" data-tab="map" onclick="switchTab('map')">
+    <span class="navIcon">🗺️</span>
+    <span class="navLabel">Карта</span>
+  </button>
+  <button class="navBtn navCenter" data-tab="add" onclick="switchTab('add')">
+    <span class="navCenterCircle">＋</span>
+    <span class="navLabel">Добавить</span>
+  </button>
+  <button class="navBtn" data-tab="profile" onclick="switchTab('profile')">
+    <span class="navIcon">👤</span>
+    <span class="navLabel">Профиль</span>
+  </button>
+</div>
+<style>
+#bottomNav{
+  position:absolute;bottom:0;left:0;right:0;z-index:15;
+  display:flex;align-items:center;justify-content:space-around;
+  background:rgba(255,255,255,0.97);
+  border-top:1px solid var(--border);
+  padding:8px 0 16px;
+  backdrop-filter:blur(12px);
+}
+.navBtn{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  background:none;border:none;cursor:pointer;
+  color:var(--text2);font-size:11px;font-weight:500;
+  padding:2px 20px;transition:color .2s;
+}
+.navBtn.active{color:var(--green);}
+.navIcon{font-size:22px;}
+.navLabel{font-size:10.5px;font-weight:600;}
+.navCenterCircle{
+  width:48px;height:48px;border-radius:50%;
+  background:var(--green);color:#fff;
+  font-size:26px;font-weight:300;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 16px rgba(1,148,81,0.4);
+  margin-top:-18px;
+}
+</style>
+
+<!-- PROFILE TAB SCREEN -->
+<div id="profileScreen" class="tabScreen hidden">
+  <div id="profileScreenHeader">Профиль</div>
+  <div id="profileScreenSub">Настройки профиля появятся здесь</div>
+  <div id="profileUserInfo"></div>
+  <button id="profileLogoutBtn" class="hidden" onclick="doLogout()">🚪 Выйти из аккаунта</button>
+</div>
+<style>
+.tabScreen{
+  position:absolute;top:0;left:0;right:0;bottom:0;z-index:12;
+  background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;
+  padding-top:100px;gap:8px;
+}
+.hidden{display:none!important;}
+#profileScreenHeader{font-size:22px;font-weight:700;color:var(--text);}
+#profileScreenSub{font-size:14px;color:var(--text2);margin-top:4px;}
+#profileUserInfo{
+  margin-top:16px;padding:14px 24px;background:#fff;
+  border-radius:var(--r);box-shadow:var(--shadow);
+  font-size:14px;color:var(--text);text-align:center;min-width:200px;
+}
+#profileLogoutBtn{
+  margin-top:12px;padding:12px 32px;
+  background:#ef4444;color:#fff;border:none;
+  border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;
+}
+</style>
+
+<!-- ADMIN ACCESS DENIED SCREEN -->
+<div id="adminDeniedScreen" class="tabScreen hidden">
+  <div id="adminDeniedIcon">🔒</div>
+  <div id="adminDeniedTitle">Доступ ограничен</div>
+  <div id="adminDeniedText">Эта вкладка предназначена только для администраторов Toilet Advisor.<br><br>Кириш тақиқланган. Бу бўлим фақат администраторлар учун.</div>
+  <button id="adminDeniedBtn" onclick="openAdminLogin()">⚙️ Войти как Админ</button>
+</div>
+<style>
+#adminDeniedIcon{font-size:52px;margin-bottom:8px;}
+#adminDeniedTitle{font-size:20px;font-weight:700;color:var(--text);text-align:center;}
+#adminDeniedText{font-size:13px;color:var(--text2);text-align:center;padding:0 24px;line-height:1.6;margin-top:8px;}
+#adminDeniedBtn{
+  margin-top:20px;padding:13px 28px;
+  background:var(--green);color:#fff;border:none;
+  border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;
+}
+</style>
+
+<!-- ADD TOILET ADMIN SCREEN -->
+<div id="addScreen" class="tabScreen hidden" style="padding-top:70px;overflow-y:auto;padding-bottom:80px;display:block;">
+  <div id="addScreenTitle">➕ Добавить туалет</div>
+  <div id="addMapHint">📍 Нажмите на карту, чтобы выбрать место</div>
+  <div id="addForm">
+    <input type="text" id="addTitle" placeholder="Название туалета">
+    <input type="text" id="addDesc" placeholder="Описание (необязательно)">
+    <input type="text" id="addPhoto" placeholder="Ссылка на фото (необязательно)">
+    <div class="checkGrid">
+      <label><input type="checkbox" id="addIsFree" checked> 🆓 Бесплатно</label>
+      <label><input type="checkbox" id="addIsOpen" checked> 🟢 Открыто</label>
+      <label><input type="checkbox" id="addHasSoap"> 🧼 Мыло</label>
+      <label><input type="checkbox" id="addHasPaper"> 🧻 Бумага</label>
+      <label><input type="checkbox" id="addIsAccessible"> ♿ Доступно</label>
+      <label><input type="checkbox" id="addIsTaharatkhana"> 🕌 Тахаратхана</label>
+    </div>
+    <button id="addSubmitBtn" onclick="submitAddToilet()">✅ Добавить</button>
+  </div>
+</div>
+<style>
+#addScreenTitle{font-size:20px;font-weight:700;color:var(--text);text-align:center;padding:16px 0 6px;}
+#addMapHint{
+  font-size:13px;color:var(--green);text-align:center;
+  margin:0 16px 12px;padding:10px;
+  background:var(--green-light);border-radius:var(--rs);
+  font-weight:500;
+}
+#addForm{padding:0 16px;display:flex;flex-direction:column;gap:10px;}
+#addForm input[type="text"]{
+  width:100%;padding:13px 16px;
+  border:1.5px solid var(--border);border-radius:var(--rs);
+  background:#fff;font-size:14px;color:var(--text);outline:none;
+}
+#addForm input[type="text"]:focus{border-color:var(--green);}
+.checkGrid{display:flex;flex-wrap:wrap;gap:8px;}
+.checkGrid label{
+  display:flex;align-items:center;gap:6px;
+  font-size:13px;color:var(--text);cursor:pointer;
+  padding:8px 12px;background:#fff;
+  border-radius:var(--rs);border:1px solid var(--border);
+}
+.checkGrid input[type="checkbox"]{width:auto;accent-color:var(--green);}
+#addSubmitBtn{
+  padding:14px;background:var(--green);color:#fff;
+  border:none;border-radius:var(--rs);
+  font-size:15px;font-weight:700;cursor:pointer;
+  margin-top:4px;
+}
+</style>
+
+<!-- BOTTOM SHEET: TOILET DETAILS -->
+<div id="toiletSheet">
+  <div id="sheetHandle"></div>
+  <button id="sheetClose" onclick="closeSheet()">✕</button>
+  <div id="sheetScroll">
+
+    <!-- Title + Rating -->
+    <div id="sheetTopRow">
+      <div id="sheetTitle">Название</div>
+      <div id="sheetRatingPill"><span id="sheetRatingStar">⭐</span><span id="sheetRatingVal">—</span></div>
     </div>
 
-    <!-- ===== ПОИСК ===== -->
-    <div class="search-bar">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" placeholder="Поиск туалета...">
+    <!-- Meta pills -->
+    <div id="sheetPills">
+      <span class="metaPill pillBlue" id="sheetDistPill">▵ — км от вас</span>
+      <span class="metaPill pillGreen" id="sheetOpenPill">Открыто</span>
+      <span class="metaPill pillGreen2" id="sheetFreePill">🆓 Бесплатно</span>
     </div>
 
-    <!-- ===== КАТЕГОРИИ ===== -->
-    <div class="categories" id="categories">
-        <button class="category-chip active" data-category="all">📋 Всем</button>
-        <button class="category-chip" data-category="taharatkhana">🕌 Тахаратхана</button>
-        <button class="category-chip" data-category="free">🆓 Бесплатно</button>
-        <button class="category-chip" data-category="soap">🧼 С мылом</button>
-        <button class="category-chip" data-category="paper">🧻 С бумагой</button>
-        <button class="category-chip" data-category="accessible">♿ Доступные</button>
-        <button class="category-chip" data-category="open">🟢 Открыто</button>
+    <!-- Taharatkhana block (conditional) -->
+    <div id="taharatBlock" class="hidden">
+      <div id="taharatHeader">
+        <div id="taharatTitle">🕌 Тахоратхона / Тахаратхана</div>
+        <div id="taharatSub">Место для омовения перед намазом</div>
+      </div>
+      <div id="taharatGrid">
+        <div class="taharatItem">🔥 Горячая вода</div>
+        <div class="taharatItem">🧼 Мыло</div>
+        <div class="taharatItem">🧻 Полотенца</div>
+        <div class="taharatItem">🩴 Тапочки</div>
+      </div>
+      <div id="taharatNote">Специально оборудованное место для омовения. Чистые условия, горячая вода, мыло и одноразовые полотенца.</div>
     </div>
 
-    <!-- ===== КАРТОЧКА ТУАЛЕТА ===== -->
-    <div class="toilet-sheet" id="toiletSheet">
-        <div class="sheet-handle"></div>
-        <button class="sheet-close" id="sheetClose">✕</button>
+    <!-- Amenity badges -->
+    <div id="sheetBadges"></div>
 
-        <div class="sheet-title" id="sheetTitle">Название</div>
-        <div class="sheet-rating">
-            <span class="stars" id="sheetStars">★★★★★</span>
-            <span class="rating-value" id="sheetRatingValue">4.0</span>
-            <span class="rating-count" id="sheetRatingCount">(12 отзывов)</span>
-        </div>
-        <div class="sheet-distance" id="sheetDistance">📍 1.2 км от вас</div>
-        <div class="sheet-badges" id="sheetBadges"></div>
-        <div class="sheet-description" id="sheetDescription">Описание туалета</div>
+    <!-- Description -->
+    <div id="sheetDesc"></div>
 
-        <div class="sheet-reviews-title">📝 Отзывы</div>
-        <div id="sheetReviews"></div>
+    <!-- Reviews section -->
+    <div id="reviewsTitle">Отзывы</div>
+    <div id="reviewsList"></div>
 
-        <div class="review-form" id="reviewForm">
-            <textarea id="reviewText" placeholder="Опишите ваши впечатления..." rows="3"></textarea>
-            <div class="star-select" id="starSelect">
-                <span data-star="1">☆</span>
-                <span data-star="2">☆</span>
-                <span data-star="3">☆</span>
-                <span data-star="4">☆</span>
-                <span data-star="5">☆</span>
-            </div>
-            <div class="submit-row">
-                <button class="btn-primary" id="reviewSubmit">📝 Отправить</button>
-                <button class="btn-route" id="routeBtn">🚗 Маршрут</button>
-            </div>
-            <div class="hint" id="reviewHint"></div>
-        </div>
+    <!-- Review form -->
+    <div id="reviewForm">
+      <div id="starRow">
+        <span class="starBtn" data-s="1">☆</span>
+        <span class="starBtn" data-s="2">☆</span>
+        <span class="starBtn" data-s="3">☆</span>
+        <span class="starBtn" data-s="4">☆</span>
+        <span class="starBtn" data-s="5">☆</span>
+      </div>
+      <div id="authNotice" class="hidden">🔒 Чтобы оставить оценку, пожалуйста, войдите в систему</div>
+      <textarea id="reviewText" placeholder="Опишите ваши впечатления..."></textarea>
+      <div id="formBtns">
+        <button id="submitReviewBtn" onclick="submitReview()">▲ Отправить</button>
+        <button id="routeBtn" onclick="goRoute()">📍 Маршрут / Йўналиш</button>
+      </div>
     </div>
 
-    <!-- ===== НИЖНЯЯ НАВИГАЦИЯ ===== -->
-    <div class="bottom-nav" id="bottomNav">
-        <button class="nav-item active" data-tab="map">
-            <span class="nav-icon">🗺️</span>
-            <span class="nav-label">Карта</span>
-        </button>
-        <button class="nav-item" data-tab="add" id="navAdd" style="display: none;">
-            <span class="nav-icon">➕</span>
-            <span class="nav-label">Добавить</span>
-        </button>
-        <button class="nav-item" data-tab="profile">
-            <span class="nav-icon">👤</span>
-            <span class="nav-label">Профиль</span>
-        </button>
+  </div>
+</div>
+
+<style>
+/* BOTTOM SHEET */
+#toiletSheet{
+  position:absolute;bottom:0;left:0;right:0;z-index:20;
+  background:#fff;border-radius:26px 26px 0 0;
+  max-height:78vh;
+  transform:translateY(100%);
+  transition:transform .35s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 -8px 40px rgba(0,0,0,0.15);
+}
+#toiletSheet.open{transform:translateY(0);}
+#sheetHandle{
+  width:44px;height:4px;background:#ddd;border-radius:4px;
+  margin:14px auto 0;
+}
+#sheetClose{
+  position:absolute;top:14px;right:16px;
+  background:none;border:none;font-size:20px;
+  color:var(--text2);cursor:pointer;z-index:2;
+}
+#sheetScroll{
+  padding:16px 20px 110px;
+  max-height:calc(78vh - 30px);
+  overflow-y:auto;
+}
+#sheetTopRow{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:8px;
+  margin-bottom:10px;
+}
+#sheetTitle{font-size:18px;font-weight:700;color:var(--text);flex:1;line-height:1.3;}
+#sheetRatingPill{
+  display:flex;align-items:center;gap:3px;
+  background:#fef3c7;border-radius:12px;
+  padding:5px 10px;font-weight:700;font-size:14px;
+  flex-shrink:0;color:#92400e;
+}
+#sheetPills{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px;}
+.metaPill{
+  padding:5px 12px;border-radius:14px;
+  font-size:12px;font-weight:600;white-space:nowrap;
+}
+.pillBlue{background:#dbeafe;color:#1e40af;}
+.pillGreen{background:#d1fae5;color:#065f46;}
+.pillGreen2{background:#dcfce7;color:#166534;}
+/* Taharatkhana block */
+#taharatBlock{
+  background:linear-gradient(135deg,#e6f5ee,#d0f0e0);
+  border-radius:var(--r);padding:14px;margin-bottom:14px;
+}
+#taharatTitle{font-size:14px;font-weight:700;color:#065f46;}
+#taharatSub{font-size:12px;color:#047857;margin-top:2px;}
+#taharatGrid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:8px;margin:12px 0 10px;
+}
+.taharatItem{
+  background:rgba(255,255,255,0.7);border-radius:10px;
+  padding:8px 10px;font-size:12.5px;font-weight:600;color:#065f46;
+}
+#taharatNote{font-size:11.5px;color:#047857;line-height:1.5;}
+/* Badges */
+#sheetBadges{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px;}
+.sheetBadge{
+  padding:5px 12px;border-radius:14px;
+  font-size:12px;font-weight:500;
+  background:#f3f4f6;color:#4b5563;
+}
+/* Description */
+#sheetDesc{
+  font-size:13px;color:var(--text2);line-height:1.6;
+  padding:10px 14px;background:#f4f8f5;
+  border-radius:var(--rs);margin-bottom:16px;
+}
+/* Reviews */
+#reviewsTitle{font-size:16px;font-weight:700;color:var(--text);margin-bottom:10px;}
+.reviewItem{
+  display:flex;gap:12px;padding:12px 0;
+  border-bottom:1px solid var(--border);
+}
+.reviewItem:last-child{border-bottom:none;}
+.reviewAvatar{
+  width:40px;height:40px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:13px;color:#fff;flex-shrink:0;
+}
+.reviewBody{flex:1;}
+.reviewName{font-weight:600;font-size:13px;color:var(--text);}
+.reviewDate{font-size:11px;color:var(--text2);margin-left:6px;}
+.reviewStars{color:var(--star);font-size:12px;letter-spacing:1px;margin:3px 0;}
+.reviewText{font-size:13px;color:var(--text2);line-height:1.5;}
+</style>
+
+<style>
+/* Review Form */
+#reviewForm{
+  margin-top:14px;padding-top:14px;
+  border-top:1px solid var(--border);
+}
+#starRow{display:flex;gap:6px;margin-bottom:10px;}
+.starBtn{
+  font-size:28px;color:#d1d5db;cursor:pointer;
+  transition:color .15s,transform .1s;
+  user-select:none;
+}
+.starBtn.lit{color:var(--star);}
+.starBtn:hover{transform:scale(1.15);}
+#authNotice{
+  padding:12px 14px;
+  background:#f0fdf4;border-radius:var(--rs);
+  font-size:13px;color:#166534;font-weight:500;
+  margin-bottom:10px;border:1px solid #bbf7d0;
+}
+#reviewText{
+  width:100%;padding:12px 14px;
+  border:1.5px solid var(--border);border-radius:var(--rs);
+  background:#f9fafb;color:var(--text);font-size:14px;
+  resize:none;min-height:80px;font-family:inherit;
+  outline:none;transition:border-color .2s;
+}
+#reviewText:focus{border-color:var(--green);}
+#formBtns{display:flex;flex-direction:column;gap:9px;margin-top:10px;}
+#submitReviewBtn{
+  padding:13px;background:var(--green);color:#fff;
+  border:none;border-radius:var(--rs);
+  font-size:14px;font-weight:700;cursor:pointer;
+  transition:opacity .2s;
+}
+#submitReviewBtn:hover{opacity:.88;}
+#routeBtn{
+  padding:13px;background:#fff;color:var(--green);
+  border:2px solid var(--green);border-radius:var(--rs);
+  font-size:14px;font-weight:700;cursor:pointer;
+  transition:background .2s;
+}
+#routeBtn:hover{background:var(--green-light);}
+</style>
+
+<!-- AUTH MODAL -->
+<div id="authOverlay" class="overlay hidden" onclick="overlayClickClose(event,'authOverlay')">
+  <div class="modalBox" onclick="event.stopPropagation()">
+    <div class="modalTitle">Добро пожаловать<br><span class="modalSubTitle">Toilet Advisor Tashkent</span></div>
+    <div class="reviewNotice">💬 Для отправки отзыва необходимо войти</div>
+    <div class="tabRow">
+      <button class="tabBtn active" id="tabLogin" onclick="setAuthTab('login')">Войти</button>
+      <button class="tabBtn" id="tabReg" onclick="setAuthTab('register')">Регистрация</button>
     </div>
-
-    <!-- ===== МОДАЛ: АВТОРИЗАЦИЯ ===== -->
-    <div class="modal-overlay" id="authModal">
-        <div class="modal-box">
-            <div class="modal-title" id="authModalTitle">Добро пожаловать</div>
-            <div class="modal-sub" id="authModalSub">Toilet Advisor Tashkent</div>
-
-            <div class="modal-tabs">
-                <div class="modal-tab active" id="tabLogin">Вход</div>
-                <div class="modal-tab" id="tabRegister">Регистрация</div>
-            </div>
-
-            <input id="authPhone" type="tel" placeholder="Номер телефона">
-            <input id="authPassword" type="password" placeholder="Пароль">
-
-            <button class="modal-btn primary" id="authSubmit">Войти</button>
-            <button class="modal-btn secondary" id="authClose">Отмена</button>
-
-            <span class="modal-link" id="adminLoginLink">🔑 Войти как администратор</span>
-        </div>
+    <div id="phoneRow">
+      <span class="phoneCode">+998</span>
+      <input type="tel" id="authPhone" placeholder="901234567" maxlength="12">
     </div>
-
-    <!-- ===== МОДАЛ: АДМИН ВХОД ===== -->
-    <div class="modal-overlay" id="adminModal">
-        <div class="modal-box">
-            <div class="modal-title">🔐 Вход администратора</div>
-            <input id="adminLogin" type="text" placeholder="Логин">
-            <input id="adminPassword" type="password" placeholder="Пароль">
-            <button class="modal-btn primary" id="adminSubmit">Войти</button>
-            <button class="modal-btn secondary" id="adminClose">Отмена</button>
-        </div>
+    <div id="passRow">
+      <input type="password" id="authPass" placeholder="Пароль" id="authPassInput">
+      <button id="eyeBtn" onclick="togglePassVis()">👁</button>
     </div>
+    <button class="authMainBtn" id="authActionBtn" onclick="doAuth()">Войти</button>
+    <button class="adminSwitchBtn" onclick="openAdminLogin()">🔑 Войти как администратор / Расширенный доступ</button>
+    <button class="cancelBtn" onclick="closeOverlay('authOverlay')">Отмена</button>
+  </div>
+</div>
 
-    <!-- ===== МОДАЛ: ДОБАВИТЬ ТУАЛЕТ ===== -->
-    <div class="modal-overlay" id="addModal">
-        <div class="modal-box">
-            <div class="modal-title">➕ Добавить туалет</div>
-            <input id="addTitle" type="text" placeholder="Название">
-            <input id="addDescription" type="text" placeholder="Описание (необязательно)">
-            <input id="addPhoto" type="text" placeholder="Ссылка на фото (необязательно)">
-
-            <div class="checkbox-group">
-                <label><input type="checkbox" id="addIsFree" checked> 🆓 Бесплатно</label>
-                <label><input type="checkbox" id="addIsOpen" checked> 🟢 Открыто</label>
-                <label><input type="checkbox" id="addHasSoap"> 🧼 Мыло</label>
-                <label><input type="checkbox" id="addHasPaper"> 🧻 Бумага</label>
-                <label><input type="checkbox" id="addIsAccessible"> ♿ Доступно</label>
-                <label><input type="checkbox" id="addIsTaharatkhana"> 🕌 Тахаратхана</label>
-            </div>
-
-            <button class="modal-btn primary" id="addSubmit">✅ Добавить</button>
-            <button class="modal-btn secondary" id="addClose">Отмена</button>
-            <div class="hint" id="addHint" style="font-size:12px;color:var(--text-secondary);text-align:center;margin-top:8px;">
-                Нажмите на карте, чтобы выбрать место
-            </div>
-        </div>
+<!-- ADMIN LOGIN MODAL -->
+<div id="adminOverlay" class="overlay hidden" onclick="overlayClickClose(event,'adminOverlay')">
+  <div class="modalBox" onclick="event.stopPropagation()">
+    <div class="modalTitle">🔐 Вход администратора</div>
+    <input class="plainInput" type="text" id="adminLogin" placeholder="Логин">
+    <div id="adminPassRow">
+      <input type="password" id="adminPass" placeholder="Пароль">
+      <button id="adminEyeBtn" onclick="toggleAdminPassVis()">👁</button>
     </div>
+    <button class="authMainBtn" onclick="doAdminLogin()">Войти</button>
+    <button class="cancelBtn" onclick="closeOverlay('adminOverlay')">Отмена</button>
+  </div>
+</div>
 
-    <!-- ===== МОДАЛ: ПРОФИЛЬ ===== -->
-    <div class="modal-overlay" id="profileModal">
-        <div class="modal-box">
-            <div class="modal-title">👤 Профиль</div>
-            <div id="profileInfo" style="text-align:center;margin-bottom:16px;color:var(--text-secondary);">
-                Не авторизован
-            </div>
-            <button class="modal-btn primary" id="profileLoginBtn">Войти</button>
-            <button class="modal-btn danger" id="profileLogoutBtn" style="display:none;">🚪 Выйти</button>
-            <button class="modal-btn secondary" id="profileClose">Закрыть</button>
-        </div>
+<!-- ADD TOILET MODAL (map click flow) -->
+<div id="addOverlay" class="overlay hidden" onclick="overlayClickClose(event,'addOverlay')">
+  <div class="modalBox" onclick="event.stopPropagation()">
+    <div class="modalTitle">➕ Добавить туалет</div>
+    <div id="addHintModal" style="font-size:12px;color:var(--green);text-align:center;margin-bottom:12px;">📍 Нажмите на карте, чтобы выбрать место</div>
+    <input class="plainInput" type="text" id="addTitleM" placeholder="Название туалета">
+    <input class="plainInput" type="text" id="addDescM" placeholder="Описание (необязательно)">
+    <input class="plainInput" type="text" id="addPhotoM" placeholder="Ссылка на фото (необязательно)">
+    <div class="checkGrid" style="margin:6px 0 12px;">
+      <label><input type="checkbox" id="addIsFreeM" checked> 🆓 Бесплатно</label>
+      <label><input type="checkbox" id="addIsOpenM" checked> 🟢 Открыто</label>
+      <label><input type="checkbox" id="addHasSoapM"> 🧼 Мыло</label>
+      <label><input type="checkbox" id="addHasPaperM"> 🧻 Бумага</label>
+      <label><input type="checkbox" id="addIsAccessibleM"> ♿ Доступно</label>
+      <label><input type="checkbox" id="addIsTaharatkhanaM"> 🕌 Тахаратхана</label>
     </div>
+    <button class="authMainBtn" onclick="submitAddToiletModal()">✅ Добавить</button>
+    <button class="cancelBtn" onclick="closeOverlay('addOverlay')">Отмена</button>
+  </div>
+</div>
 
-    <script>
-        const API_URL = 'https://toiletadvisor-server.onrender.com/api';
+<style>
+/* OVERLAYS & MODALS */
+.overlay{
+  position:absolute;top:0;left:0;right:0;bottom:0;z-index:50;
+  background:rgba(0,0,0,0.48);
+  display:flex;align-items:flex-end;justify-content:center;
+  backdrop-filter:blur(4px);
+  animation:fadeIn .22s ease;
+}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.modalBox{
+  background:#fff;border-radius:26px 26px 0 0;
+  padding:24px 22px 32px;width:100%;
+  max-height:88vh;overflow-y:auto;
+  animation:slideUp .28s cubic-bezier(.4,0,.2,1);
+}
+@keyframes slideUp{from{transform:translateY(60px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modalTitle{
+  font-size:18px;font-weight:700;color:var(--text);
+  text-align:center;margin-bottom:6px;line-height:1.4;
+}
+.modalSubTitle{font-size:13px;color:var(--text2);font-weight:400;}
+.reviewNotice{
+  background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;
+  padding:10px 14px;font-size:13px;color:#166534;
+  text-align:center;margin:10px 0 14px;
+}
+.tabRow{
+  display:flex;border-radius:var(--rs);overflow:hidden;
+  border:1.5px solid var(--border);margin-bottom:14px;
+}
+.tabBtn{
+  flex:1;padding:11px;font-size:13px;font-weight:600;
+  background:#f3f4f6;color:var(--text2);border:none;cursor:pointer;
+  transition:all .2s;
+}
+.tabBtn.active{background:var(--green);color:#fff;}
+#phoneRow{
+  display:flex;align-items:center;
+  border:1.5px solid var(--border);border-radius:var(--rs);
+  overflow:hidden;margin-bottom:10px;background:#f9fafb;
+}
+.phoneCode{
+  padding:13px 12px;font-size:14px;font-weight:600;
+  color:var(--text);background:#e9edf0;border-right:1px solid var(--border);
+  white-space:nowrap;
+}
+#authPhone{
+  flex:1;padding:13px 12px;border:none;background:transparent;
+  font-size:14px;color:var(--text);outline:none;
+}
+#passRow,#adminPassRow{
+  display:flex;align-items:center;
+  border:1.5px solid var(--border);border-radius:var(--rs);
+  overflow:hidden;margin-bottom:14px;background:#f9fafb;
+}
+#passRow input,#adminPassRow input{
+  flex:1;padding:13px 12px;border:none;background:transparent;
+  font-size:14px;color:var(--text);outline:none;
+}
+#eyeBtn,#adminEyeBtn{
+  padding:0 12px;background:none;border:none;
+  font-size:18px;cursor:pointer;color:var(--text2);
+}
+.plainInput{
+  width:100%;padding:13px 14px;
+  border:1.5px solid var(--border);border-radius:var(--rs);
+  background:#f9fafb;font-size:14px;color:var(--text);
+  outline:none;margin-bottom:10px;display:block;
+}
+.plainInput:focus{border-color:var(--green);}
+.authMainBtn{
+  width:100%;padding:14px;background:var(--green);color:#fff;
+  border:none;border-radius:var(--rs);font-size:15px;font-weight:700;
+  cursor:pointer;transition:opacity .2s;margin-bottom:8px;
+}
+.authMainBtn:hover{opacity:.88;}
+.adminSwitchBtn{
+  width:100%;padding:11px;background:none;
+  border:1.5px solid var(--border);border-radius:var(--rs);
+  font-size:12.5px;color:var(--text2);cursor:pointer;margin-bottom:8px;
+}
+.cancelBtn{
+  width:100%;padding:11px;background:#f3f4f6;border:none;
+  border-radius:var(--rs);font-size:14px;color:var(--text2);cursor:pointer;
+}
+</style>
 
-        const LANG = {
-            ru: {
-                title: '🚽 ToiletAdvisor', search: 'Поиск туалета...', all: '📋 Всем', taharatkhana: '🕌 Тахаратхана', free: '🆓 Бесплатно', soap: '🧼 С мылом', paper: '🧻 С бумагой', accessible: '♿ Доступные', open: '🟢 Открыто', openStatus: 'Открыто', closedStatus: 'Закрыто', freeLabel: 'Бесплатно', paidLabel: 'Платно', reviews: 'Отзывы', writeReview: 'Опишите ваши впечатления...', submit: '📝 Отправить', route: '🚗 Маршрут', login: 'Вход', register: 'Регистрация', welcome: 'Добро пожаловать', subtitle: 'Toilet Advisor Tashkent', phone: 'Номер телефона', password: 'Пароль', cancel: 'Отмена', adminLogin: '🔑 Войти как администратор', adminTitle: '🔐 Вход администратора', adminLoginLabel: 'Логин', adminPasswordLabel: 'Пароль', addTitle: '➕ Добавить туалет', addName: 'Название', addDesc: 'Описание (необязательно)', addPhoto: 'Ссылка на фото (необязательно)', addFree: '🆓 Бесплатно', addOpen: '🟢 Открыто', addSoap: '🧼 Мыло', addPaper: '🧻 Бумага', addAccessible: '♿ Доступно', addTaharatkhana: '🕌 Тахаратхана', addSubmit: '✅ Добавить', addHint: 'Нажмите на карте, чтобы выбрать место', profile: '👤 Профиль', notAuth: 'Не авторизован', loginBtn: 'Войти', logoutBtn: '🚪 Выйти', close: 'Закрыть', kmAway: 'км от вас', noReviews: 'Нет отзывов', pleaseLogin: 'Войдите, чтобы оставить отзыв', success: '✅ Отзыв отправлен!', error: '❌ Ошибка', adminOnly: 'Доступ только для администраторов', map: 'Карта', add: 'Добавить', profileLabel: 'Профиль'
-            },
-            en: {
-                title: '🚽 ToiletAdvisor', search: 'Search toilet...', all: '📋 All', taharatkhana: '🕌 Taharatkhana', free: '🆓 Free', soap: '🧼 With soap', paper: '🧻 With paper', accessible: '♿ Accessible', open: '🟢 Open', openStatus: 'Open', closedStatus: 'Closed', freeLabel: 'Free', paidLabel: 'Paid', reviews: 'Reviews', writeReview: 'Write your impression...', submit: '📝 Submit', route: '🚗 Route', login: 'Login', register: 'Register', welcome: 'Welcome', subtitle: 'Toilet Advisor Tashkent', phone: 'Phone number', password: 'Password', cancel: 'Cancel', adminLogin: '🔑 Login as admin', adminTitle: '🔐 Admin Login', adminLoginLabel: 'Login', adminPasswordLabel: 'Password', addTitle: '➕ Add toilet', addName: 'Name', addDesc: 'Description (optional)', addPhoto: 'Photo URL (optional)', addFree: '🆓 Free', addOpen: '🟢 Open', addSoap: '🧼 Soap', addPaper: '🧻 Paper', addAccessible: '♿ Accessible', addTaharatkhana: '🕌 Taharatkhana', addSubmit: '✅ Add', addHint: 'Tap on map to select location', profile: '👤 Profile', notAuth: 'Not authorized', loginBtn: 'Login', logoutBtn: '🚪 Logout', close: 'Close', kmAway: 'km away', noReviews: 'No reviews', pleaseLogin: 'Please login to leave a review', success: '✅ Review sent!', error: '❌ Error', adminOnly: 'Admin only', map: 'Map', add: 'Add', profileLabel: 'Profile'
-            },
-            uzb: {
-                title: '🚽 ToiletAdvisor', search: 'Hojatxona qidirish...', all: '📋 Hammasi', taharatkhana: '🕌 Tahoratxona', free: '🆓 Bepul', soap: '🧼 Sovun bor', paper: '🧻 Qog\'oz bor', accessible: '♿ Qulay', open: '🟢 Ochiq', openStatus: 'Ochiq', closedStatus: 'Yopiq', freeLabel: 'Bepul', paidLabel: 'Pullik', reviews: 'Sharhlar', writeReview: 'Taassurotlaringizni yozing...', submit: '📝 Yuborish', route: '🚗 Marshrut', login: 'Kirish', register: "Ro'yxatdan o'tish", welcome: 'Xush kelibsiz', subtitle: 'Toilet Advisor Tashkent', phone: 'Telefon raqam', password: 'Parol', cancel: 'Bekor qilish', adminLogin: '🔑 Administrator sifatida kirish', adminTitle: '🔐 Admin kirish', adminLoginLabel: 'Login', adminPasswordLabel: 'Parol', addTitle: '➕ Hojatxona qo\'shish', addName: 'Nomi', addDesc: 'Tavsif (ixtiyoriy)', addPhoto: 'Rasm URL (ixtiyoriy)', addFree: '🆓 Bepul', addOpen: '🟢 Ochiq', addSoap: '🧼 Sovun', addPaper: '🧻 Qog\'oz', addAccessible: '♿ Qulay', addTaharatkhana: '🕌 Tahoratxona', addSubmit: '✅ Qo\'shish', addHint: 'Xaritani tanlash uchun bosing', profile: '👤 Profil', notAuth: 'Tizimga kirmagan', loginBtn: 'Kirish', logoutBtn: '🚪 Chiqish', close: 'Yopish', kmAway: 'km uzoqlikda', noReviews: 'Sharhlar yo\'q', pleaseLogin: 'Sharh qoldirish uchun tizimga kiring', success: '✅ Sharh yuborildi!', error: '❌ Xatolik', adminOnly: 'Faqat administratorlar uchun', map: 'Xarita', add: 'Qo\'shish', profileLabel: 'Profil'
-            }
-        };
+<!-- TOAST -->
+<div id="toast"></div>
+<style>
+#toast{
+  position:absolute;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:20px;
+  font-size:13px;font-weight:600;white-space:nowrap;
+  opacity:0;transition:opacity .3s,transform .3s;z-index:100;pointer-events:none;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
 
-        let currentLang = localStorage.getItem('lang') || 'ru';
-        let currentTheme = localStorage.getItem('theme') || 'light';
-        let currentUser = null;
-        let allToilets = [];
-        let currentCategory = 'all';
-        let selectedToilet = null;
-        let reviewRating = 0;
-        let authMode = 'login';
-        let addToiletCoords = null;
-        let myMap = null;
-        let searchTimeout = null;
+</div><!-- /appShell -->
+</div><!-- /phoneFrame -->
 
-        function t(key) { return LANG[currentLang]?.[key] || LANG.ru[key] || key; }
-        function getInitials(name) { if (!name) return '?'; const parts = name.trim().split(' '); return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.slice(0, 2).toUpperCase(); }
-        function formatDate(dateStr) { const d = new Date(dateStr); const months = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек']; return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`; }
-        function getStarString(rating) { const full = Math.floor(rating); const half = rating - full >= 0.5 ? 1 : 0; return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(5 - full - half); }
-        function getRandomColor(seed) { const colors = ['#2ecc71', '#3498db', '#9b59b6', '#e67e22', '#1abc9c', '#e74c3c', '#f39c12']; return colors[seed % colors.length]; }
+<script>
+// ============================================================
+// CONSTANTS & STATE
+// ============================================================
+const API = 'https://toiletadvisor-server.onrender.com/api';
+const COLORS = ['#019451','#3b82f6','#8b5cf6','#f59e0b','#ef4444','#06b6d4','#ec4899'];
 
-        // ТЕМА
-        if (currentTheme === 'dark') { document.body.classList.add('dark'); document.getElementById('themeToggle').textContent = '☀️'; }
-        document.getElementById('themeToggle').addEventListener('click', () => {
-            document.body.classList.toggle('dark');
-            const isDark = document.body.classList.contains('dark');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            document.getElementById('themeToggle').textContent = isDark ? '☀️' : '🌙';
-        });
+let currentLang = localStorage.getItem('ta_lang') || 'ru';
+let currentUser = null;
+let allToilets = [];
+let currentCat = 'all';
+let selectedToilet = null;
+let reviewRating = 0;
+let authTab = 'login';
+let addCoords = null;
+let myMap = null;
+let searchTimer = null;
+let localReviews = JSON.parse(localStorage.getItem('ta_reviews') || '{}');
 
-        // ЯЗЫК
-        document.getElementById('langSelect').value = currentLang;
-        document.getElementById('langSelect').addEventListener('change', (e) => {
-            currentLang = e.target.value;
-            localStorage.setItem('lang', currentLang);
-            updateUI();
-            if (selectedToilet) showToiletSheet(selectedToilet);
-        });
+// Restore session
+const savedUser = localStorage.getItem('ta_user');
+if (savedUser) { try { currentUser = JSON.parse(savedUser); } catch(e){} }
 
-        function updateUI() {
-            document.getElementById('searchInput').placeholder = t('search');
-            document.querySelectorAll('.nav-item .nav-label').forEach(el => {
-                const tab = el.closest('.nav-item').dataset.tab;
-                if (tab === 'map') el.textContent = t('map');
-                if (tab === 'add') el.textContent = t('add');
-                if (tab === 'profile') el.textContent = t('profileLabel');
-            });
+// ============================================================
+// LANG
+// ============================================================
+const T = {
+  ru: { search:'Поиск туалета...', loginBtn:'→ Войти', open:'Открыто', closed:'Закрыто', free:'🆓 Бесплатно', paid:'Платно', noReviews:'Пока нет отзывов', loginPrompt:'Войдите, чтобы оставить отзыв', success:'✓ Ваш отзыв добавлен!', kmAway:'км от вас', addHint:'📍 Нажмите на карте, чтобы выбрать место' },
+  uz: { search:'Hojatxona qidirish...', loginBtn:'→ Kirish', open:'Ochiq', closed:'Yopiq', free:'🆓 Bepul', paid:'Pullik', noReviews:'Sharhlar yoq', loginPrompt:'Sharh qoldirish uchun kiring', success:'✓ Sharhingiz qoshildi!', kmAway:'km uzoqda', addHint:'📍 Joyni tanlash uchun xaritaga bosing' }
+};
+function t(k){ return (T[currentLang]||T.ru)[k] || k; }
 
-            if(document.getElementById('authModalTitle')) document.getElementById('authModalTitle').textContent = t('welcome');
-            if(document.getElementById('authModalSub')) document.getElementById('authModalSub').textContent = t('subtitle');
-            if(document.getElementById('tabLogin')) document.getElementById('tabLogin').textContent = t('login');
-            if(document.getElementById('tabRegister')) document.getElementById('tabRegister').textContent = t('register');
-            if(document.getElementById('authSubmit')) document.getElementById('authSubmit').textContent = authMode === 'login' ? t('login') : t('register');
-            if(document.getElementById('authClose')) document.getElementById('authClose').textContent = t('cancel');
-            if(document.getElementById('adminLoginLink')) document.getElementById('adminLoginLink').textContent = t('adminLogin');
-            if(document.getElementById('adminClose')) document.getElementById('adminClose').textContent = t('cancel');
-            if(document.getElementById('adminSubmit')) document.getElementById('adminSubmit').textContent = t('login');
+function setLang(l){
+  currentLang = l;
+  localStorage.setItem('ta_lang', l);
+  document.getElementById('chipRU').classList.toggle('active', l==='ru');
+  document.getElementById('chipUZ').classList.toggle('active', l==='uz');
+  document.getElementById('searchInput').placeholder = t('search');
+  updateLoginBtn();
+}
 
-            document.getElementById('addClose').textContent = t('cancel');
-            document.getElementById('addSubmit').textContent = t('addSubmit');
-            document.getElementById('addHint').textContent = t('addHint');
-            document.querySelector('#addModal .modal-title').textContent = t('addTitle');
-            document.getElementById('addTitle').placeholder = t('addName');
-            document.getElementById('addDescription').placeholder = t('addDesc');
-            document.getElementById('addPhoto').placeholder = t('addPhoto');
+function updateLoginBtn(){
+  const btn = document.getElementById('loginBtn');
+  if(currentUser){
+    const label = currentUser.phone || currentUser.login || '';
+    const masked = currentUser.role==='admin' ? `⚙️ ${label}` : `👤 ${maskPhone(label)}`;
+    btn.textContent = masked;
+    btn.style.background = currentUser.role==='admin' ? '#7c3aed' : 'var(--green)';
+  } else {
+    btn.textContent = t('loginBtn');
+    btn.style.background = 'var(--green)';
+  }
+}
 
-            document.querySelector('#profileModal .modal-title').textContent = t('profile');
-            document.getElementById('profileLoginBtn').textContent = t('loginBtn');
-            document.getElementById('profileLogoutBtn').textContent = t('logoutBtn');
-            document.getElementById('profileClose').textContent = t('close');
+function maskPhone(p){
+  if(!p) return '';
+  if(p.length <= 6) return p;
+  return p.slice(0,6) + '***';
+}
+</script>
 
-            updateAuthUI();
-        }
+<script>
+// ============================================================
+// MAP INIT
+// ============================================================
+function initMap(){
+  try {
+    myMap = new ymaps.Map('map',{
+      center:[41.2995,69.2401], zoom:13,
+      controls:['zoomControl','geolocationControl']
+    });
+    myMap.events.add('click', e => {
+      if(addCoords !== undefined && document.getElementById('addOverlay').classList.contains('hidden')===false){
+        addCoords = e.get('coords');
+        document.getElementById('addHintModal').textContent = `📍 Выбрано: ${addCoords[0].toFixed(4)}, ${addCoords[1].toFixed(4)}`;
+        document.getElementById('addHintModal').style.color = 'var(--green)';
+      }
+    });
+    loadToilets();
+  } catch(err){ console.error('Map init error:',err); }
+}
 
-        // АВТОРИЗАЦИЯ И СЕССИЯ
-        function updateAuthUI() {
-            const btn = document.getElementById('authBtn');
-            if (currentUser) {
-                const label = currentUser.phone || currentUser.login || 'User';
-                btn.textContent = currentUser.role === 'admin' ? '🔧' : '👤';
-                btn.title = label;
-                document.getElementById('navAdd').style.display = currentUser.role === 'admin' ? 'flex' : 'none';
-                document.getElementById('profileInfo').textContent = `${label} (${currentUser.role})`;
-                document.getElementById('profileLoginBtn').style.display = 'none';
-                document.getElementById('profileLogoutBtn').style.display = 'block';
-            } else {
-                btn.textContent = '👤';
-                btn.title = t('loginBtn');
-                document.getElementById('navAdd').style.display = 'none';
-                document.getElementById('profileInfo').textContent = t('notAuth');
-                document.getElementById('profileLoginBtn').style.display = 'block';
-                document.getElementById('profileLogoutBtn').style.display = 'none';
-            }
-        }
+if(typeof ymaps !== 'undefined'){
+  ymaps.ready(initMap);
+}
 
-        document.getElementById('authBtn').addEventListener('click', () => {
-            if (currentUser) { document.getElementById('profileModal').classList.add('active'); } 
-            else { document.getElementById('authModal').classList.add('active'); }
-        });
+// ============================================================
+// TOILETS
+// ============================================================
+async function loadToilets(){
+  try {
+    const r = await fetch(`${API}/toilets`);
+    allToilets = await r.json();
+  } catch(e){
+    allToilets = [];
+  }
+  renderMarkers();
+}
 
-        document.getElementById('authClose').addEventListener('click', () => { document.getElementById('authModal').remove('active'); });
-        if(document.getElementById('tabLogin')) document.getElementById('tabLogin').addEventListener('click', () => setAuthMode('login'));
-        if(document.getElementById('tabRegister')) document.getElementById('tabRegister').addEventListener('click', () => setAuthMode('register'));
+function renderMarkers(){
+  if(!myMap) return;
+  myMap.geoObjects.removeAll();
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  let list = allToilets.filter(t => {
+    if(q && !t.title.toLowerCase().includes(q)) return false;
+    if(currentCat==='taharatkhana') return t.isTaharatkhana;
+    if(currentCat==='free') return t.isFree;
+    if(currentCat==='soap') return t.hasSoap;
+    if(currentCat==='paper') return t.hasPaper;
+    if(currentCat==='accessible') return t.isAccessible;
+    return true;
+  });
+  list.forEach(toilet => {
+    let pm;
+    if(toilet.isTaharatkhana){
+      pm = new ymaps.Placemark([toilet.lat,toilet.lon],
+        {hintContent: toilet.title},
+        {iconLayout:'default#image',
+         iconImageHref:'data:image/svg+xml;utf8,'+encodeURIComponent(mosqueMarkerSVG()),
+         iconImageSize:[44,54],iconImageOffset:[-22,-54]}
+      );
+    } else {
+      const color = toilet.isFree ? '#019451' : '#f59e0b';
+      pm = new ymaps.Placemark([toilet.lat,toilet.lon],
+        {hintContent: toilet.title},
+        {iconLayout:'default#image',
+         iconImageHref:'data:image/svg+xml;utf8,'+encodeURIComponent(toiletMarkerSVG(color)),
+         iconImageSize:[40,50],iconImageOffset:[-20,-50]}
+      );
+    }
+    pm.events.add('click', () => openSheet(toilet));
+    myMap.geoObjects.add(pm);
+  });
+}
 
-        function setAuthMode(mode) {
-            authMode = mode;
-            document.getElementById('tabLogin').classList.toggle('active', mode === 'login');
-            document.getElementById('tabRegister').classList.toggle('active', mode === 'register');
-            document.getElementById('authSubmit').textContent = mode === 'login' ? t('login') : t('register');
-        }
+function toiletMarkerSVG(color){
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="50" viewBox="0 0 40 50">
+    <ellipse cx="20" cy="48" rx="8" ry="3" fill="rgba(0,0,0,0.2)"/>
+    <path d="M20 46 L6 18 Q6 4 20 4 Q34 4 34 18 Z" fill="${color}"/>
+    <circle cx="20" cy="18" r="9" fill="white" opacity="0.95"/>
+    <text x="20" y="22" font-size="11" text-anchor="middle" fill="${color}">🚽</text>
+  </svg>`;
+}
 
-        document.getElementById('authSubmit').addEventListener('click', async () => {
-            const phone = document.getElementById('authPhone').value.trim();
-            const password = document.getElementById('authPassword').value.trim();
-            if (!phone || !password) return alert('Заполните все поля');
-            const endpoint = authMode === 'login' ? '/login' : '/register';
-            try {
-                const res = await fetch(`${API_URL}${endpoint}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ phone, password })
-                });
-                const data = await res.json();
-                if (res.ok) {
-                    currentUser = { ...data.user, token: data.token };
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                    document.getElementById('authModal').classList.remove('active');
-                    updateAuthUI();
-                    alert(data.message);
-                } else { alert(data.error); }
-            } catch (err) { alert('Ошибка соединения'); }
-        });
+function mosqueMarkerSVG(){
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="54" viewBox="0 0 44 54">
+    <ellipse cx="22" cy="52" rx="9" ry="3" fill="rgba(0,0,0,0.2)"/>
+    <path d="M22 50 L6 20 Q6 4 22 4 Q38 4 38 20 Z" fill="#7c3aed"/>
+    <circle cx="22" cy="20" r="10" fill="white" opacity="0.95"/>
+    <text x="22" y="24" font-size="13" text-anchor="middle" fill="#7c3aed">🕌</text>
+  </svg>`;
+}
+</script>
 
-        document.getElementById('adminLoginLink').addEventListener('click', () => {
-            document.getElementById('authModal').classList.remove('active');
-            document.getElementById('adminModal').classList.add('active');
-        });
-        document.getElementById('adminClose').addEventListener('click', () => { document.getElementById('adminModal').classList.remove('active'); });
+<script>
+// ============================================================
+// BOTTOM SHEET
+// ============================================================
+async function openSheet(toilet){
+  selectedToilet = toilet;
+  const sheet = document.getElementById('toiletSheet');
+  document.getElementById('sheetTitle').textContent = toilet.title;
 
-        document.getElementById('adminSubmit').addEventListener('click', async () => {
-            const login = document.getElementById('adminLogin').value.trim();
-            const password = document.getElementById('adminPassword').value.trim();
-            if (!login || !password) return alert('Заполните все поля');
-            try {
-                const res = await fetch(`${API_URL}/admin/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ login, password })
-                });
-                const data = await res.json();
-                if (res.ok) {
-                    currentUser = { ...data.user, token: data.token };
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                    document.getElementById('adminModal').classList.remove('active');
-                    updateAuthUI();
-                    alert(data.message);
-                } else { alert(data.error); }
-            } catch (err) { alert('Ошибка соединения'); }
-        });
+  // Reviews
+  const reviews = await getReviews(toilet.id);
+  const avg = reviews.length ? (reviews.reduce((s,r)=>s+r.rating,0)/reviews.length) : 0;
+  document.getElementById('sheetRatingVal').textContent = avg>0 ? avg.toFixed(1) : '—';
 
-        document.querySelector('.nav-item[data-tab="profile"]').addEventListener('click', () => { document.getElementById('profileModal').classList.add('active'); });
-        document.getElementById('profileClose').addEventListener('click', () => { document.getElementById('profileModal').classList.remove('active'); });
-        document.getElementById('profileLoginBtn').addEventListener('click', () => { document.getElementById('profileModal').classList.remove('active'); document.getElementById('authModal').classList.add('active'); });
-        document.getElementById('profileLogoutBtn').addEventListener('click', () => { currentUser = null; localStorage.removeItem('currentUser'); updateAuthUI(); document.getElementById('profileModal').classList.remove('active'); alert('Вы вышли из системы'); });
+  // Distance
+  if(myMap){
+    const center = myMap.getCenter();
+    try {
+      const dist = ymaps.coordSystem.geo.getDistance([toilet.lat,toilet.lon],[center[0],center[1]]);
+      document.getElementById('sheetDistPill').textContent = `▵ ${(dist/1000).toFixed(1)} ${t('kmAway')}`;
+    } catch(e) {}
+  }
 
-        const savedUser = localStorage.getItem('currentUser');
-        if (savedUser) { currentUser = JSON.parse(savedUser); }
+  // Status pills
+  document.getElementById('sheetOpenPill').textContent = toilet.isOpen ? t('open') : t('closed');
+  document.getElementById('sheetOpenPill').style.background = toilet.isOpen ? '#d1fae5' : '#fee2e2';
+  document.getElementById('sheetOpenPill').style.color = toilet.isOpen ? '#065f46' : '#991b1b';
+  document.getElementById('sheetFreePill').textContent = toilet.isFree ? t('free') : t('paid');
+  document.getElementById('sheetFreePill').style.background = toilet.isFree ? '#dcfce7' : '#fef3c7';
+  document.getElementById('sheetFreePill').style.color = toilet.isFree ? '#166534' : '#92400e';
 
-        // КАРТА
-        function initMap() {
-            try {
-                myMap = new ymaps.Map('map', {
-                    center: [41.2995, 69.2401], 
-                    zoom: 12,
-                    controls: ['zoomControl', 'fullscreenControl']
-                });
-                loadToilets();
+  // Taharatkhana block
+  const tBlock = document.getElementById('taharatBlock');
+  toilet.isTaharatkhana ? tBlock.classList.remove('hidden') : tBlock.classList.add('hidden');
 
-                myMap.events.add('click', (e) => {
-                    if (document.getElementById('addModal').classList.contains('active')) {
-                        addToiletCoords = e.get('coords');
-                        document.getElementById('addHint').textContent = `📍 Выбрано: ${addToiletCoords[0].toFixed(5)}, ${addToiletCoords[1].toFixed(5)}`;
-                        document.getElementById('addHint').style.color = 'var(--primary)';
-                    }
-                });
-            } catch (err) {
-                console.error('Ошибка создания инстанса карт:', err);
-            }
-        }
+  // Amenity badges
+  const bads = [];
+  if(toilet.hasSoap) bads.push('🧼 Мыло');
+  if(toilet.hasPaper) bads.push('🧻 Бумага');
+  if(toilet.isAccessible) bads.push('♿ Доступность');
+  document.getElementById('sheetBadges').innerHTML = bads.map(b=>`<span class="sheetBadge">${b}</span>`).join('');
 
-        if (typeof ymaps !== 'undefined') {
-            ymaps.ready(initMap);
-        }
+  // Description
+  document.getElementById('sheetDesc').textContent = toilet.description || '';
+  document.getElementById('sheetDesc').style.display = toilet.description ? 'block' : 'none';
 
-        async function loadToilets() {
-            try {
-                const res = await fetch(`${API_URL}/toilets`);
-                allToilets = await res.json();
-                renderMarkers();
-            } catch (err) { console.error('Ошибка загрузки туалетов:', err); }
-        }
+  // Reviews
+  renderReviews(reviews);
 
-        function renderMarkers() {
-            if (!myMap) return;
-            myMap.geoObjects.removeAll();
-            let filtered = allToilets;
+  // Review form state
+  resetReviewForm();
 
-            const query = document.getElementById('searchInput').value.toLowerCase().trim();
-            if (query) { filtered = filtered.filter(t => t.title.toLowerCase().includes(query)); }
+  sheet.classList.add('open');
+}
 
-            if (currentCategory === 'taharatkhana') { filtered = filtered.filter(t => t.isTaharatkhana); } 
-            else if (currentCategory === 'free') { filtered = filtered.filter(t => t.isFree); } 
-            else if (currentCategory === 'soap') { filtered = filtered.filter(t => t.hasSoap); } 
-            else if (currentCategory === 'paper') { filtered = filtered.filter(t => t.hasPaper); } 
-            else if (currentCategory === 'accessible') { filtered = filtered.filter(t => t.isAccessible); } 
-            else if (currentCategory === 'open') { filtered = filtered.filter(t => t.isOpen); }
+function closeSheet(){
+  document.getElementById('toiletSheet').classList.remove('open');
+  selectedToilet = null;
+}
 
-            filtered.forEach(toilet => {
-                const color = toilet.isFree ? 'green' : 'orange';
-                const placemark = new ymaps.Placemark(
-                    [toilet.lat, toilet.lon], { balloonContent: toilet.title, hintContent: toilet.title }, { preset: `islands#${color}DotIcon`, iconColor: toilet.isTaharatkhana ? '#8B5CF6' : undefined }
-                );
-                placemark.events.add('click', () => showToiletSheet(toilet));
-                myMap.geoObjects.add(placemark);
-            });
-        }
+function resetReviewForm(){
+  reviewRating = 0;
+  document.querySelectorAll('.starBtn').forEach(s => s.classList.remove('lit'));
+  document.getElementById('reviewText').value = '';
+  const notice = document.getElementById('authNotice');
+  if(currentUser){
+    notice.classList.add('hidden');
+    document.getElementById('reviewText').style.display = 'block';
+    document.getElementById('submitReviewBtn').style.display = 'block';
+  } else {
+    notice.classList.remove('hidden');
+    document.getElementById('reviewText').style.display = 'none';
+    document.getElementById('submitReviewBtn').style.display = 'none';
+  }
+}
 
-        document.getElementById('searchInput').addEventListener('input', () => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => { renderMarkers(); }, 300);
-        });
+// ============================================================
+// REVIEWS
+// ============================================================
+async function getReviews(toiletId){
+  const local = localReviews[toiletId] || [];
+  try {
+    const r = await fetch(`${API}/reviews/${toiletId}`);
+    const remote = await r.json();
+    const remoteIds = new Set(remote.map(x=>x.id));
+    const extras = local.filter(x=>!remoteIds.has(x.id));
+    return [...extras, ...remote];
+  } catch(e){
+    return local;
+  }
+}
 
-        document.querySelectorAll('.category-chip').forEach(chip => {
-            chip.addEventListener('click', function() {
-                document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
-                this.classList.add('active');
-                currentCategory = this.dataset.category;
-                renderMarkers();
-            });
-        });
+function renderReviews(reviews){
+  const c = document.getElementById('reviewsList');
+  if(!reviews.length){ c.innerHTML=`<p style="color:var(--text2);font-size:13px;padding:8px 0;">${t('noReviews')}</p>`; return; }
+  c.innerHTML = [...reviews].reverse().map(r => {
+    const name = r.userPhone || r.userLogin || 'Аноним';
+    const seed = name.charCodeAt(0)||0;
+    const col = COLORS[seed%COLORS.length];
+    const initials = name.replace(/\+/g,'').slice(0,2).toUpperCase();
+    const stars = '★'.repeat(r.rating)+'☆'.repeat(5-r.rating);
+    const date = new Date(r.createdAt);
+    const dateStr = `${date.getDate()} ${['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'][date.getMonth()]} ${date.getFullYear()}`;
+    return `<div class="reviewItem">
+      <div class="reviewAvatar" style="background:${col}">${initials}</div>
+      <div class="reviewBody">
+        <span class="reviewName">${name}</span><span class="reviewDate">${dateStr}</span>
+        <div class="reviewStars">${stars}</div>
+        <div class="reviewText">${r.text}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+</script>
 
-        // КАРТОЧКА ТУАЛЕТА И ОТЗЫВЫ
-        async function showToiletSheet(toilet) {
-            selectedToilet = toilet;
-            const sheet = document.getElementById('toiletSheet');
-            sheet.classList.add('active');
-            document.getElementById('sheetTitle').textContent = toilet.title;
+<script>
+// ============================================================
+// STAR RATING INPUT
+// ============================================================
+document.querySelectorAll('.starBtn').forEach(btn => {
+  btn.addEventListener('click', function(){
+    if(!currentUser){ openAuthModal(); return; }
+    reviewRating = parseInt(this.dataset.s);
+    document.querySelectorAll('.starBtn').forEach((s,i) => {
+      s.classList.toggle('lit', i < reviewRating);
+      s.textContent = i < reviewRating ? '★' : '☆';
+    });
+  });
+  btn.addEventListener('mouseover', function(){
+    if(!currentUser) return;
+    const s = parseInt(this.dataset.s);
+    document.querySelectorAll('.starBtn').forEach((el,i) => {
+      el.style.color = i < s ? 'var(--star)' : '#d1d5db';
+    });
+  });
+  btn.addEventListener('mouseout', function(){
+    document.querySelectorAll('.starBtn').forEach((el,i) => {
+      el.style.color = i < reviewRating ? 'var(--star)' : '#d1d5db';
+    });
+  });
+});
 
-            const reviews = await loadReviews(toilet.id);
-            const avg = reviews.length > 0 ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) : 0;
-            document.getElementById('sheetStars').textContent = getStarString(avg);
-            document.getElementById('sheetRatingValue').textContent = avg > 0 ? avg.toFixed(1) : '—';
-            document.getElementById('sheetRatingCount').textContent = reviews.length > 0 ? `(${reviews.length} ${t('reviews')})` : t('noReviews');
+// ============================================================
+// SUBMIT REVIEW
+// ============================================================
+async function submitReview(){
+  if(!currentUser){ openAuthModal(); return; }
+  if(!selectedToilet) return;
+  const text = document.getElementById('reviewText').value.trim();
+  if(!text || !reviewRating){ showToast('Введите текст и поставьте оценку'); return; }
 
-            if (myMap) {
-                const center = myMap.getCenter();
-                const dist = ymaps.coordSystem.geo.getDistance([toilet.lat, toilet.lon], [center[0], center[1]]);
-                document.getElementById('sheetDistance').textContent = `📍 ${(dist / 1000).toFixed(1)} ${t('kmAway')}`;
-            }
+  const newRev = {
+    id: 'local_'+Date.now(),
+    toiletId: selectedToilet.id,
+    userId: currentUser.id,
+    userPhone: currentUser.phone || currentUser.login || 'Пользователь',
+    text, rating: reviewRating,
+    createdAt: new Date().toISOString()
+  };
 
-            const badges = [];
-            badges.push({ text: toilet.isOpen ? t('openStatus') : t('closedStatus'), cls: toilet.isOpen ? 'open' : 'closed' });
-            badges.push({ text: toilet.isFree ? t('freeLabel') : t('paidLabel'), cls: toilet.isFree ? 'free' : 'paid' });
-            if (toilet.hasSoap) badges.push({ text: '🧼 Мыло', cls: '' });
-            if (toilet.hasPaper) badges.push({ text: '🧻 Бумага', cls: '' });
-            if (toilet.isAccessible) badges.push({ text: '♿ Доступно', cls: '' });
-            if (toilet.isTaharatkhana) badges.push({ text: '🕌 Тахаратхана', cls: '' });
+  try {
+    const r = await fetch(`${API}/reviews`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+currentUser.token},
+      body: JSON.stringify({toiletId:selectedToilet.id, text, rating:reviewRating})
+    });
+    if(r.ok){ const d=await r.json(); newRev.id=d.id; }
+  } catch(e){}
 
-            document.getElementById('sheetBadges').innerHTML = badges.map(b => `<span class="sheet-badge ${b.cls}">${b.text}</span>`).join('');
-            document.getElementById('sheetDescription').textContent = toilet.description || 'Нет описания';
+  // Save locally
+  if(!localReviews[selectedToilet.id]) localReviews[selectedToilet.id]=[];
+  localReviews[selectedToilet.id].unshift(newRev);
+  localStorage.setItem('ta_reviews', JSON.stringify(localReviews));
 
-            renderReviews(reviews);
+  showToast(t('success'));
+  resetReviewForm();
+  const reviews = await getReviews(selectedToilet.id);
+  renderReviews(reviews);
+  const avg = reviews.length ? (reviews.reduce((s,r)=>s+r.rating,0)/reviews.length) : 0;
+  document.getElementById('sheetRatingVal').textContent = avg.toFixed(1);
+}
 
-            document.getElementById('reviewText').value = '';
-            reviewRating = 0;
-            document.querySelectorAll('.star-select span').forEach(s => { s.textContent = '☆'; s.style.color = 'var(--border)'; });
-            document.getElementById('reviewHint').textContent = currentUser ? '' : t('pleaseLogin');
-            document.getElementById('reviewHint').className = currentUser ? 'hint' : 'hint error';
-        }
+// ============================================================
+// ROUTE
+// ============================================================
+function goRoute(){
+  if(!selectedToilet) return;
+  navigator.geolocation.getCurrentPosition(
+    p => window.open(`https://yandex.ru/maps/?rtext=${p.coords.latitude},${p.coords.longitude}~${selectedToilet.lat},${selectedToilet.lon}&rtt=pd`,'_blank'),
+    () => window.open(`https://yandex.ru/maps/?rtext=~${selectedToilet.lat},${selectedToilet.lon}`,'_blank')
+  );
+}
+</script>
 
-        async function loadReviews(toiletId) { try { const res = await fetch(`${API_URL}/reviews/${toiletId}`); return await res.json(); } catch { return []; } }
-        
-        function renderReviews(reviews) {
-            const container = document.getElementById('sheetReviews');
-            if (!reviews || reviews.length === 0) { container.innerHTML = `<p style="color:var(--text-secondary);font-size:14px;">${t('noReviews')}</p>`; return; }
-            container.innerHTML = reviews.slice().reverse().map(r => {
-                const name = r.userPhone || 'Аноним';
-                return `
-                    <div class="sheet-review">
-                        <div class="review-avatar" style="background:${getRandomColor(name.length)}">${getInitials(name)}</div>
-                        <div class="review-body">
-                            <div><span class="review-name">${name}</span> <span class="review-date">${formatDate(r.createdAt)}</span></div>
-                            <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
-                            <div class="review-text">${r.text}</div>
-                        </div>
-                    </div>`;
-            }).join('');
-        }
+<script>
+// ============================================================
+// AUTH
+// ============================================================
+function onLoginBtnClick(){
+  if(currentUser){ switchTab('profile'); }
+  else { openAuthModal(); }
+}
 
-        document.getElementById('sheetClose').addEventListener('click', () => { document.getElementById('toiletSheet').classList.remove('active'); selectedToilet = null; });
+function openAuthModal(){
+  document.getElementById('authOverlay').classList.remove('hidden');
+}
 
-        document.querySelectorAll('.star-select span').forEach(el => {
-            el.addEventListener('click', function() {
-                reviewRating = parseInt(this.dataset.star);
-                document.querySelectorAll('.star-select span').forEach((s, i) => {
-                    s.textContent = i < reviewRating ? '★' : '☆';
-                    s.style.color = i < reviewRating ? 'var(--star-color)' : 'var(--border)';
-                });
-            });
-        });
+function openAdminLogin(){
+  closeOverlay('authOverlay');
+  document.getElementById('adminOverlay').classList.remove('hidden');
+}
 
-        document.getElementById('reviewSubmit').addEventListener('click', async () => {
-            if (!currentUser) return;
-            if (!selectedToilet) return;
-            const text = document.getElementById('reviewText').value.trim();
-            if (!text || reviewRating === 0) { document.getElementById('reviewHint').textContent = 'Введите текст и поставьте оценку'; document.getElementById('reviewHint').className = 'hint error'; return; }
-            try {
-                const res = await fetch(`${API_URL}/reviews`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentUser.token}` },
-                    body: JSON.stringify({ toiletId: selectedToilet.id, text, rating: reviewRating })
-                });
-                if (res.ok) { document.getElementById('reviewHint').textContent = t('success'); document.getElementById('reviewHint').className = 'hint success'; showToiletSheet(selectedToilet); } 
-                else { document.getElementById('reviewHint').textContent = t('error'); document.getElementById('reviewHint').className = 'hint error'; }
-            } catch { document.getElementById('reviewHint').textContent = t('error'); document.getElementById('reviewHint').className = 'hint error'; }
-        });
+function closeOverlay(id){
+  document.getElementById(id).classList.add('hidden');
+}
 
-        document.getElementById('routeBtn').addEventListener('click', () => {
-            if (!selectedToilet) return;
-            navigator.geolocation.getCurrentPosition(
-                (pos) => { window.open(`https://yandex.ru/maps/?rtext=${pos.coords.latitude},${pos.coords.longitude}~${selectedToilet.lat},${selectedToilet.lon}&rtt=pd`, '_blank'); },
-                () => { window.open(`https://yandex.ru/maps/?rtext=~${selectedToilet.lat},${selectedToilet.lon}&rtt=pd`, '_blank'); }
-            );
-        });
+function overlayClickClose(e, id){
+  if(e.target.id===id) closeOverlay(id);
+}
 
-        // ДОБАВЛЕНИЕ (АДМИН)
-        document.querySelector('.nav-item[data-tab="add"]').addEventListener('click', () => {
-            if (!currentUser || currentUser.role !== 'admin') { alert(t('adminOnly')); return; }
-            document.getElementById('addModal').classList.add('active');
-        });
-        document.getElementById('addClose').addEventListener('click', () => { document.getElementById('addModal').classList.remove('active'); addToiletCoords = null; });
+function setAuthTab(tab){
+  authTab = tab;
+  document.getElementById('tabLogin').classList.toggle('active', tab==='login');
+  document.getElementById('tabReg').classList.toggle('active', tab==='register');
+  document.getElementById('authActionBtn').textContent = tab==='login' ? 'Войти' : 'Зарегистрироваться';
+}
 
-        document.getElementById('addSubmit').addEventListener('click', async () => {
-            if (!currentUser || currentUser.role !== 'admin') return;
-            const title = document.getElementById('addTitle').value.trim();
-            if (!title) return alert('Введите название');
-            if (!addToiletCoords) return alert('Нажмите на карте, чтобы выбрать место');
+function togglePassVis(){
+  const inp = document.getElementById('authPass');
+  inp.type = inp.type==='password' ? 'text' : 'password';
+}
+function toggleAdminPassVis(){
+  const inp = document.getElementById('adminPass');
+  inp.type = inp.type==='password' ? 'text' : 'password';
+}
 
-            const toiletData = {
-                lat: addToiletCoords[0], lon: addToiletCoords[1], title: title,
-                description: document.getElementById('addDescription').value.trim() || '',
-                photo: document.getElementById('addPhoto').value.trim() || '',
-                isOpen: document.getElementById('addIsOpen').checked,
-                isFree: document.getElementById('addIsFree').checked,
-                hasSoap: document.getElementById('addHasSoap').checked,
-                hasPaper: document.getElementById('addHasPaper').checked,
-                isAccessible: document.getElementById('addIsAccessible').checked,
-                isTaharatkhana: document.getElementById('addIsTaharatkhana').checked
-            };
+async function doAuth(){
+  const phone = '+998' + document.getElementById('authPhone').value.trim().replace(/\D/g,'');
+  const pass = document.getElementById('authPass').value.trim();
+  if(!phone || !pass){ showToast('Заполните все поля'); return; }
+  const endpoint = authTab==='login' ? '/login' : '/register';
+  try {
+    const r = await fetch(`${API}${endpoint}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({phone, password:pass})
+    });
+    const d = await r.json();
+    if(r.ok){
+      currentUser = {...d.user, token:d.token};
+      localStorage.setItem('ta_user', JSON.stringify(currentUser));
+      closeOverlay('authOverlay');
+      updateLoginBtn();
+      resetReviewForm();
+      showToast(authTab==='login' ? '✓ Вы вошли в систему' : '✓ Регистрация успешна');
+    } else { showToast(d.error||'Ошибка'); }
+  } catch(e){ showToast('Ошибка соединения с сервером'); }
+}
 
-            try {
-                const res = await fetch(`${API_URL}/toilets`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentUser.token}` },
-                    body: JSON.stringify(toiletData)
-                });
-                if (res.ok) { document.getElementById('addModal').classList.remove('active'); addToiletCoords = null; await loadToilets(); alert('✅ Туалет добавлен!'); } 
-                else { const data = await res.json(); alert(data.error || 'Ошибка'); }
-            } catch { alert('Ошибка соединения'); }
-        });
+async function doAdminLogin(){
+  const login = document.getElementById('adminLogin').value.trim();
+  const pass = document.getElementById('adminPass').value.trim();
+  if(!login||!pass){ showToast('Заполните все поля'); return; }
+  try {
+    const r = await fetch(`${API}/admin/login`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({login, password:pass})
+    });
+    const d = await r.json();
+    if(r.ok){
+      currentUser = {...d.user, token:d.token};
+      localStorage.setItem('ta_user', JSON.stringify(currentUser));
+      closeOverlay('adminOverlay');
+      updateLoginBtn();
+      renderBottomNav();
+      showToast('✓ Вы вошли как администратор');
+    } else { showToast(d.error||'Неверные данные'); }
+  } catch(e){ showToast('Ошибка соединения с сервером'); }
+}
 
-        updateUI();
-    </script>
+function doLogout(){
+  currentUser = null;
+  localStorage.removeItem('ta_user');
+  updateLoginBtn();
+  renderBottomNav();
+  switchTab('map');
+  showToast('Вы вышли из аккаунта');
+}
+</script>
+
+<script>
+// ============================================================
+// TABS / NAVIGATION
+// ============================================================
+function switchTab(tab){
+  // Close sheet if open
+  closeSheet();
+
+  // Update active nav button
+  document.querySelectorAll('.navBtn').forEach(b => b.classList.toggle('active', b.dataset.tab===tab));
+
+  // Hide all screens
+  document.getElementById('profileScreen').classList.add('hidden');
+  document.getElementById('adminDeniedScreen').classList.add('hidden');
+  document.getElementById('addScreen').classList.add('hidden');
+
+  if(tab==='map'){
+    // Nothing extra — map is always underneath
+  } else if(tab==='add'){
+    if(currentUser && currentUser.role==='admin'){
+      document.getElementById('addScreen').classList.remove('hidden');
+      addCoords = null;
+      document.getElementById('addHintModal').textContent = t('addHint');
+    } else {
+      document.getElementById('adminDeniedScreen').classList.remove('hidden');
+    }
+  } else if(tab==='profile'){
+    const ps = document.getElementById('profileScreen');
+    ps.classList.remove('hidden');
+    const ui = document.getElementById('profileUserInfo');
+    const logoutBtn = document.getElementById('profileLogoutBtn');
+    if(currentUser){
+      ui.textContent = `${currentUser.phone||currentUser.login||''} (${currentUser.role})`;
+      logoutBtn.classList.remove('hidden');
+    } else {
+      ui.textContent = 'Не авторизован';
+      logoutBtn.classList.add('hidden');
+    }
+  }
+}
+
+function renderBottomNav(){
+  // Admin gets "add" tab; normal users see it but get denied screen
+  // Nav is always visible — no changes needed structurally
+}
+
+// ============================================================
+// ADD TOILET (admin flow)
+// ============================================================
+function submitAddToilet(){
+  // Inline screen version — trigger the modal flow
+  addCoords = null;
+  document.getElementById('addOverlay').classList.remove('hidden');
+}
+
+async function submitAddToiletModal(){
+  if(!currentUser||currentUser.role!=='admin'){ showToast('Требуются права администратора'); return; }
+  const title = document.getElementById('addTitleM').value.trim();
+  if(!title){ showToast('Введите название'); return; }
+  if(!addCoords){ showToast('Выберите место на карте'); return; }
+  const body = {
+    lat:addCoords[0], lon:addCoords[1], title,
+    description: document.getElementById('addDescM').value.trim()||'',
+    photo: document.getElementById('addPhotoM').value.trim()||'',
+    isOpen: document.getElementById('addIsOpenM').checked,
+    isFree: document.getElementById('addIsFreeM').checked,
+    hasSoap: document.getElementById('addHasSoapM').checked,
+    hasPaper: document.getElementById('addHasPaperM').checked,
+    isAccessible: document.getElementById('addIsAccessibleM').checked,
+    isTaharatkhana: document.getElementById('addIsTaharatkhanaM').checked
+  };
+  try {
+    const r = await fetch(`${API}/toilets`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+currentUser.token},
+      body:JSON.stringify(body)
+    });
+    if(r.ok){
+      closeOverlay('addOverlay');
+      addCoords=null;
+      await loadToilets();
+      showToast('✅ Туалет добавлен!');
+      switchTab('map');
+    } else { const d=await r.json(); showToast(d.error||'Ошибка'); }
+  } catch(e){ showToast('Ошибка соединения'); }
+}
+</script>
+
+<script>
+// ============================================================
+// SEARCH & CATEGORY FILTER
+// ============================================================
+document.getElementById('searchInput').addEventListener('input', () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(renderMarkers, 300);
+});
+
+document.querySelectorAll('.catChip').forEach(chip => {
+  chip.addEventListener('click', function(){
+    document.querySelectorAll('.catChip').forEach(c=>c.classList.remove('active'));
+    this.classList.add('active');
+    currentCat = this.dataset.cat;
+    renderMarkers();
+  });
+});
+
+// ============================================================
+// TOAST
+// ============================================================
+let toastTimer;
+function showToast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// ============================================================
+// AUTH NOTICE click to open login
+// ============================================================
+document.getElementById('authNotice').addEventListener('click', openAuthModal);
+
+// ============================================================
+// INIT
+// ============================================================
+setLang(currentLang);
+updateLoginBtn();
+</script>
 </body>
 </html>
