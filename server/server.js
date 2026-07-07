@@ -20,13 +20,102 @@ app.use(cors());
 app.use(express.json());
 
 // ============================================================
+//  SEED DATA — точки Ташкента (восстанавливаются при пустом файле)
+// ============================================================
+const SEED_TOILETS = [
+    {
+        id: 'seed-0001-tashkent-city-mall',
+        lat: 41.2956, lon: 69.2797,
+        title: 'Туалет в Tashkent City Mall',
+        description: 'Чистый туалет на 1-м этаже ТРЦ Tashkent City Mall, рядом с фуд-кортом',
+        photo: '', isOpen: true, isFree: true, hasSoap: true, hasPaper: true,
+        isAccessible: true, isTaharatkhana: false,
+        addedBy: 'system', createdAt: '2026-07-07T10:00:00.000Z'
+    },
+    {
+        id: 'seed-0002-masjid-minor',
+        lat: 41.2871, lon: 69.2768,
+        title: 'Тахаратхана у мечети Минор',
+        description: 'Место для омовения при мечети Минор. Горячая вода, мыло, тапочки',
+        photo: '', isOpen: true, isFree: true, hasSoap: true, hasPaper: false,
+        isAccessible: false, isTaharatkhana: true,
+        addedBy: 'system', createdAt: '2026-07-07T10:01:00.000Z'
+    },
+    {
+        id: 'seed-0003-railway-station',
+        lat: 41.3174, lon: 69.2870,
+        title: 'Туалет на вокзале Ташкент-Главный',
+        description: 'Платный туалет в здании главного железнодорожного вокзала',
+        photo: '', isOpen: true, isFree: false, hasSoap: true, hasPaper: true,
+        isAccessible: true, isTaharatkhana: false,
+        addedBy: 'system', createdAt: '2026-07-07T10:02:00.000Z'
+    },
+    {
+        id: 'seed-0004-navoi-park',
+        lat: 41.3058, lon: 69.2714,
+        title: 'Туалет в парке Алишера Навои',
+        description: 'Общественный туалет в центральной части парка Навои',
+        photo: '', isOpen: true, isFree: true, hasSoap: false, hasPaper: true,
+        isAccessible: false, isTaharatkhana: false,
+        addedBy: 'system', createdAt: '2026-07-07T10:03:00.000Z'
+    },
+    {
+        id: 'seed-0005-khastimom',
+        lat: 41.3276, lon: 69.2623,
+        title: 'Тахаратхана в мечети Хастимом',
+        description: 'Тахаратхана при соборной мечети Хасти-Имом, рядом с медресе',
+        photo: '', isOpen: true, isFree: true, hasSoap: true, hasPaper: false,
+        isAccessible: false, isTaharatkhana: true,
+        addedBy: 'system', createdAt: '2026-07-07T10:04:00.000Z'
+    },
+    {
+        id: 'seed-0006-next-mall',
+        lat: 41.3376, lon: 69.2841,
+        title: 'Туалет в ТРЦ Next',
+        description: 'Туалет на 2-м этаже торгового центра Next на Юнусабаде',
+        photo: '', isOpen: true, isFree: true, hasSoap: true, hasPaper: true,
+        isAccessible: true, isTaharatkhana: false,
+        addedBy: 'system', createdAt: '2026-07-07T10:05:00.000Z'
+    },
+    {
+        id: 'seed-0007-broadway',
+        lat: 41.2983, lon: 69.2717,
+        title: 'Туалет на Broadway (пешеходная зона)',
+        description: 'Общественный платный туалет на пешеходной улице Сайилгох (Broadway)',
+        photo: '', isOpen: true, isFree: false, hasSoap: true, hasPaper: true,
+        isAccessible: false, isTaharatkhana: false,
+        addedBy: 'system', createdAt: '2026-07-07T10:06:00.000Z'
+    }
+];
+
+// ============================================================
 //  ИНИЦИАЛИЗАЦИЯ ФАЙЛОВ
 // ============================================================
 function initDataFiles() {
     if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
     if (!fs.existsSync(USERS_FILE)) fs.writeFileSync(USERS_FILE, JSON.stringify([], null, 2));
-    if (!fs.existsSync(TOILETS_FILE)) fs.writeFileSync(TOILETS_FILE, JSON.stringify([], null, 2));
     if (!fs.existsSync(REVIEWS_FILE)) fs.writeFileSync(REVIEWS_FILE, JSON.stringify([], null, 2));
+
+    // Если файл туалетов отсутствует или пустой — загружаем seed-данные
+    if (!fs.existsSync(TOILETS_FILE)) {
+        fs.writeFileSync(TOILETS_FILE, JSON.stringify(SEED_TOILETS, null, 2));
+        console.log(`✅ Загружено ${SEED_TOILETS.length} начальных точек`);
+    } else {
+        const existing = JSON.parse(fs.readFileSync(TOILETS_FILE));
+        if (existing.length === 0) {
+            fs.writeFileSync(TOILETS_FILE, JSON.stringify(SEED_TOILETS, null, 2));
+            console.log(`✅ Файл туалетов был пустым — восстановлено ${SEED_TOILETS.length} точек`);
+        } else {
+            // Добавляем seed-точки если их ещё нет (по id)
+            const existingIds = new Set(existing.map(t => t.id));
+            const missing = SEED_TOILETS.filter(t => !existingIds.has(t.id));
+            if (missing.length > 0) {
+                const merged = [...missing, ...existing];
+                fs.writeFileSync(TOILETS_FILE, JSON.stringify(merged, null, 2));
+                console.log(`✅ Добавлено ${missing.length} недостающих seed-точек`);
+            }
+        }
+    }
 
     const users = JSON.parse(fs.readFileSync(USERS_FILE));
     const adminExists = users.find(u => u.role === 'admin');
