@@ -25,18 +25,24 @@
   --text:#111827;
   --text2:#6b7280;
   --border:#e5e7eb;
-  --sh:0 1px 8px rgba(0,0,0,0.08),0 4px 20px rgba(0,0,0,0.06);
+  --sh:0 2px 12px rgba(0,0,0,0.07),0 6px 24px rgba(0,0,0,0.05);
   --sh2:0 8px 40px rgba(0,0,0,0.14);
-  --r:20px;--rs:14px;
+  --sh-float:0 4px 20px rgba(0,0,0,0.10),0 1px 4px rgba(0,0,0,0.06);
+  --r:20px;--rs:16px;
   --star:#f59e0b;
   --purple:#7c3aed;
   --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  --header-h:130px;
+  --header-h:138px;
   --nav-h:72px;
+  --side-gap:12px;
+  --glass-bg:rgba(255,255,255,0.82);
+  --glass-blur:blur(18px);
 }
 body.dark{
   --bg:#0f1117;--card:#1c1f26;--text:#f1f5f9;--text2:#94a3b8;
-  --border:#2d3142;--sh:0 1px 8px rgba(0,0,0,0.35),0 4px 20px rgba(0,0,0,0.3);
+  --border:#2d3142;
+  --sh:0 2px 12px rgba(0,0,0,0.4),0 6px 24px rgba(0,0,0,0.3);
+  --glass-bg:rgba(20,23,32,0.82);
 }
 
 html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-family:var(--font);color:var(--text);}
@@ -44,20 +50,31 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 /* ===== MAP ===== */
 #map{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;}
 
-/* ===== HEADER PANEL (solid white, no overlay) ===== */
+/* ===== HEADER PANEL — floating card ===== */
 #headerPanel{
   position:fixed;top:0;left:0;right:0;z-index:20;
-  background:var(--card);
-  border-bottom:1px solid var(--border);
-  box-shadow:var(--sh);
   padding-top:env(safe-area-inset-top,0px);
+}
+.headerCard{
+  margin:calc(env(safe-area-inset-top,0px) + 8px) var(--side-gap) 0;
+  background:var(--glass-bg);
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
+  border-radius:20px;
+  border:1px solid rgba(255,255,255,0.6);
+  box-shadow:var(--sh-float);
+  overflow:hidden;
+  padding-top:0;
+}
+body.dark .headerCard{
+  background:var(--glass-bg);
+  border-color:rgba(255,255,255,0.08);
 }
 .hRow1{
   display:flex;align-items:center;gap:8px;
   padding:10px 14px 8px;
 }
 #hTitle{font-size:17px;font-weight:700;letter-spacing:-.3px;white-space:nowrap;flex-shrink:0;}
-#hDot,#hAdv{color:var(--green);}
 .hControls{display:flex;align-items:center;gap:6px;margin-left:auto;}
 
 /* Lang dropdown */
@@ -125,18 +142,48 @@ body.dark .catChip{background:#1c1f26;}
 </style>
 
 <style>
-/* ===== GEO BTN (bottom-left, below zoom) ===== */
-#geoBtn{
-  position:fixed;left:14px;
-  bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 100px);
-  z-index:15;width:44px;height:44px;border-radius:50%;
-  background:rgba(255,255,255,0.88);backdrop-filter:blur(14px);
-  border:none;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 2px 14px rgba(0,0,0,0.16);transition:transform .15s;
+/* ===== ZOOM CONTROLS (custom, left side) ===== */
+#zoomControls{
+  position:fixed;
+  left:var(--side-gap);
+  top:calc(env(safe-area-inset-top,0px) + var(--header-h) + 16px);
+  z-index:15;
+  display:flex;flex-direction:column;gap:8px;
 }
-body.dark #geoBtn{background:rgba(28,31,38,0.92);}
-#geoBtn:active{transform:scale(.9);}
+.zoomBtn{
+  width:44px;height:44px;border-radius:50%;
+  background:var(--glass-bg);
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
+  border:1px solid rgba(255,255,255,0.5);
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--sh-float);
+  font-size:20px;font-weight:300;color:var(--text);
+  transition:transform .15s,opacity .15s;
+  font-family:var(--font);
+  line-height:1;
+}
+body.dark .zoomBtn{border-color:rgba(255,255,255,0.12);}
+.zoomBtn:active{transform:scale(.88);opacity:.75;}
+
+/* ===== GEO BTN (below zoom controls) ===== */
+#geoBtn{
+  position:fixed;
+  left:var(--side-gap);
+  top:calc(env(safe-area-inset-top,0px) + var(--header-h) + 16px + 44px + 8px + 44px + 16px);
+  z-index:15;width:44px;height:44px;border-radius:50%;
+  background:var(--glass-bg);
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
+  border:1px solid rgba(255,255,255,0.5);
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--sh-float);
+  transition:transform .15s;
+}
+body.dark #geoBtn{border-color:rgba(255,255,255,0.12);}
+#geoBtn:active{transform:scale(.88);}
 
 /* ===== PULSING BLUE DOT ===== */
 @keyframes pulseRing{0%{transform:translate(-50%,-50%) scale(1);opacity:.55;}100%{transform:translate(-50%,-50%) scale(3.8);opacity:0;}}
@@ -156,18 +203,23 @@ body.dark #geoBtn{background:rgba(28,31,38,0.92);}
 
 /* ===== FIND NEAREST BUTTON ===== */
 #findNearestBtn{
-  position:fixed;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 4px);
+  position:fixed;
+  bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 16px);
   left:50%;transform:translateX(-50%);z-index:15;
-  display:flex;align-items:center;gap:6px;
-  padding:11px 22px;background:var(--card);
-  border:1.5px solid var(--border);border-radius:28px;
+  display:flex;align-items:center;gap:7px;
+  padding:12px 24px;
+  background:var(--glass-bg);
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
+  border:1px solid rgba(255,255,255,0.55);
+  border-radius:30px;
   font-size:13px;font-weight:700;font-family:var(--font);color:var(--green);
   cursor:pointer;white-space:nowrap;
-  box-shadow:0 4px 20px rgba(0,0,0,0.11);
-  transition:transform .15s;
+  box-shadow:var(--sh-float);
+  transition:transform .15s,opacity .15s;
 }
-body.dark #findNearestBtn{background:rgba(28,31,38,0.94);}
-#findNearestBtn:active{transform:translateX(-50%) scale(.96);}
+body.dark #findNearestBtn{border-color:rgba(255,255,255,0.12);}
+#findNearestBtn:active{transform:translateX(-50%) scale(.96);opacity:.85;}
 
 /* ===== BOTTOM NAV ===== */
 #bottomNav{
@@ -356,30 +408,52 @@ body.dark .phoneCode{background:#2d3142;}
 #addForm input[type=text]:focus{border-color:var(--green);}
 #addSubmitBtn{padding:14px;background:var(--green);color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);}
 
-/* ===== OFFLINE BANNER ===== */
+/* ===== OFFLINE PILL ===== */
 #offlineBanner{
-  position:fixed;top:0;left:0;right:0;z-index:200;
-  background:#ef4444;color:#fff;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  padding:10px 16px;
+  position:fixed;
+  top:calc(env(safe-area-inset-top,0px) + var(--header-h) + 16px);
+  left:50%;transform:translateX(-50%) translateY(-20px);
+  z-index:201;
+  display:flex;align-items:center;gap:8px;
+  padding:10px 18px;
+  background:rgba(239,68,68,0.88);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,100,100,0.4);
+  border-radius:30px;
+  color:#fff;
   font-size:13px;font-weight:600;font-family:var(--font);
-  transform:translateY(-100%);
-  transition:transform .35s cubic-bezier(.32,1,.46,1);
-  box-shadow:0 2px 12px rgba(239,68,68,.4);
+  white-space:nowrap;
+  box-shadow:0 4px 20px rgba(239,68,68,0.35);
+  opacity:0;pointer-events:none;
+  transition:opacity .35s cubic-bezier(.32,1,.46,1),transform .35s cubic-bezier(.32,1,.46,1);
 }
-#offlineBanner.show{transform:translateY(0);}
+#offlineBanner.show{
+  opacity:1;pointer-events:auto;
+  transform:translateX(-50%) translateY(0);
+}
 #offlineBanner svg{flex-shrink:0;opacity:.9;}
 
-/* Toast */
+/* ===== TOAST — glassmorphic pill ===== */
 #toast{
-  position:fixed;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 8px);
-  left:50%;transform:translateX(-50%) translateY(12px);
-  background:#1a1a2e;color:#fff;padding:10px 20px;border-radius:20px;
+  position:fixed;
+  bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 76px);
+  left:50%;transform:translateX(-50%) translateY(16px);
+  background:rgba(20,20,30,0.75);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,0.12);
+  color:#fff;padding:11px 22px;border-radius:30px;
   font-size:13px;font-weight:600;white-space:nowrap;
-  opacity:0;transition:opacity .3s,transform .3s;z-index:100;pointer-events:none;font-family:var(--font);
+  opacity:0;transition:opacity .3s,transform .3s;
+  z-index:100;pointer-events:none;font-family:var(--font);
+  box-shadow:0 4px 24px rgba(0,0,0,0.25);
 }
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-body.dark #toast{background:#e2e8f0;color:#1a1a2e;}
+body.dark #toast{
+  background:rgba(240,245,255,0.18);
+  border-color:rgba(255,255,255,0.18);
+}
 </style>
 
 </head>
@@ -402,42 +476,47 @@ body.dark #toast{background:#e2e8f0;color:#1a1a2e;}
 <!-- MAP -->
 <div id="map"></div>
 
+
 <!-- ===== HEADER ===== -->
 <div id="headerPanel">
-  <div class="hRow1">
-    <div id="hTitle"><span id="hDot">•</span> Toilet <span id="hAdv">Advisor</span></div>
-    <div class="hControls">
-      <div class="langWrap">
-        <button id="langBtn" onclick="toggleLangDrop()">
-          <span id="langLabel">RU</span>
-          <svg id="langChevron" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="2,3 5,7 8,3"/></svg>
-        </button>
-        <div id="langDrop">
-          <div class="lOpt" onclick="setLang('ru')">RU</div>
-          <div class="lOpt" onclick="setLang('uz')">UZ</div>
-          <div class="lOpt" onclick="setLang('en')">EN</div>
+  <div class="headerCard">
+    <div class="hRow1">
+      <div id="hTitle"><span id="hDot">•</span> Toilet <span id="hAdv">Advisor</span></div>
+      <div class="hControls">
+        <div class="langWrap">
+          <button id="langBtn" onclick="toggleLangDrop()">
+            <span id="langLabel">RU</span>
+            <svg id="langChevron" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="2,3 5,7 8,3"/></svg>
+          </button>
+          <div id="langDrop">
+            <div class="lOpt" onclick="setLang('ru')">RU</div>
+            <div class="lOpt" onclick="setLang('uz')">UZ</div>
+            <div class="lOpt" onclick="setLang('en')">EN</div>
+          </div>
+        </div>
+        <button id="themeBtn" onclick="toggleTheme()">🌙</button>
+        <button id="loginBtn" onclick="onLoginBtnClick()">→ Войти</button>
+      </div>
+    </div>
+    <div id="mapControls">
+      <div class="hRow2">
+        <div id="searchWrap">
+          <div id="searchIco">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+          <input type="text" id="searchInput" placeholder="Поиск туалета...">
         </div>
       </div>
-      <button id="themeBtn" onclick="toggleTheme()">🌙</button>
-      <button id="loginBtn" onclick="onLoginBtnClick()">→ Войти</button>
-    </div>
-  </div>
-  <div class="hRow2">
-    <div id="searchWrap">
-      <div id="searchIco">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <div class="hRow3">
+        <div id="categories">
+          <button class="catChip active" data-cat="all">🗺️ Все</button>
+          <button class="catChip" data-cat="taharatkhana">🕌 Тахаратхана</button>
+          <button class="catChip" data-cat="free">🆓 Бесплатно</button>
+          <button class="catChip" data-cat="soap">🧼 С мылом</button>
+          <button class="catChip" data-cat="paper">🧻 С бумагой</button>
+          <button class="catChip" data-cat="accessible">♿ Доступные</button>
+        </div>
       </div>
-      <input type="text" id="searchInput" placeholder="Поиск туалета...">
-    </div>
-  </div>
-  <div class="hRow3">
-    <div id="categories">
-      <button class="catChip active" data-cat="all">🗺️ Все</button>
-      <button class="catChip" data-cat="taharatkhana">🕌 Тахаратхана</button>
-      <button class="catChip" data-cat="free">🆓 Бесплатно</button>
-      <button class="catChip" data-cat="soap">🧼 С мылом</button>
-      <button class="catChip" data-cat="paper">🧻 С бумагой</button>
-      <button class="catChip" data-cat="accessible">♿ Доступные</button>
     </div>
   </div>
 </div>
@@ -450,6 +529,12 @@ body.dark #toast{background:#e2e8f0;color:#1a1a2e;}
     <circle cx="12" cy="12" r="8" stroke-dasharray="2 3" opacity=".4"/>
   </svg>
 </button>
+
+<!-- ZOOM CONTROLS -->
+<div id="zoomControls">
+  <button class="zoomBtn" id="zoomInBtn" onclick="mapZoom(1)" aria-label="Приблизить">+</button>
+  <button class="zoomBtn" id="zoomOutBtn" onclick="mapZoom(-1)" aria-label="Отдалить">−</button>
+</div>
 
 <!-- FIND NEAREST -->
 <button id="findNearestBtn" onclick="findNearest()">
@@ -610,16 +695,6 @@ body.dark #toast{background:#e2e8f0;color:#1a1a2e;}
   </div>
 </div>
 
-<!-- TEST PANEL (убери после теста) -->
-<div id="testPanelWrap" style="position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;background:rgba(0,0,0,0.6)!important;">
-  <div id="testPanel" style="display:flex!important;flex-direction:column!important;gap:14px!important;background:#fff!important;border-radius:24px!important;border:4px solid #f59e0b!important;padding:32px!important;box-shadow:0 20px 60px rgba(0,0,0,0.8)!important;min-width:300px!important;">
-    <p style="font-size:15px!important;font-weight:800!important;color:#f59e0b!important;text-align:center!important;margin:0!important;font-family:sans-serif!important;">🧪 ТЕСТ УВЕДОМЛЕНИЙ</p>
-    <button onclick="showOfflineBanner()" style="padding:14px!important;border:none!important;border-radius:12px!important;background:#ef4444!important;color:#fff!important;font-size:14px!important;font-weight:700!important;cursor:pointer!important;font-family:sans-serif!important;">📵 Показать Offline баннер</button>
-    <button onclick="showToast('⚠️ Сервер недоступен — показаны сохранённые данные')" style="padding:14px!important;border:none!important;border-radius:12px!important;background:#f59e0b!important;color:#fff!important;font-size:14px!important;font-weight:700!important;cursor:pointer!important;font-family:sans-serif!important;">⚠️ Показать Toast сервера</button>
-    <button onclick="hideOfflineBanner();this.closest('#testPanelWrap').style.display='none'" style="padding:14px!important;border:none!important;border-radius:12px!important;background:#e5e7eb!important;color:#374151!important;font-size:14px!important;font-weight:700!important;cursor:pointer!important;font-family:sans-serif!important;">✕ Закрыть панель</button>
-  </div>
-</div>
-
 <!-- TOAST -->
 <div id="toast"></div>
 
@@ -734,8 +809,7 @@ function formatDist(m,fallback){
 // ── MAP INIT ──
 function initMap(){
   try{
-    myMap=new ymaps.Map('map',{center:TASHKENT,zoom:13,controls:['zoomControl']});
-    myMap.controls.get('zoomControl').options.set({position:{left:14,bottom:160}});
+    myMap=new ymaps.Map('map',{center:TASHKENT,zoom:13,controls:[]});
     myMap.events.add('click',e=>{
       if(document.getElementById('toiletSheet').classList.contains('open')){closeSheet();return;}
       if(!document.getElementById('addOverlay').classList.contains('hidden')){
@@ -749,6 +823,12 @@ function initMap(){
   }catch(err){console.error('Map:',err);}
 }
 if(typeof ymaps!=='undefined')ymaps.ready(initMap);
+
+// ── ZOOM ──
+function mapZoom(delta){
+  if(!myMap)return;
+  myMap.setZoom(myMap.getZoom()+delta,{duration:200});
+}
 
 // ── USER LOCATION ──
 function startGeo(){
@@ -1067,9 +1147,19 @@ function doLogout(){
 function switchTab(tab){
   closeSheet();
   document.querySelectorAll('.navBtn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+
+  // Показываем/скрываем map-специфичные элементы
+  const mapOnly=['mapControls','zoomControls','geoBtn','findNearestBtn'];
+  const isMap=tab==='map';
+  mapOnly.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.style.display=isMap?'':'none';
+  });
+
   document.getElementById('profileScreen').classList.add('hidden');
   document.getElementById('adminDeniedScreen').classList.add('hidden');
   document.getElementById('addScreen').classList.add('hidden');
+
   if(tab==='add'){
     if(currentUser&&currentUser.role==='admin'){
       document.getElementById('addScreen').classList.remove('hidden');
@@ -1149,12 +1239,9 @@ function updateOfflineText(){
 function showOfflineBanner(){
   updateOfflineText();
   document.getElementById('offlineBanner').classList.add('show');
-  // сдвигаем headerPanel вниз чтобы баннер не перекрывал шапку
-  document.getElementById('headerPanel').style.marginTop='42px';
 }
 function hideOfflineBanner(){
   document.getElementById('offlineBanner').classList.remove('show');
-  document.getElementById('headerPanel').style.marginTop='';
 }
 window.addEventListener('online',()=>{
   hideOfflineBanner();
@@ -1164,11 +1251,6 @@ window.addEventListener('online',()=>{
 window.addEventListener('offline',()=>showOfflineBanner());
 // Проверка при старте
 if(!navigator.onLine)showOfflineBanner();
-
-// ── TEST HELPERS (убери после теста) ──
-window.__testOfflineBanner=()=>showOfflineBanner();
-window.__testServerToast=()=>showToast('⚠️ Сервер недоступен — показаны сохранённые данные');
-window.__hideOfflineBanner=()=>hideOfflineBanner();
 
 // ── INIT ──
 setLang(currentLang);
