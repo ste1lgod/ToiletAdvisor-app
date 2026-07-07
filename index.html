@@ -1359,39 +1359,59 @@
         // ============================================================
         //  КАРТА
         // ============================================================
-        ymaps.ready(() => {
-            myMap = new ymaps.Map('map', {
-                center: [55.751244, 37.618423],
-                zoom: 13,
-                controls: ['zoomControl']
-            });
-
-            loadToilets();
-
-            // Клик по карте для добавления (админ)
-            myMap.events.add('click', (e) => {
-                if (document.getElementById('addModal').classList.contains('active')) {
-                    addToiletCoords = e.get('coords');
-                    document.getElementById('addHint').textContent = `📍 Выбрано: ${addToiletCoords[0].toFixed(5)}, ${addToiletCoords[1].toFixed(5)}`;
-                    document.getElementById('addHint').style.color = 'var(--primary)';
-                }
-            });
-
-            // Долгий клик для админа
-            let longPressTimer = null;
-            myMap.events.add('pressstart', (e) => {
-                if (!currentUser || currentUser.role !== 'admin') return;
-                longPressTimer = setTimeout(() => {
-                    addToiletCoords = e.get('coords');
-                    document.getElementById('addModal').classList.add('active');
-                    document.getElementById('addHint').textContent = `📍 ${addToiletCoords[0].toFixed(5)}, ${addToiletCoords[1].toFixed(5)}`;
-                    document.getElementById('addHint').style.color = 'var(--primary)';
-                }, 600);
-            });
-            myMap.events.add('pressend', () => {
-                clearTimeout(longPressTimer);
-            });
+// Инициализация карты с задержкой и повторной попыткой
+function initMap() {
+    try {
+        myMap = new ymaps.Map('map', {
+            center: [41.2995, 69.2401],  // Ташкент
+            zoom: 12,
+            controls: ['zoomControl', 'fullscreenControl']
         });
+        console.log('✅ Карта инициализирована');
+
+        loadToilets();
+
+        // Клик по карте для добавления (админ)
+        myMap.events.add('click', (e) => {
+            if (document.getElementById('addModal').classList.contains('active')) {
+                addToiletCoords = e.get('coords');
+                document.getElementById('addHint').textContent = `📍 Выбрано: ${addToiletCoords[0].toFixed(5)}, ${addToiletCoords[1].toFixed(5)}`;
+                document.getElementById('addHint').style.color = 'var(--primary)';
+            }
+        });
+
+        // Долгий клик для админа
+        let longPressTimer = null;
+        myMap.events.add('pressstart', (e) => {
+            if (!currentUser || currentUser.role !== 'admin') return;
+            longPressTimer = setTimeout(() => {
+                addToiletCoords = e.get('coords');
+                document.getElementById('addModal').classList.add('active');
+                document.getElementById('addHint').textContent = `📍 ${addToiletCoords[0].toFixed(5)}, ${addToiletCoords[1].toFixed(5)}`;
+                document.getElementById('addHint').style.color = 'var(--primary)';
+            }, 600);
+        });
+        myMap.events.add('pressend', () => {
+            clearTimeout(longPressTimer);
+        });
+
+    } catch (err) {
+        console.error('❌ Ошибка инициализации карты:', err);
+        setTimeout(initMap, 1000);
+    }
+}
+
+// Запуск карты
+if (typeof ymaps !== 'undefined') {
+    ymaps.ready(initMap);
+} else {
+    console.warn('⚠️ Яндекс.Карты не загружены, повторная попытка...');
+    setTimeout(() => {
+        if (typeof ymaps !== 'undefined') {
+            ymaps.ready(initMap);
+        }
+    }, 2000);
+}
 
         // ============================================================
         //  ЗАГРУЗКА ТУАЛЕТОВ
