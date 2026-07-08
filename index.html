@@ -852,11 +852,15 @@ body.dark #toast{
       <div id="sTitle">Название</div>
       <div id="sRatingPill"><span>⭐</span><span id="sRatingVal">—</span></div>
     </div>
+    <!-- Блок 1: стандартные теги (дистанция, статус, цена) -->
     <div id="sPills">
       <span class="mPill pBlue" id="sDistPill">▵ — км от вас</span>
       <span class="mPill pGreen" id="sOpenPill">Открыто</span>
       <span class="mPill pGreen2" id="sFreePill">🆓 Бесплатно</span>
     </div>
+    <!-- Блок 2: доп. теги (мыло, бумага, доступность) — строго после sPills -->
+    <div id="sBadges"></div>
+    <!-- Блок 3: тахаратхана — полноширинный блок, строго после тегов -->
     <div id="taharatBlock" class="hidden">
       <div id="taharatTitle">🕌 Тахоратхона / Тахаратхана</div>
       <div id="taharatSub">Место для омовения перед намазом</div>
@@ -868,7 +872,7 @@ body.dark #toast{
       </div>
       <div id="taharatNote">Специально оборудованное место для омовения. Чистые условия, горячая вода, мыло и одноразовые полотенца.</div>
     </div>
-    <div id="sBadges"></div>
+    <!-- Блок 4: описание -->
     <div id="sDesc"></div>
     <div id="reviewsTitle">Отзывы</div>
     <div id="reviewsList"></div>
