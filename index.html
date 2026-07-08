@@ -685,8 +685,9 @@ body.dark .phoneCode{background:#2d3142;}
 /* Admin denied */
 #adminDeniedScreen{
   padding-left:24px;padding-right:24px;gap:0;text-align:center;
-  justify-content:flex-end;
-  padding-bottom:calc(var(--nav-offset) + 16px + 25vh);
+  justify-content:center;
+  padding-top:calc(env(safe-area-inset-top,0px) + 60px);
+  padding-bottom:calc(var(--nav-offset) + 16px);
 }
 #adIcon{font-size:56px;margin-bottom:12px;}
 #adTitle{font-size:20px;font-weight:700;color:var(--text);font-family:var(--font);}
