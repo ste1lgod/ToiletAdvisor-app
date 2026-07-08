@@ -1144,6 +1144,13 @@ function setLang(l){
   if(rl)rl.textContent=t('route');
   const sl=document.getElementById('submitLabel');
   if(sl)sl.textContent=t('submit');
+  // Обновляем adminDeniedScreen
+  const adTitle=document.getElementById('adTitle');
+  if(adTitle)adTitle.textContent=t('adminDeniedTitle');
+  const adText=document.getElementById('adText');
+  if(adText)adText.textContent=t('adminDenied');
+  const adBtnLabel=document.getElementById('adBtnLabel');
+  if(adBtnLabel)adBtnLabel.textContent=t('adminDeniedBtn');
   updateLoginBtn();
   if(typeof updateOfflineText==='function')updateOfflineText();
 }
