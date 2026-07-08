@@ -363,10 +363,10 @@ body.dark #bottomNav{
 }
 #toiletSheet.open{transform:translateY(0);}
 
-#sDragZone{padding:12px 0 4px;cursor:grab;user-select:none;-webkit-user-select:none;}
-#sHandle{width:40px;height:4px;background:#d1d5db;border-radius:4px;margin:0 auto;}
-body.dark #sHandle{background:#3d4258;}
-#sScroll{padding:4px 20px 110px;max-height:calc(82vh - 30px);overflow-y:auto;}
+#sDragZone{padding:14px 0 6px;cursor:grab;user-select:none;-webkit-user-select:none;}
+#sHandle{width:48px;height:4px;background:#d1d5db;border-radius:4px;margin:0 auto;opacity:.6;}
+body.dark #sHandle{background:#4b5568;}
+#sScroll{padding:4px 20px 120px;max-height:calc(82vh - 30px);overflow-y:auto;}
 
 /* Sheet inner */
 #sTopRow{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px;}
@@ -393,7 +393,22 @@ body.dark .tItem{background:rgba(255,255,255,.08);}
 body.dark .sBadge{background:#2d3142;color:#94a3b8;}
 #sDesc{font-size:13px;color:var(--text2);line-height:1.6;padding:10px 14px;background:var(--bg);border-radius:var(--rs);margin-bottom:16px;}
 
-#reviewsTitle{font-size:16px;font-weight:700;color:var(--text);margin-bottom:10px;}
+/* Reviews section */
+#reviewsTitle{
+  font-size:17px;font-weight:700;color:var(--text);
+  font-family:var(--font);
+  text-align:center;
+  margin-bottom:12px;
+  letter-spacing:-.2px;
+}
+.rvNoReviews{
+  text-align:center;
+  color:var(--text2);
+  font-size:13px;
+  font-family:var(--font);
+  padding:12px 0 4px;
+  line-height:1.5;
+}
 .rvItem{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
 .rvItem:last-child{border-bottom:none;}
 .rvAvatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;flex-shrink:0;}
@@ -403,19 +418,58 @@ body.dark .sBadge{background:#2d3142;color:#94a3b8;}
 .rvStars{color:var(--star);font-size:12px;letter-spacing:1px;margin:3px 0;}
 .rvText{font-size:13px;color:var(--text2);line-height:1.5;}
 
-#reviewForm{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
-#starRow{display:flex;gap:6px;margin-bottom:10px;}
-.starBtn{font-size:28px;color:#d1d5db;cursor:pointer;transition:color .15s,transform .1s;user-select:none;}
+/* Review form */
+#reviewForm{margin-top:16px;padding-top:16px;border-top:1px solid var(--border);}
+#starRow{
+  display:flex;gap:8px;
+  justify-content:center;
+  margin-bottom:14px;
+}
+.starBtn{
+  width:36px;height:36px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  transition:transform .15s;
+  user-select:none;
+  color:#d1d5db;
+}
 .starBtn.lit{color:var(--star);}
-.starBtn:hover{transform:scale(1.15);}
+.starBtn:hover{transform:scale(1.2);}
+.starBtn svg{width:28px;height:28px;transition:fill .15s,stroke .15s;}
+.starBtn.lit svg{fill:var(--star);stroke:var(--star);}
+.starBtn:not(.lit) svg{fill:none;stroke:#d1d5db;stroke-width:1.5;}
+
 #authNotice{padding:12px 14px;background:#f0fdf4;border-radius:var(--rs);font-size:13px;color:#166534;font-weight:500;margin-bottom:10px;border:1px solid #bbf7d0;cursor:pointer;}
 body.dark #authNotice{background:#0a2e1c;border-color:#166534;color:#4ade80;}
-#reviewText{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);font-size:14px;resize:none;min-height:80px;font-family:var(--font);outline:none;transition:border-color .2s;}
+
+#reviewText{
+  width:100%;padding:13px 16px;
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  background:var(--bg);
+  color:var(--text);
+  font-size:14px;
+  resize:none;min-height:88px;
+  font-family:var(--font);
+  outline:none;
+  transition:border-color .2s;
+  line-height:1.5;
+}
+body.dark #reviewText{background:#161a24;border-color:#2d3142;}
 #reviewText:focus{border-color:var(--green);}
-#formBtns{display:flex;flex-direction:column;gap:9px;margin-top:10px;}
+
+#formBtns{display:flex;flex-direction:column;gap:9px;margin-top:12px;}
 #submitReviewBtn{padding:13px;background:var(--green);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:700;font-family:var(--font);cursor:pointer;}
 #submitReviewBtn:active{opacity:.85;}
-#routeBtn{padding:13px;background:transparent;color:var(--green);border:2px solid var(--green);border-radius:var(--rs);font-size:14px;font-weight:700;font-family:var(--font);cursor:pointer;}
+#routeBtn{
+  padding:13px;
+  background:transparent;color:var(--green);
+  border:2px solid var(--green);
+  border-radius:var(--rs);
+  font-size:14px;font-weight:700;
+  font-family:var(--font);cursor:pointer;
+  margin-top:4px;
+}
 #routeBtn:hover{background:var(--green-l);}
 </style>
 
@@ -731,15 +785,17 @@ body.dark #toast{
     <div id="reviewsList"></div>
     <div id="reviewForm">
       <div id="starRow">
-        <span class="starBtn" data-s="1">☆</span><span class="starBtn" data-s="2">☆</span>
-        <span class="starBtn" data-s="3">☆</span><span class="starBtn" data-s="4">☆</span>
-        <span class="starBtn" data-s="5">☆</span>
+        <span class="starBtn" data-s="1"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+        <span class="starBtn" data-s="2"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+        <span class="starBtn" data-s="3"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+        <span class="starBtn" data-s="4"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+        <span class="starBtn" data-s="5"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
       </div>
       <div id="authNotice" class="hidden">🔒 Чтобы оставить оценку, пожалуйста, войдите в систему</div>
       <textarea id="reviewText" placeholder="Опишите ваши впечатления..."></textarea>
       <div id="formBtns">
         <button id="submitReviewBtn" onclick="submitReview()">▲ Отправить</button>
-        <button id="routeBtn" onclick="goRoute()">📍 Маршрут / Йўналиш</button>
+        <button id="routeBtn" onclick="goRoute()">📍 <span id="routeLabel"></span>Маршрут</span></button>
       </div>
     </div>
   </div>
@@ -865,17 +921,17 @@ const T={
       free:'🆓 Бесплатно',paid:'Платно',noReviews:'Пока нет отзывов',
       success:'✓ Ваш отзыв добавлен!',kmAway:'км от вас',mAway:'м от вас',
       findNearest:'Найти ближайший туалет',addHint:'📍 Нажмите на карте, чтобы выбрать место',
-      distFallback:'(от центра)'},
+      distFallback:'(от центра)',route:'Маршрут',writeReview:'Напишите ваш отзыв...'},
   uz:{search:'Hojatxona qidirish...',loginBtn:'→ Kirish',open:'Ochiq',closed:'Yopiq',
       free:'🆓 Bepul',paid:'Pullik',noReviews:'Sharhlar yoq',
       success:'✓ Sharhingiz qoshildi!',kmAway:'km uzoqda',mAway:'m uzoqda',
       findNearest:'Eng yaqin hojatxonani topish',addHint:'📍 Xaritaga bosing',
-      distFallback:'(markazdan)'},
+      distFallback:'(markazdan)',route:'Йўналиш',writeReview:'Sharhingizni yozing...'},
   en:{search:'Search toilet...',loginBtn:'→ Login',open:'Open',closed:'Closed',
       free:'🆓 Free',paid:'Paid',noReviews:'No reviews yet',
       success:'✓ Review submitted!',kmAway:'km away',mAway:'m away',
       findNearest:'Find nearest toilet',addHint:'📍 Tap map to select location',
-      distFallback:'(from center)'}
+      distFallback:'(from center)',route:'Route',writeReview:'Write your review...'}
 };
 function t(k){return(T[currentLang]||T.ru)[k]||(T.ru[k]||k);}
 let currentLang=localStorage.getItem('ta_lang')||'ru';
@@ -934,6 +990,9 @@ function setLang(l){
   document.querySelectorAll('.lOpt').forEach(o=>o.classList.toggle('active',o.textContent.trim().toLowerCase()===l));
   document.getElementById('searchInput').placeholder=t('search');
   document.getElementById('fnLabel').textContent=t('findNearest');
+  document.getElementById('reviewText').placeholder=t('writeReview');
+  const rl=document.getElementById('routeLabel');
+  if(rl)rl.textContent=t('route');
   updateLoginBtn();
   if(typeof updateOfflineText==='function')updateOfflineText();
 }
@@ -1210,8 +1269,11 @@ function closeSheet(){
 }
 function resetReviewForm(){
   reviewRating=0;
-  document.querySelectorAll('.starBtn').forEach(s=>{s.classList.remove('lit');s.textContent='☆';});
+  document.querySelectorAll('.starBtn').forEach(s=>s.classList.remove('lit'));
   document.getElementById('reviewText').value='';
+  document.getElementById('reviewText').placeholder=t('writeReview');
+  const rl=document.getElementById('routeLabel');
+  if(rl)rl.textContent=t('route');
   const notice=document.getElementById('authNotice');
   if(currentUser){
     notice.classList.add('hidden');
@@ -1238,7 +1300,7 @@ async function getReviews(id){
 }
 function renderReviews(reviews){
   const c=document.getElementById('reviewsList');
-  if(!reviews.length){c.innerHTML=`<p style="color:var(--text2);font-size:13px;padding:8px 0;">${t('noReviews')}</p>`;return;}
+  if(!reviews.length){c.innerHTML=`<p class="rvNoReviews">${t('noReviews')}</p>`;return;}
   c.innerHTML=[...reviews].reverse().map(r=>{
     const name=r.userPhone||r.userLogin||'Аноним';
     const col=COLORS[name.charCodeAt(0)%COLORS.length];
@@ -1255,8 +1317,8 @@ document.querySelectorAll('.starBtn').forEach(btn=>{
     if(!currentUser){openAuthModal();return;}
     reviewRating=parseInt(this.dataset.s);
     document.querySelectorAll('.starBtn').forEach((s,i)=>{
-      s.classList.toggle('lit',i<reviewRating);
-      s.textContent=i<reviewRating?'★':'☆';
+      const isLit=i<reviewRating;
+      s.classList.toggle('lit',isLit);
     });
   });
 });
