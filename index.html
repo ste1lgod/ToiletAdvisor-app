@@ -260,13 +260,14 @@ body.dark #bottomNav{
   border-color:rgba(255,255,255,0.10);
 }
 
-/* ===== HIDE ALL YANDEX DEFAULT UI ===== */
-/* Логотип, копирайт, attribution — максимально широкие селекторы */
+/* ===== HIDE YANDEX DEFAULT UI — CSS layer ===== */
 [class*="ymaps-"][class*="-copyright"],
 [class*="ymaps-"][class*="-logo"],
 [class*="ymaps-"][class*="-gotoymaps"],
 [class*="ymaps-"][class*="-float-button"],
 [class*="ymaps-"][class*="-controls__control"],
+[class*="ymaps-"][class*="-controls__pane"],
+[class*="ymaps-"][class*="-controls__toolbar"],
 [class*="ymaps-"][class*="-scale"],
 [class*="ymaps-"][class*="-ruler"],
 [class*="ymaps-"][class*="-searchbox"]{
@@ -274,6 +275,9 @@ body.dark #bottomNav{
   opacity:0!important;
   pointer-events:none!important;
   visibility:hidden!important;
+  width:0!important;
+  height:0!important;
+  overflow:hidden!important;
 }
 
 /* Боковые кнопки (Карта / Профиль) — каждая занимает треть */
@@ -590,9 +594,6 @@ body.dark #toast{
   background:rgba(240,245,255,0.18);
   border-color:rgba(255,255,255,0.18);
 }
-/* ===== DEBUG: скрыть нижнюю навигацию ===== */
-#bottomNav, #findNearestBtn { display: none !important; }
-/* ===== /DEBUG ===== */
 </style>
 
 </head>
@@ -676,13 +677,13 @@ body.dark #toast{
 </div>
 
 <!-- FIND NEAREST -->
-<button id="findNearestBtn" onclick="findNearest()" style="display:none!important;visibility:hidden!important;">
+<button id="findNearestBtn" onclick="findNearest()">
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
   <span id="fnLabel">Найти ближайший туалет</span>
 </button>
 
 <!-- BOTTOM NAV -->
-<div id="bottomNav" style="display:none!important;visibility:hidden!important;">
+<div id="bottomNav">
   <button class="navBtn active" data-tab="map" onclick="switchTab('map')">
     <div class="navIco"><svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></div>
     <span class="navLabel">Карта</span>
@@ -1002,42 +1003,44 @@ function hideYandexUI(){
   const map=document.getElementById('map');
   if(!map)return;
 
-  // Список суффиксов классов которые нужно скрыть
+  // Суффиксы классов Яндекса которые нужно скрыть
   const BAD_SUFFIXES=[
     'copyright','Copyright','gotoymaps','GoToYMaps',
     'logo','Logo','scale','Scale','ruler','Ruler',
     'float-button','searchbox','geolocation',
-    'controls__toolbar','controls__control',
-    'controls__pane'
+    'controls__toolbar','controls__control','controls__pane',
+    'zoom','Zoom'
   ];
 
   function shouldHide(el){
-    if(!el.className||typeof el.className!=='string')return false;
+    if(!el||!el.className||typeof el.className!=='string')return false;
+    // Проверяем что это Яндекс-элемент (содержит ymaps в классе)
+    if(!el.className.includes('ymaps'))return false;
     return BAD_SUFFIXES.some(s=>el.className.includes(s));
   }
 
-  function processEl(el){
-    if(el.id==='geoBtn'||el.id==='zoomControls')return;
-    if(el.closest&&(el.closest('#geoBtn')||el.closest('#zoomControls')))return;
+  function hideEl(el){
+    if(!el||el.id==='geoBtn'||el.id==='zoomControls')return;
+    if(el.closest&&(el.closest('#geoBtn')||el.closest('#zoomControls')||el.closest('#bottomNav')))return;
     if(shouldHide(el)){
       el.style.setProperty('display','none','important');
       el.style.setProperty('opacity','0','important');
       el.style.setProperty('pointer-events','none','important');
       el.style.setProperty('visibility','hidden','important');
+      el.style.setProperty('width','0','important');
+      el.style.setProperty('height','0','important');
     }
   }
 
-  // Обходим всё дерево карты
-  map.querySelectorAll('*').forEach(processEl);
+  map.querySelectorAll('*').forEach(hideEl);
 
-  // MutationObserver — перехватываем новые элементы
   if(!map._uiObserver){
     map._uiObserver=new MutationObserver(mutations=>{
       mutations.forEach(m=>{
         m.addedNodes.forEach(node=>{
           if(node.nodeType===1){
-            processEl(node);
-            node.querySelectorAll&&node.querySelectorAll('*').forEach(processEl);
+            hideEl(node);
+            node.querySelectorAll&&node.querySelectorAll('*').forEach(hideEl);
           }
         });
       });
