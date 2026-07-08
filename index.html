@@ -1323,10 +1323,22 @@ function renderMarkers(){
       zIndex:200,
       zIndexHover:210
     });
-    // Используем замыкание через IIFE чтобы не терять ссылку на toilet
     pm.events.add('click',(()=>{
       const _toilet=toilet;
-      return ()=>{ if(!isPanning) openSheet(_toilet); };
+      return (e)=>{
+        if(isPanning)return;
+        e.stopPropagation();
+        // Если шторка уже открыта с другим туалетом — закрываем и открываем новый
+        if(isSheetOpen){
+          isSheetOpen=false;
+          _closeBackdrop();
+          document.getElementById('toiletSheet').classList.remove('open');
+          selectedToilet=null;
+          setTimeout(()=>openSheet(_toilet),50);
+        } else {
+          openSheet(_toilet);
+        }
+      };
     })());
     myMap.geoObjects.add(pm);
   });
