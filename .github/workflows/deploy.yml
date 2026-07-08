@@ -1,0 +1,71 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install server dependencies
+        run: npm install
+        working-directory: server
+
+      - name: Verify server starts
+        run: |
+          node server.js &
+          SERVER_PID=$!
+          sleep 3
+          curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/api/toilets || true
+          kill $SERVER_PID 2>/dev/null || true
+
+      - name: Upload static artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: toiletadvisor-static
+          path: |
+            index.html
+            manifest.json
+            icon.png
+            .nojekyll
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -7,7 +7,7 @@
       "matcher": "^(fs_write|str_replace|fs_append)$",
       "action": {
         "type": "command",
-        "command": "powershell -NoProfile -Command \"Set-Location 'c:\\Users\\zbaze\\ToiletAdvisor'; Start-Sleep -Milliseconds 500; git add -A; $diff = git diff --cached --name-only; if ($diff) { git commit -m 'auto: agent file changes'; git push origin main }\"",
+        "command": "powershell -NoProfile -Command \"$repo = (Get-Location).Path; Set-Location $repo; Start-Sleep -Milliseconds 500; git add -A; $diff = git diff --cached --name-only; if ($diff) { $ts = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'; git commit -m \\\"auto: agent file changes ($ts)\\\"; git push origin main }\"",
         "timeout": 60
       }
     }

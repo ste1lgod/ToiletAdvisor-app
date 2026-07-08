@@ -4,10 +4,10 @@
     {
       "name": "Auto Commit & Push on Save",
       "trigger": "PostFileSave",
-      "matcher": "\\.(html|js|json|css)$",
+      "matcher": "\\.(html|js|json|css|bat|ps1|yml|md)$",
       "action": {
         "type": "command",
-        "command": "powershell -NoProfile -Command \"Set-Location 'c:\\Users\\zbaze\\ToiletAdvisor'; git add -A; $diff = git diff --cached --name-only; if ($diff) { git commit -m 'auto: save changes'; git push origin main }\"",
+        "command": "powershell -NoProfile -Command \"$repo = (Get-Location).Path; Set-Location $repo; git add -A; $diff = git diff --cached --name-only; if ($diff) { $ts = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'; git commit -m \\\"auto: save changes ($ts)\\\"; git push origin main }\"",
         "timeout": 60
       }
     }
