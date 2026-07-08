@@ -360,8 +360,10 @@ body.dark #bottomNav{
   transition:transform .36s cubic-bezier(.32,1,.46,1);
   box-shadow:0 -4px 40px rgba(0,0,0,0.16);
   will-change:transform;touch-action:none;
+  /* Критично: не перехватывать события когда скрыт */
+  pointer-events:none;
 }
-#toiletSheet.open{transform:translateY(0);}
+#toiletSheet.open{transform:translateY(0);pointer-events:auto;}
 
 #sDragZone{padding:14px 0 6px;cursor:grab;user-select:none;-webkit-user-select:none;}
 #sHandle{width:48px;height:4px;background:#d1d5db;border-radius:4px;margin:0 auto;opacity:.6;}
