@@ -410,16 +410,24 @@ body.dark #taharatBlock{background:linear-gradient(135deg,#0a2e1c,#0f3d27);}
 body.dark .tItem{background:rgba(255,255,255,.08);}
 #taharatNote{font-size:11.5px;color:#047857;line-height:1.5;}
 
-#sBadges{display:flex;flex-wrap:wrap;gap:6px;row-gap:6px;margin-bottom:0;}
+#sBadges{display:flex;flex-wrap:wrap;gap:6px;row-gap:6px;margin-bottom:12px;}
 .sBadge{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;background:#f3f4f6;color:#4b5563;}
 body.dark .sBadge{background:#2d3142;color:#94a3b8;}
+/* taharatBlock — полноширинный блок строго под тегами */
+#taharatBlock{
+  background:linear-gradient(135deg,#e6f5ee,#d0f0e0);
+  border-radius:var(--r);padding:14px;
+  margin-top:4px;margin-bottom:16px;
+  display:block;width:100%;
+}
+body.dark #taharatBlock{background:linear-gradient(135deg,#0a2e1c,#0f3d27);}
 /* Описание — чёткий отступ от блока тегов */
 #sDesc{
   font-size:14.5px;color:var(--text2);line-height:1.65;
   padding:14px 16px;
   background:var(--bg);
   border-radius:var(--rs);
-  margin-top:16px;
+  margin-top:12px;
   margin-bottom:20px;
 }
 
