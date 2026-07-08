@@ -219,7 +219,7 @@ body.dark #geoBtn{border-color:rgba(255,255,255,0.12);}
 /* ===== FIND NEAREST BUTTON ===== */
 #findNearestBtn{
   position:fixed;
-  bottom:calc(var(--nav-offset) + 100px);
+  bottom:calc(var(--nav-offset) + 20px);
   left:50%;transform:translateX(-50%);z-index:15;
   display:flex;align-items:center;gap:7px;
   padding:12px 22px;
@@ -249,11 +249,9 @@ body.dark #findNearestBtn{border-color:rgba(255,255,255,0.12);}
   border-radius:24px;
   display:flex;
   align-items:center;
-  /* Нижний паддинг учитывает home indicator iOS */
   padding:10px 0 calc(12px + env(safe-area-inset-bottom,0px));
   box-shadow:var(--sh-float);
-  /* Скрываем логотип Яндекс и home indicator под панелью */
-  overflow:hidden;
+  overflow:visible;
 }
 body.dark #bottomNav{
   background:var(--glass-bg);
