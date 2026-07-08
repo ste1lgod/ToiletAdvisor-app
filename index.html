@@ -1716,14 +1716,13 @@ async function submitAddToiletModal(){
     hasSoap:document.getElementById('addHasSoapM').checked,
     hasPaper:document.getElementById('addHasPaperM').checked,
     isAccessible:document.getElementById('addIsAccessibleM').checked,
-    isTaharatkhana:document.getElementById('addIsTaharatkhanaM').checked};
+    isTaharatkhana:document.getElementById('addIsTaharatkhanaM').checked,
+    addedBy:currentUser.id,createdAt:new Date().toISOString()};
   try{
-    const r=await fetch(`${API}/toilets`,{method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+currentUser.token},
-      body:JSON.stringify(body)});
-    if(r.ok){closeOverlay('addOverlay');addCoords=null;await loadToilets();showToast('✅ Туалет добавлен!');switchTab('map');}
-    else{const d=await r.json();showToast(d.error||'Ошибка');}
-  }catch(e){showToast('Ошибка соединения');}
+    await _loadFirebase();
+    await db.collection('toilets').add(body);
+    closeOverlay('addOverlay');addCoords=null;await loadToilets();showToast('✅ Туалет добавлен!');switchTab('map');
+  }catch(e){showToast('Ошибка: '+e.message);console.error(e);}
 }
 
 // ── SEARCH & CHIPS ──
