@@ -260,14 +260,21 @@ body.dark #bottomNav{
   border-color:rgba(255,255,255,0.10);
 }
 
-/* Скрываем логотип Яндекс.Карт */
-.ymaps-2-1-79-copyright,
-.ymaps-2-1-79-gotoymaps,
-[class*="ymaps"][class*="copyright"],
-[class*="ymaps"][class*="gotoymaps"]{
+/* ===== HIDE ALL YANDEX DEFAULT UI ===== */
+/* Логотип, копирайт, attribution */
+[class*="ymaps-"][class*="-copyright"],
+[class*="ymaps-"][class*="-logo"],
+[class*="ymaps-"][class*="-gotoymaps"],
+[class*="ymaps-"][class*="-float-button"],
+[class*="ymaps-"][class*="-controls__control"],
+[class*="ymaps-"][class*="-scale"],
+[class*="ymaps-"][class*="-ruler"],
+[class*="ymaps-"][class*="-searchbox"],
+[class*="ymaps-"][class*="-zoom"]{
   display:none!important;
   opacity:0!important;
   pointer-events:none!important;
+  visibility:hidden!important;
 }
 
 /* Боковые кнопки (Карта / Профиль) — каждая занимает треть */
@@ -961,7 +968,17 @@ function formatDist(m,fallback){
 // ── MAP INIT ──
 function initMap(){
   try{
-    myMap=new ymaps.Map('map',{center:TASHKENT,zoom:13,controls:[]});
+    myMap=new ymaps.Map('map',{
+      center:TASHKENT,
+      zoom:13,
+      controls:[] // отключаем ВСЕ дефолтные контролы Яндекса
+    },{
+      suppressMapOpenBlock:true,        // убираем "Открыть в Яндекс.Картах"
+      yandexMapDisablePoiInteractivity:false,
+      copyrightLogoVisible:false,       // скрываем логотип
+      copyrightProvidersVisible:false,  // скрываем провайдеров
+      copyrightUaVisible:false          // скрываем UA copyright
+    });
     myMap.events.add('click',e=>{
       if(document.getElementById('toiletSheet').classList.contains('open')){closeSheet();return;}
       if(!document.getElementById('addOverlay').classList.contains('hidden')){
@@ -973,21 +990,38 @@ function initMap(){
     loadToilets();
     startGeo();
     setTimeout(adjustControlsPosition,200);
-    // Скрываем логотип Яндекс
-    setTimeout(hideYandexLogo,800);
-    setTimeout(hideYandexLogo,2000);
+    // Дополнительная зачистка через DOM на случай если API игнорирует опции
+    setTimeout(hideYandexUI,600);
+    setTimeout(hideYandexUI,1500);
+    setTimeout(hideYandexUI,3000);
   }catch(err){console.error('Map:',err);}
 }
-function hideYandexLogo(){
-  // Яндекс использует динамические имена классов — ищем по атрибутам и содержимому
-  document.querySelectorAll('[class*="copyright"],[class*="Copyright"],[class*="gotoymaps"],[class*="logo"]').forEach(el=>{
-    if(el.closest('#map')){el.style.cssText='display:none!important;opacity:0!important;pointer-events:none!important;';}
+function hideYandexUI(){
+  const map=document.getElementById('map');
+  if(!map)return;
+  // Ищем все дефолтные элементы Яндекса внутри контейнера карты
+  const selectors=[
+    '[class*="copyright"]',
+    '[class*="Copyright"]',
+    '[class*="gotoymaps"]',
+    '[class*="logo"]',
+    '[class*="scale"]',
+    '[class*="ruler"]',
+    '[class*="float-button"]',
+    '[class*="geolocation"]',
+    '[class*="zoom"]',
+  ];
+  selectors.forEach(sel=>{
+    map.querySelectorAll(sel).forEach(el=>{
+      // Не трогаем наши собственные элементы (geoBtn, zoomControls)
+      if(el.id==='geoBtn'||el.id==='zoomControls'||el.closest('#geoBtn')||el.closest('#zoomControls'))return;
+      el.style.cssText='display:none!important;opacity:0!important;pointer-events:none!important;visibility:hidden!important;';
+    });
   });
-  // Также через MutationObserver для элементов которые добавляются позже
-  const mapEl=document.getElementById('map');
-  if(mapEl&&!mapEl._logoObserver){
-    mapEl._logoObserver=new MutationObserver(()=>hideYandexLogo());
-    mapEl._logoObserver.observe(mapEl,{childList:true,subtree:true});
+  // MutationObserver — ловим динамически добавляемые элементы
+  if(!map._uiObserver){
+    map._uiObserver=new MutationObserver(()=>hideYandexUI());
+    map._uiObserver.observe(map,{childList:true,subtree:true,attributes:false});
   }
 }
 if(typeof ymaps!=='undefined')ymaps.ready(initMap);
