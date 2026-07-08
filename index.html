@@ -1461,24 +1461,26 @@ async function submitReview(){
   if(!selectedToilet)return;
   const text=document.getElementById('reviewText').value.trim();
   if(!text||!reviewRating){showToast('Введите текст и поставьте оценку');return;}
-  const nRev={id:'l_'+Date.now(),toiletId:selectedToilet.id,userId:currentUser.id,
-    userPhone:currentUser.phone||currentUser.login||'Пользователь',
-    text,rating:reviewRating,createdAt:new Date().toISOString()};
   try{
-    const r=await fetch(`${API}/reviews`,{method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+currentUser.token},
-      body:JSON.stringify({toiletId:selectedToilet.id,text,rating:reviewRating})});
-    if(r.ok){const d=await r.json();nRev.id=d.id;}
-  }catch(e){}
-  if(!localReviews[selectedToilet.id])localReviews[selectedToilet.id]=[];
-  localReviews[selectedToilet.id].unshift(nRev);
-  localStorage.setItem('ta_reviews',JSON.stringify(localReviews));
-  showToast(t('success'));
-  resetReviewForm();
-  const reviews=await getReviews(selectedToilet.id);
-  renderReviews(reviews);
-  const avg=reviews.length?(reviews.reduce((s,r)=>s+r.rating,0)/reviews.length):0;
-  document.getElementById('sRatingVal').textContent=avg.toFixed(1);
+    await _loadFirebase();
+    await db.collection('reviews').add({
+      toiletId:selectedToilet.id,
+      userId:currentUser.id,
+      userPhone:currentUser.phone||currentUser.login||'Пользователь',
+      text,
+      rating:reviewRating,
+      createdAt:new Date().toISOString()
+    });
+    showToast(t('success'));
+    resetReviewForm();
+    const reviews=await getReviews(selectedToilet.id);
+    renderReviews(reviews);
+    const avg=reviews.length?(reviews.reduce((s,r)=>s+r.rating,0)/reviews.length):0;
+    document.getElementById('sRatingVal').textContent=avg.toFixed(1);
+  }catch(e){
+    showToast('Ошибка сохранения отзыва');
+    console.error(e);
+  }
 }
 // ── ROUTE ──
 function goRoute(){
