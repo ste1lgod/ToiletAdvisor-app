@@ -458,17 +458,25 @@ body.dark #authNotice{background:#0a2e1c;border-color:#166534;color:#4ade80;}
 body.dark #reviewText{background:#161a24;border-color:#2d3142;}
 #reviewText:focus{border-color:var(--green);}
 
-#formBtns{display:flex;flex-direction:column;gap:9px;margin-top:12px;}
-#submitReviewBtn{padding:13px;background:var(--green);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:700;font-family:var(--font);cursor:pointer;}
-#submitReviewBtn:active{opacity:.85;}
+#formBtns{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
+#submitReviewBtn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:14px;background:var(--green);color:#fff;
+  border:none;border-radius:var(--rs);
+  font-size:14px;font-weight:700;font-family:var(--font);cursor:pointer;
+  box-shadow:0 4px 14px rgba(0,168,89,0.30);
+  transition:opacity .15s;
+}
+#submitReviewBtn:active{opacity:.82;}
 #routeBtn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
   padding:13px;
   background:transparent;color:var(--green);
   border:2px solid var(--green);
   border-radius:var(--rs);
   font-size:14px;font-weight:700;
   font-family:var(--font);cursor:pointer;
-  margin-top:4px;
+  transition:background .15s;
 }
 #routeBtn:hover{background:var(--green-l);}
 </style>
@@ -794,8 +802,14 @@ body.dark #toast{
       <div id="authNotice" class="hidden">🔒 Чтобы оставить оценку, пожалуйста, войдите в систему</div>
       <textarea id="reviewText" placeholder="Опишите ваши впечатления..."></textarea>
       <div id="formBtns">
-        <button id="submitReviewBtn" onclick="submitReview()">▲ Отправить</button>
-        <button id="routeBtn" onclick="goRoute()">📍 <span id="routeLabel"></span>Маршрут</span></button>
+        <button id="submitReviewBtn" onclick="submitReview()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          <span id="submitLabel">Отправить</span>
+        </button>
+        <button id="routeBtn" onclick="goRoute()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+          <span id="routeLabel">Маршрут</span>
+        </button>
       </div>
     </div>
   </div>
@@ -921,17 +935,17 @@ const T={
       free:'🆓 Бесплатно',paid:'Платно',noReviews:'Пока нет отзывов',
       success:'✓ Ваш отзыв добавлен!',kmAway:'км от вас',mAway:'м от вас',
       findNearest:'Найти ближайший туалет',addHint:'📍 Нажмите на карте, чтобы выбрать место',
-      distFallback:'(от центра)',route:'Маршрут',writeReview:'Напишите ваш отзыв...'},
+      distFallback:'(от центра)',route:'Маршрут',writeReview:'Напишите ваш отзыв...',submit:'Отправить'},
   uz:{search:'Hojatxona qidirish...',loginBtn:'→ Kirish',open:'Ochiq',closed:'Yopiq',
       free:'🆓 Bepul',paid:'Pullik',noReviews:'Sharhlar yoq',
       success:'✓ Sharhingiz qoshildi!',kmAway:'km uzoqda',mAway:'m uzoqda',
       findNearest:'Eng yaqin hojatxonani topish',addHint:'📍 Xaritaga bosing',
-      distFallback:'(markazdan)',route:'Йўналиш',writeReview:'Sharhingizni yozing...'},
+      distFallback:'(markazdan)',route:'Йўналиш',writeReview:'Sharhingizni yozing...',submit:'Yuborish'},
   en:{search:'Search toilet...',loginBtn:'→ Login',open:'Open',closed:'Closed',
       free:'🆓 Free',paid:'Paid',noReviews:'No reviews yet',
       success:'✓ Review submitted!',kmAway:'km away',mAway:'m away',
       findNearest:'Find nearest toilet',addHint:'📍 Tap map to select location',
-      distFallback:'(from center)',route:'Route',writeReview:'Write your review...'}
+      distFallback:'(from center)',route:'Route',writeReview:'Write your review...',submit:'Submit'}
 };
 function t(k){return(T[currentLang]||T.ru)[k]||(T.ru[k]||k);}
 let currentLang=localStorage.getItem('ta_lang')||'ru';
@@ -993,6 +1007,8 @@ function setLang(l){
   document.getElementById('reviewText').placeholder=t('writeReview');
   const rl=document.getElementById('routeLabel');
   if(rl)rl.textContent=t('route');
+  const sl=document.getElementById('submitLabel');
+  if(sl)sl.textContent=t('submit');
   updateLoginBtn();
   if(typeof updateOfflineText==='function')updateOfflineText();
 }
@@ -1374,6 +1390,8 @@ function resetReviewForm(){
   document.getElementById('reviewText').placeholder=t('writeReview');
   const rl=document.getElementById('routeLabel');
   if(rl)rl.textContent=t('route');
+  const sl2=document.getElementById('submitLabel');
+  if(sl2)sl2.textContent=t('submit');
   const notice=document.getElementById('authNotice');
   if(currentUser){
     notice.classList.add('hidden');
