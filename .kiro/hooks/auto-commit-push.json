@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Auto Commit & Push on Save",
+      "trigger": "PostFileSave",
+      "description": "При каждом сохранении .html/.js/.json/.css файла автоматически делает git add, commit и push на GitHub.",
+      "matcher": "\\.(html|js|json|css)$",
+      "action": {
+        "type": "command",
+        "command": "cmd /c c:\\Users\\zbaze\\ToiletAdvisor\\.kiro\\hooks\\git-push.bat",
+        "timeout": 90
+      }
+    }
+  ]
+}
