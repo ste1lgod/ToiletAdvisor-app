@@ -681,7 +681,11 @@ body.dark .phoneCode{background:#2d3142;}
 #pLogoutBtn:active{opacity:.85;}
 
 /* Admin denied */
-#adminDeniedScreen{padding-left:24px;padding-right:24px;gap:0;text-align:center;}
+#adminDeniedScreen{
+  padding-left:24px;padding-right:24px;gap:0;text-align:center;
+  justify-content:flex-end;
+  padding-bottom:calc(var(--nav-offset) + 16px + 25vh);
+}
 #adIcon{font-size:56px;margin-bottom:12px;}
 #adTitle{font-size:20px;font-weight:700;color:var(--text);font-family:var(--font);}
 #adText{font-size:13px;color:var(--text2);line-height:1.6;margin-top:8px;}
