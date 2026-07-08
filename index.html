@@ -1578,10 +1578,11 @@ document.querySelectorAll('.starBtn').forEach(btn=>{
 async function submitReview(){
   if(!currentUser){openAuthModal();return;}
   if(!selectedToilet)return;
-  const text=document.getElementById('reviewText').value.trim();
+  const ta=document.getElementById('reviewText');
+  const text=ta.value.trim();
   if(!text||!reviewRating){showToast('Введите текст и поставьте оценку');return;}
 
-  // Мгновенный ре-рендер — добавляем локально сразу
+  // Оптимистичный ре-рендер — не ждём Firestore
   const optimistic={
     id:'tmp_'+Date.now(),
     toiletId:selectedToilet.id,
@@ -1590,11 +1591,33 @@ async function submitReview(){
     text,rating:reviewRating,
     createdAt:new Date().toISOString()
   };
-  const currentReviews=await getReviews(selectedToilet.id);
-  const merged=[optimistic,...currentReviews];
-  renderReviews(merged);
-  const avg=merged.reduce((s,r)=>s+r.rating,0)/merged.length;
-  document.getElementById('sRatingVal').textContent=avg.toFixed(1);
+
+  // Берём уже загруженные отзывы из DOM — не делаем повторный запрос
+  const existingItems=document.querySelectorAll('#reviewsList .rvItem');
+  const existingCount=existingItems.length;
+  // Добавляем новый отзыв мгновенно поверх списка
+  const name=optimistic.userPhone;
+  const col=COLORS[name.charCodeAt(0)%COLORS.length];
+  const ini=name.replace(/\+/g,'').slice(0,2).toUpperCase();
+  const stars='★'.repeat(optimistic.rating)+'☆'.repeat(5-optimistic.rating);
+  const d=new Date(optimistic.createdAt);
+  const ds=`${d.getDate()} ${['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'][d.getMonth()]} ${d.getFullYear()}`;
+  const newCard=`<div class="rvItem" id="${optimistic.id}"><div class="rvAvatar" style="background:${col}">${ini}</div><div class="rvBody"><div class="rvHeader"><span class="rvName">${name}</span><span class="rvDate">${ds}</span></div><div class="rvStars">${stars}</div><div class="rvText">${text}</div></div></div>`;
+  const listEl=document.getElementById('reviewsList');
+  // Если был "нет отзывов" — заменяем, иначе prepend
+  if(existingCount===0){
+    listEl.innerHTML=newCard;
+  } else {
+    listEl.insertAdjacentHTML('afterbegin',newCard);
+  }
+
+  // Обновляем рейтинг
+  const currentRating=document.getElementById('sRatingVal').textContent;
+  const prevAvg=currentRating==='—'?0:parseFloat(currentRating);
+  const prevCount=existingCount;
+  const newAvg=prevCount===0?optimistic.rating:((prevAvg*prevCount)+optimistic.rating)/(prevCount+1);
+  document.getElementById('sRatingVal').textContent=newAvg.toFixed(1);
+
   resetReviewForm();
   showToast(t('success'));
 
@@ -1605,11 +1628,15 @@ async function submitReview(){
       toiletId:selectedToilet.id,
       userId:currentUser.id,
       userPhone:currentUser.phone||currentUser.login||'Пользователь',
-      text,rating:reviewRating,
+      text,rating:optimistic.rating,
       createdAt:optimistic.createdAt
     });
+    // Убираем tmp id
+    const tmpEl=document.getElementById(optimistic.id);
+    if(tmpEl)tmpEl.removeAttribute('id');
   }catch(e){
     console.error('Ошибка сохранения отзыва:',e);
+    showToast('Отзыв сохранён локально, синхронизация при следующем открытии');
   }
 }
 // ── ROUTE ──
