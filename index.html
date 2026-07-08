@@ -1475,25 +1475,36 @@ async function submitReview(){
   if(!selectedToilet)return;
   const text=document.getElementById('reviewText').value.trim();
   if(!text||!reviewRating){showToast('Введите текст и поставьте оценку');return;}
+
+  // Мгновенный ре-рендер — добавляем локально сразу
+  const optimistic={
+    id:'tmp_'+Date.now(),
+    toiletId:selectedToilet.id,
+    userId:currentUser.id,
+    userPhone:currentUser.phone||currentUser.login||'Пользователь',
+    text,rating:reviewRating,
+    createdAt:new Date().toISOString()
+  };
+  const currentReviews=await getReviews(selectedToilet.id);
+  const merged=[optimistic,...currentReviews];
+  renderReviews(merged);
+  const avg=merged.reduce((s,r)=>s+r.rating,0)/merged.length;
+  document.getElementById('sRatingVal').textContent=avg.toFixed(1);
+  resetReviewForm();
+  showToast(t('success'));
+
+  // Сохраняем в Firestore в фоне
   try{
     await _loadFirebase();
     await db.collection('reviews').add({
       toiletId:selectedToilet.id,
       userId:currentUser.id,
       userPhone:currentUser.phone||currentUser.login||'Пользователь',
-      text,
-      rating:reviewRating,
-      createdAt:new Date().toISOString()
+      text,rating:reviewRating,
+      createdAt:optimistic.createdAt
     });
-    showToast(t('success'));
-    resetReviewForm();
-    const reviews=await getReviews(selectedToilet.id);
-    renderReviews(reviews);
-    const avg=reviews.length?(reviews.reduce((s,r)=>s+r.rating,0)/reviews.length):0;
-    document.getElementById('sRatingVal').textContent=avg.toFixed(1);
   }catch(e){
-    showToast('Ошибка сохранения отзыва');
-    console.error(e);
+    console.error('Ошибка сохранения отзыва:',e);
   }
 }
 // ── ROUTE ──
