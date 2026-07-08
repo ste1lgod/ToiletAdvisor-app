@@ -219,7 +219,7 @@ body.dark #geoBtn{border-color:rgba(255,255,255,0.12);}
 /* ===== FIND NEAREST BUTTON ===== */
 #findNearestBtn{
   position:fixed;
-  bottom:calc(var(--nav-offset) + 68px);
+  bottom:calc(var(--nav-offset) + 100px);
   left:50%;transform:translateX(-50%);z-index:15;
   display:flex;align-items:center;gap:7px;
   padding:12px 22px;
@@ -261,7 +261,7 @@ body.dark #bottomNav{
 }
 
 /* ===== HIDE ALL YANDEX DEFAULT UI ===== */
-/* Логотип, копирайт, attribution */
+/* Логотип, копирайт, attribution — максимально широкие селекторы */
 [class*="ymaps-"][class*="-copyright"],
 [class*="ymaps-"][class*="-logo"],
 [class*="ymaps-"][class*="-gotoymaps"],
@@ -269,8 +269,7 @@ body.dark #bottomNav{
 [class*="ymaps-"][class*="-controls__control"],
 [class*="ymaps-"][class*="-scale"],
 [class*="ymaps-"][class*="-ruler"],
-[class*="ymaps-"][class*="-searchbox"],
-[class*="ymaps-"][class*="-zoom"]{
+[class*="ymaps-"][class*="-searchbox"]{
   display:none!important;
   opacity:0!important;
   pointer-events:none!important;
@@ -999,29 +998,48 @@ function initMap(){
 function hideYandexUI(){
   const map=document.getElementById('map');
   if(!map)return;
-  // Ищем все дефолтные элементы Яндекса внутри контейнера карты
-  const selectors=[
-    '[class*="copyright"]',
-    '[class*="Copyright"]',
-    '[class*="gotoymaps"]',
-    '[class*="logo"]',
-    '[class*="scale"]',
-    '[class*="ruler"]',
-    '[class*="float-button"]',
-    '[class*="geolocation"]',
-    '[class*="zoom"]',
+
+  // Список суффиксов классов которые нужно скрыть
+  const BAD_SUFFIXES=[
+    'copyright','Copyright','gotoymaps','GoToYMaps',
+    'logo','Logo','scale','Scale','ruler','Ruler',
+    'float-button','searchbox','geolocation',
+    'controls__toolbar','controls__control',
+    'controls__pane'
   ];
-  selectors.forEach(sel=>{
-    map.querySelectorAll(sel).forEach(el=>{
-      // Не трогаем наши собственные элементы (geoBtn, zoomControls)
-      if(el.id==='geoBtn'||el.id==='zoomControls'||el.closest('#geoBtn')||el.closest('#zoomControls'))return;
-      el.style.cssText='display:none!important;opacity:0!important;pointer-events:none!important;visibility:hidden!important;';
-    });
-  });
-  // MutationObserver — ловим динамически добавляемые элементы
+
+  function shouldHide(el){
+    if(!el.className||typeof el.className!=='string')return false;
+    return BAD_SUFFIXES.some(s=>el.className.includes(s));
+  }
+
+  function processEl(el){
+    if(el.id==='geoBtn'||el.id==='zoomControls')return;
+    if(el.closest&&(el.closest('#geoBtn')||el.closest('#zoomControls')))return;
+    if(shouldHide(el)){
+      el.style.setProperty('display','none','important');
+      el.style.setProperty('opacity','0','important');
+      el.style.setProperty('pointer-events','none','important');
+      el.style.setProperty('visibility','hidden','important');
+    }
+  }
+
+  // Обходим всё дерево карты
+  map.querySelectorAll('*').forEach(processEl);
+
+  // MutationObserver — перехватываем новые элементы
   if(!map._uiObserver){
-    map._uiObserver=new MutationObserver(()=>hideYandexUI());
-    map._uiObserver.observe(map,{childList:true,subtree:true,attributes:false});
+    map._uiObserver=new MutationObserver(mutations=>{
+      mutations.forEach(m=>{
+        m.addedNodes.forEach(node=>{
+          if(node.nodeType===1){
+            processEl(node);
+            node.querySelectorAll&&node.querySelectorAll('*').forEach(processEl);
+          }
+        });
+      });
+    });
+    map._uiObserver.observe(map,{childList:true,subtree:true});
   }
 }
 if(typeof ymaps!=='undefined')ymaps.ready(initMap);
