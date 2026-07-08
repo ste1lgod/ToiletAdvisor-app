@@ -10,6 +10,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Туалеты">
 <script src="https://api-maps.yandex.ru/2.1/?apikey=45bd36a1-ed61-4910-bba7-c4c36f55877b&lang=ru_RU&load=package.full"></script>
+<!-- Firebase SDK — загружаем сразу в head чтобы не ждать при открытии карточки -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
 /* ===== RESET ===== */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
