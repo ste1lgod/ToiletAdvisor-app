@@ -1411,7 +1411,7 @@ function _closeBackdrop(){
 }
 
 async function openSheet(toilet){
-  if(isSheetOpen)return; // защита от двойного открытия
+  if(isSheetOpen)return;
   isSheetOpen=true;
   selectedToilet=toilet;
   document.getElementById('sTitle').textContent=toilet.title;
@@ -1433,14 +1433,25 @@ async function openSheet(toilet){
   const desc=document.getElementById('sDesc');
   desc.textContent=toilet.description||'';
   desc.style.display=toilet.description?'block':'none';
-  const reviews=await getReviews(toilet.id);
-  const avg=reviews.length?(reviews.reduce((s,r)=>s+r.rating,0)/reviews.length):0;
-  document.getElementById('sRatingVal').textContent=avg>0?avg.toFixed(1):'—';
-  renderReviews(reviews);
+
+  // Сначала показываем шторку — моментально
+  document.getElementById('sRatingVal').textContent='—';
+  document.getElementById('reviewsList').innerHTML=`<p class="rvNoReviews" style="opacity:.5">⏳ Загрузка отзывов...</p>`;
   resetReviewForm();
-  // Открываем шторку и backdrop
   document.getElementById('toiletSheet').classList.add('open');
   _openBackdrop();
+
+  // Отзывы грузим в фоне после открытия
+  try{
+    const reviews=await getReviews(toilet.id);
+    // Проверяем что шторка всё ещё открыта и тот же туалет
+    if(!isSheetOpen||selectedToilet?.id!==toilet.id)return;
+    const avg=reviews.length?(reviews.reduce((s,r)=>s+r.rating,0)/reviews.length):0;
+    document.getElementById('sRatingVal').textContent=avg>0?avg.toFixed(1):'—';
+    renderReviews(reviews);
+  }catch(e){
+    document.getElementById('reviewsList').innerHTML=`<p class="rvNoReviews">${t('noReviews')}</p>`;
+  }
 }
 
 function closeSheet(){
