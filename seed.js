@@ -62,14 +62,55 @@ function postJSON(path, body, token) {
   });
 }
 
+function deleteJSON(path, token) {
+  return new Promise((resolve, reject) => {
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+    const req = https.request({ hostname: API, path, method: 'DELETE', headers }, res => {
+      let raw = '';
+      res.on('data', c => raw += c);
+      res.on('end', () => { try { resolve(JSON.parse(raw)); } catch(e) { resolve(raw); } });
+    });
+    req.on('error', reject);
+    req.end();
+  });
+}
+
+function getJSON(path, token) {
+  return new Promise((resolve, reject) => {
+    const headers = {};
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+    const req = https.request({ hostname: API, path, method: 'GET', headers }, res => {
+      let raw = '';
+      res.on('data', c => raw += c);
+      res.on('end', () => { try { resolve(JSON.parse(raw)); } catch(e) { resolve(raw); } });
+    });
+    req.on('error', reject);
+    req.end();
+  });
+}
+
 async function main() {
   console.log('Logging in as admin...');
   const auth = await postJSON('/api/admin/login', { login: 'admin', password: 'admin123' });
   if (!auth.token) { console.error('Auth failed:', auth); process.exit(1); }
   console.log('Token OK');
+
+  // Удаляем все старые туалеты
+  console.log('Clearing existing toilets...');
+  const existing = await getJSON('/api/toilets', auth.token);
+  if (Array.isArray(existing)) {
+    for (const t of existing) {
+      await deleteJSON(`/api/toilets/${t.id}`, auth.token);
+      console.log(`🗑️  Deleted: ${t.title}`);
+    }
+  }
+
+  // Заливаем новые данные
+  console.log('Seeding new toilets...');
   for (const t of TOILETS) {
     const res = await postJSON('/api/toilets', t, auth.token);
-    console.log(res.id ? `✅ ${res.title}` : `❌ ${t.title}: ${JSON.stringify(res)}`);
+    console.log(res.id ? `✅ ${res.title} (isOpen: ${res.isOpen})` : `❌ ${t.title}: ${JSON.stringify(res)}`);
   }
   console.log('Done!');
 }
