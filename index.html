@@ -1422,13 +1422,14 @@ function resetReviewForm(){
 <script>
 // ── REVIEWS ──
 async function getReviews(id){
-  const local=localReviews[id]||[];
   try{
-    const r=await fetch(`${API}/reviews/${id}`);
-    const remote=await r.json();
-    const ids=new Set(remote.map(x=>x.id));
-    return[...(local.filter(x=>!ids.has(x.id))),...remote];
-  }catch(e){return local;}
+    await _loadFirebase();
+    const snap=await db.collection('reviews').where('toiletId','==',id).get();
+    return snap.docs.map(d=>({id:d.id,...d.data()}));
+  }catch(e){
+    console.warn('Ошибка загрузки отзывов:',e.message);
+    return[];
+  }
 }
 function renderReviews(reviews){
   const c=document.getElementById('reviewsList');
