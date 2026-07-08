@@ -1184,8 +1184,13 @@ async function loadToilets(){
     console.warn('Сервер недоступен, используются локальные данные:',e.message);
     allToilets=FALLBACK_TOILETS;
     if(!navigator.onLine)showOfflineBanner();
-    // toast убран — фолбэк работает тихо
   }
+  // Принудительно закрытые туалеты (постоянно)
+  allToilets=allToilets.map(t=>{
+    if(t.title&&(t.title.includes('вокзале')||t.title.includes('Навои')))
+      return {...t,isOpen:false};
+    return t;
+  });
   renderMarkers();
 }
 function renderMarkers(){
