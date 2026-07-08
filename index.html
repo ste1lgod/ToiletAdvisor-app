@@ -242,7 +242,6 @@ body.dark #geoBtn{border-color:rgba(255,255,255,0.12);}
   border-radius:24px;
   display:flex;
   align-items:center;
-  justify-content:space-between;
   padding:10px 0 12px;
   box-shadow:var(--sh-float);
 }
@@ -251,7 +250,7 @@ body.dark #bottomNav{
   border-color:var(--panel-border);
 }
 
-/* Боковые кнопки (Карта / Профиль) */
+/* Боковые кнопки (Карта / Профиль) — каждая занимает треть */
 .navBtn{
   flex:1;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
@@ -259,18 +258,8 @@ body.dark #bottomNav{
   color:var(--text2);
   font-family:var(--font);
   padding:0;
+  min-width:0;
   transition:color .18s;
-  /* Отступ от края: первый — слева, последний — справа */
-}
-/* Левая кнопка (Карта) */
-.navBtn:first-child{
-  padding-left:36px;
-  align-items:center;
-}
-/* Правая кнопка (Профиль) */
-.navBtn:last-child{
-  padding-right:36px;
-  align-items:center;
 }
 .navBtn.active{color:var(--green);}
 
@@ -286,12 +275,13 @@ body.dark #bottomNav{
   stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
 }
 
-/* Центральная кнопка (Добавить) — зелёный круг */
+/* Центральная кнопка (Добавить) — зелёный круг, тоже треть */
 .navCenter{
-  flex:0 0 auto;
+  flex:1;
   display:flex;flex-direction:column;align-items:center;gap:4px;
   cursor:pointer;
-  padding:0 16px;
+  padding:0;
+  min-width:0;
 }
 .navCenterCircle{
   width:52px;height:52px;border-radius:50%;
@@ -462,7 +452,7 @@ body.dark .phoneCode{background:#2d3142;}
   position:fixed;top:0;left:0;right:0;bottom:0;z-index:18;
   background:var(--bg);display:flex;flex-direction:column;align-items:center;
   overflow-y:auto;
-  padding-top:80px;
+  padding-top:calc(env(safe-area-inset-top,0px) + 60px);
   padding-bottom:calc(var(--nav-offset) + 16px);
 }
 .tScreen.hidden{display:none!important;}
@@ -557,7 +547,7 @@ body.dark .phoneCode{background:#2d3142;}
 /* ===== TOAST — glassmorphic pill ===== */
 #toast{
   position:fixed;
-  bottom:calc(var(--nav-offset) + 72px);
+  bottom:calc(var(--nav-offset) + 16px);
   left:50%;transform:translateX(-50%) translateY(16px);
   background:rgba(20,20,30,0.75);
   backdrop-filter:blur(20px);
@@ -1490,10 +1480,8 @@ function adjustControlsPosition(){
 }
 
 function setScreenPaddingTop(){
-  // Для tScreen (profile/add/denied) — используем env safe-area + отступ сверху
-  const safeTop=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--safe-top')||'0')||0;
-  const pt=Math.max(60, safeTop+60);
-  document.querySelectorAll('.tScreen').forEach(s=>s.style.paddingTop=pt+'px');
+  // Padding управляется CSS через env(safe-area-inset-top)
+  // Оставляем как no-op для обратной совместимости
 }
 
 window.addEventListener('load',()=>{
