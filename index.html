@@ -1226,6 +1226,7 @@ function pinSVG(color, emoji){
   const cLight=lighten(color,60);
   const fid='pf'+color.replace('#','');
   const gid='pg'+color.replace('#','');
+  // Белый круг: cx=22, cy=18, r=11 → центр круга в px: x=11, y=7, размер 22x22
   return `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="56" viewBox="0 0 44 56">
   <defs>
     <filter id="${fid}" x="-40%" y="-30%" width="180%" height="175%">
@@ -1241,8 +1242,12 @@ function pinSVG(color, emoji){
     d="M22 2C13.2 2 6 9.2 6 18c0 11.5 16 34 16 34S38 29.5 38 18C38 9.2 30.8 2 22 2z"
     fill="url(#${gid})"/>
   <circle cx="22" cy="18" r="11" fill="rgba(255,255,255,0.92)"/>
-  <text x="22" y="18.5" font-size="15" text-anchor="middle" dominant-baseline="central"
-    font-family="Apple Color Emoji,Segoe UI Emoji,Noto Color Emoji,sans-serif">${emoji}</text>
+  <foreignObject x="11" y="7" width="22" height="22">
+    <div xmlns="http://www.w3.org/1999/xhtml"
+      style="width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1;">
+      ${emoji}
+    </div>
+  </foreignObject>
 </svg>`;
 }
 
