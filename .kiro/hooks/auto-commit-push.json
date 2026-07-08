@@ -4,12 +4,11 @@
     {
       "name": "Auto Commit & Push on Save",
       "trigger": "PostFileSave",
-      "description": "При каждом сохранении .html/.js/.json/.css файла автоматически делает git add, commit и push на GitHub.",
       "matcher": "\\.(html|js|json|css)$",
       "action": {
         "type": "command",
-        "command": "cmd /c c:\\Users\\zbaze\\ToiletAdvisor\\.kiro\\hooks\\git-push.bat",
-        "timeout": 90
+        "command": "powershell -NoProfile -Command \"Set-Location 'c:\\Users\\zbaze\\ToiletAdvisor'; git add -A; $diff = git diff --cached --name-only; if ($diff) { git commit -m 'auto: save changes'; git push origin main }\"",
+        "timeout": 60
       }
     }
   ]
