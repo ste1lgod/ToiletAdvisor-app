@@ -1510,23 +1510,27 @@ function closeSheet(){
 function resetReviewForm(){
   reviewRating=0;
   document.querySelectorAll('.starBtn').forEach(s=>s.classList.remove('lit'));
-  document.getElementById('reviewText').value='';
-  document.getElementById('reviewText').placeholder=t('writeReview');
+  // Явный двойной сброс textarea — предотвращает глитч символа после submit
+  const ta=document.getElementById('reviewText');
+  ta.blur();
+  ta.value='';
+  ta.defaultValue='';
+  ta.placeholder=t('writeReview');
   const rl=document.getElementById('routeLabel');
   if(rl)rl.textContent=t('route');
   const sl2=document.getElementById('submitLabel');
   if(sl2)sl2.textContent=t('submit');
   const notice=document.getElementById('authNotice');
   // Всегда показываем textarea и кнопку — скрываем только notice
-  document.getElementById('reviewText').style.display='block';
+  ta.style.display='block';
   document.getElementById('submitReviewBtn').style.display='flex';
   if(currentUser){
     notice.classList.add('hidden');
-    document.getElementById('reviewText').disabled=false;
+    ta.disabled=false;
     document.getElementById('submitReviewBtn').style.opacity='1';
   } else {
     notice.classList.remove('hidden');
-    document.getElementById('reviewText').disabled=false; // видима, но клик ведёт к логину
+    ta.disabled=false;
     document.getElementById('submitReviewBtn').style.opacity='0.72';
   }
 }
