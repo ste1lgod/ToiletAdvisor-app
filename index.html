@@ -1443,14 +1443,16 @@ async function getReviews(id){
 function renderReviews(reviews){
   const c=document.getElementById('reviewsList');
   if(!reviews.length){c.innerHTML=`<p class="rvNoReviews">${t('noReviews')}</p>`;return;}
-  c.innerHTML=[...reviews].reverse().map(r=>{
+  // Сортируем: новые сверху
+  const sorted=[...reviews].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+  c.innerHTML=sorted.map(r=>{
     const name=r.userPhone||r.userLogin||'Аноним';
     const col=COLORS[name.charCodeAt(0)%COLORS.length];
     const ini=name.replace(/\+/g,'').slice(0,2).toUpperCase();
     const stars='★'.repeat(r.rating)+'☆'.repeat(5-r.rating);
     const d=new Date(r.createdAt);
     const ds=`${d.getDate()} ${['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'][d.getMonth()]} ${d.getFullYear()}`;
-    return`<div class="rvItem"><div class="rvAvatar" style="background:${col}">${ini}</div><div class="rvBody"><span class="rvName">${name}</span><span class="rvDate">${ds}</span><div class="rvStars">${stars}</div><div class="rvText">${r.text}</div></div></div>`;
+    return`<div class="rvItem"><div class="rvAvatar" style="background:${col}">${ini}</div><div class="rvBody"><div class="rvHeader"><span class="rvName">${name}</span><span class="rvDate">${ds}</span></div><div class="rvStars">${stars}</div><div class="rvText">${r.text}</div></div></div>`;
   }).join('');
 }
 // ── STAR INPUT ──
