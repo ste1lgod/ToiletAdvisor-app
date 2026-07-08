@@ -1473,7 +1473,12 @@ async function openSheet(toilet){
 
   // Сначала показываем шторку — моментально
   document.getElementById('sRatingVal').textContent='—';
-  document.getElementById('reviewsList').innerHTML=`<p class="rvNoReviews" style="opacity:.5">⏳ Загрузка отзывов...</p>`;
+  // Skeleton loader вместо текста
+  document.getElementById('reviewsList').innerHTML=`
+    <div class="rvSkeleton"><div class="rvSkAvatar"></div><div class="rvSkBody"><div class="rvSkLine w80"></div><div class="rvSkLine w60"></div><div class="rvSkLine w40"></div></div></div>
+    <div class="rvSkeleton"><div class="rvSkAvatar"></div><div class="rvSkBody"><div class="rvSkLine w60"></div><div class="rvSkLine w80"></div><div class="rvSkLine w40"></div></div></div>
+    <div class="rvSkeleton"><div class="rvSkAvatar"></div><div class="rvSkBody"><div class="rvSkLine w40"></div><div class="rvSkLine w60"></div><div class="rvSkLine w80"></div></div></div>
+  `;
   resetReviewForm();
   document.getElementById('toiletSheet').classList.add('open');
   _openBackdrop();
