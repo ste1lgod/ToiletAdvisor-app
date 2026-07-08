@@ -1220,22 +1220,26 @@ function findNearest(){
 <script>
 // ── MARKERS ──
 async function loadToilets(){
+  await _loadFirebase();
   try{
-    const r=await fetch(`${API}/toilets`,{signal:AbortSignal.timeout(8000)});
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    allToilets=await r.json();
-    if(!Array.isArray(allToilets)||allToilets.length===0)throw new Error('empty');
+    const snap=await db.collection('toilets').get();
+    if(!snap.empty){
+      allToilets=snap.docs.map(d=>({id:d.id,...d.data()}));
+    } else {
+      // Firestore пустой — загружаем seed и сохраняем в БД
+      allToilets=FALLBACK_TOILETS;
+      const batch=db.batch();
+      FALLBACK_TOILETS.forEach(t=>{
+        batch.set(db.collection('toilets').doc(t.id),t);
+      });
+      await batch.commit();
+      console.log('Seed-данные записаны в Firestore');
+    }
   }catch(e){
-    console.warn('Сервер недоступен, используются локальные данные:',e.message);
+    console.warn('Firestore недоступен, используются локальные данные:',e.message);
     allToilets=FALLBACK_TOILETS;
     if(!navigator.onLine)showOfflineBanner();
   }
-  // Принудительно закрытые туалеты (постоянно)
-  allToilets=allToilets.map(t=>{
-    if(t.title&&(t.title.includes('вокзале')||t.title.includes('Навои')))
-      return {...t,isOpen:false};
-    return t;
-  });
   renderMarkers();
 }
 function renderMarkers(){
