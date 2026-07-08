@@ -1223,27 +1223,21 @@ function renderMarkers(){
 
 // ── MARKER SVGs ──
 function pinSVG(color, emoji){
-  const cLight=lighten(color,55);
-  const fid='pf'+color.replace('#','');
   const gid='pg'+color.replace('#','');
-  // Белый круг: cx=22, cy=17, r=13 — увеличен для простора вокруг эмодзи
-  // foreignObject: x=9, y=4, width=26, height=26 — точно совпадает с кругом
   return `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="60" viewBox="0 0 48 60">
   <defs>
-    <filter id="${fid}" x="-50%" y="-40%" width="200%" height="200%">
-      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="rgba(0,0,0,0.35)"/>
-    </filter>
-    <radialGradient id="${gid}" cx="35%" cy="25%" r="70%">
-      <stop offset="0%" stop-color="${cLight}"/>
+    <radialGradient id="${gid}" cx="38%" cy="28%" r="65%">
+      <stop offset="0%" stop-color="${lighten(color,40)}"/>
       <stop offset="100%" stop-color="${color}"/>
     </radialGradient>
   </defs>
-  <ellipse cx="24" cy="58" rx="6" ry="2.5" fill="rgba(0,0,0,0.18)"/>
-  <path filter="url(#${fid})"
-    stroke="rgba(0,0,0,0.18)" stroke-width="0.8"
+  <path
     d="M24 2C14.6 2 7 9.6 7 19c0 12.5 17 37 17 37S41 31.5 41 19C41 9.6 33.4 2 24 2z"
-    fill="url(#${gid})"/>
-  <circle cx="24" cy="19" r="13" fill="rgba(255,255,255,0.95)"/>
+    fill="url(#${gid})"
+    stroke="#0d1117"
+    stroke-width="1"
+    stroke-linejoin="round"/>
+  <circle cx="24" cy="19" r="13" fill="rgba(255,255,255,0.96)"/>
   <foreignObject x="11" y="6" width="26" height="26">
     <div xmlns="http://www.w3.org/1999/xhtml"
       style="width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1;">
@@ -1254,27 +1248,22 @@ function pinSVG(color, emoji){
 }
 
 function mosqueSVG(){
-  // Для мечети используем золотой цвет и чуть больший размер
-  const color='#D4900A';
-  const cLight=lighten(color,55);
-  const fid='pfmosque';
+  const color='#C8820A';
   const gid='pgmosque';
   return `<svg xmlns="http://www.w3.org/2000/svg" width="52" height="64" viewBox="0 0 48 60">
   <defs>
-    <filter id="${fid}" x="-50%" y="-40%" width="200%" height="200%">
-      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="rgba(0,0,0,0.35)"/>
-    </filter>
-    <radialGradient id="${gid}" cx="35%" cy="25%" r="70%">
-      <stop offset="0%" stop-color="${cLight}"/>
+    <radialGradient id="${gid}" cx="38%" cy="28%" r="65%">
+      <stop offset="0%" stop-color="${lighten(color,40)}"/>
       <stop offset="100%" stop-color="${color}"/>
     </radialGradient>
   </defs>
-  <ellipse cx="24" cy="58" rx="6" ry="2.5" fill="rgba(0,0,0,0.18)"/>
-  <path filter="url(#${fid})"
-    stroke="rgba(0,0,0,0.18)" stroke-width="0.8"
+  <path
     d="M24 2C14.6 2 7 9.6 7 19c0 12.5 17 37 17 37S41 31.5 41 19C41 9.6 33.4 2 24 2z"
-    fill="url(#${gid})"/>
-  <circle cx="24" cy="19" r="13" fill="rgba(255,255,255,0.95)"/>
+    fill="url(#${gid})"
+    stroke="#0d1117"
+    stroke-width="1"
+    stroke-linejoin="round"/>
+  <circle cx="24" cy="19" r="13" fill="rgba(255,255,255,0.96)"/>
   <foreignObject x="11" y="6" width="26" height="26">
     <div xmlns="http://www.w3.org/1999/xhtml"
       style="width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1;">
