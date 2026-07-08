@@ -1088,7 +1088,9 @@ function findNearest(){
   const ref=userCoords||TASHKENT;
   let best=null,bd=Infinity;
   allToilets.forEach(t=>{const d=haversine(ref[0],ref[1],t.lat,t.lon);if(d<bd){bd=d;best=t;}});
-  if(best){myMap.setCenter([best.lat,best.lon],17,{duration:700});setTimeout(()=>openSheet(best),750);}
+  if(best){
+    myMap.panTo([best.lat,best.lon],{flying:true,duration:600});
+  }
 }
 </script>
 
