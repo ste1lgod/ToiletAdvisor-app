@@ -1011,6 +1011,8 @@ function setLang(l){
   document.getElementById('searchInput').placeholder=t('search');
   document.getElementById('fnLabel').textContent=t('findNearest');
   document.getElementById('reviewText').placeholder=t('writeReview');
+  const lrt=document.getElementById('leaveReviewTitle');
+  if(lrt)lrt.textContent=t('leaveReview');
   const rl=document.getElementById('routeLabel');
   if(rl)rl.textContent=t('route');
   const sl=document.getElementById('submitLabel');
