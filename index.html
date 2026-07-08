@@ -18,23 +18,28 @@
 
 /* ===== DESIGN TOKENS ===== */
 :root{
-  --green:#019451;
-  --green-l:#e8f5ee;
-  --bg:#f4f8f5;
+  --green:#00A859;
+  --green-l:#e6f7ee;
+  --bg:#f2f4f7;
   --card:#ffffff;
   --text:#111827;
-  --text2:#6b7280;
-  --border:#e5e7eb;
+  --text2:#8e9199;
+  --border:#ebebeb;
   --sh:0 2px 12px rgba(0,0,0,0.07),0 6px 24px rgba(0,0,0,0.05);
   --sh2:0 8px 40px rgba(0,0,0,0.14);
-  --sh-float:0 4px 20px rgba(0,0,0,0.10),0 1px 4px rgba(0,0,0,0.06);
+  /* Единая тень для обеих плавающих панелей */
+  --sh-float:0 8px 32px rgba(0,0,0,0.10),0 2px 8px rgba(0,0,0,0.06);
+  --panel-bg:#ffffff;
+  --panel-border:rgba(0,0,0,0.06);
   --r:20px;--rs:16px;
   --star:#f59e0b;
   --purple:#7c3aed;
   --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   --header-h:138px;
   --nav-h:72px;
+  --nav-offset:calc(var(--nav-h) + var(--side-gap) + env(safe-area-inset-bottom,0px));
   --side-gap:12px;
+  /* glassmorphism оставляем для контролов карты, не для панелей */
   --glass-bg:rgba(255,255,255,0.82);
   --glass-blur:blur(18px);
 }
@@ -42,7 +47,9 @@ body.dark{
   --bg:#0f1117;--card:#1c1f26;--text:#f1f5f9;--text2:#94a3b8;
   --border:#2d3142;
   --sh:0 2px 12px rgba(0,0,0,0.4),0 6px 24px rgba(0,0,0,0.3);
-  --glass-bg:rgba(20,23,32,0.82);
+  --panel-bg:#1c1f26;
+  --panel-border:rgba(255,255,255,0.08);
+  --glass-bg:rgba(20,23,32,0.85);
 }
 
 html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-family:var(--font);color:var(--text);}
@@ -53,22 +60,18 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 /* ===== HEADER PANEL — floating card ===== */
 #headerPanel{
   position:fixed;top:0;left:0;right:0;z-index:20;
-  padding-top:env(safe-area-inset-top,0px);
 }
 .headerCard{
   margin:calc(env(safe-area-inset-top,0px) + 8px) var(--side-gap) 0;
-  background:var(--glass-bg);
-  backdrop-filter:var(--glass-blur);
-  -webkit-backdrop-filter:var(--glass-blur);
-  border-radius:20px;
-  border:1px solid rgba(255,255,255,0.6);
+  background:var(--panel-bg);
+  border-radius:24px;
+  border:1px solid var(--panel-border);
   box-shadow:var(--sh-float);
-  /* overflow:hidden убран — иначе langDrop клипается */
   padding-top:0;
 }
 body.dark .headerCard{
-  background:var(--glass-bg);
-  border-color:rgba(255,255,255,0.08);
+  background:var(--panel-bg);
+  border-color:var(--panel-border);
 }
 .hRow1{
   display:flex;align-items:center;gap:8px;
@@ -79,40 +82,42 @@ body.dark .headerCard{
 .hControls{display:flex;align-items:center;gap:6px;margin-left:auto;}
 
 /* Lang dropdown */
-.langWrap{position:relative;}
+.langWrap{position:relative;overflow:visible;}
 #langBtn{
   display:flex;align-items:center;gap:4px;padding:6px 10px;
-  border:none;border-radius:10px;background:#f1f5f9;
+  border:none;border-radius:10px;background:#f2f4f7;
   color:var(--text);font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;
+  position:relative;z-index:1001;
 }
 body.dark #langBtn{background:#2d3142;}
 #langChevron{width:10px;height:10px;transition:transform .18s;color:var(--text2);}
 #langBtn.open #langChevron{transform:rotate(180deg);}
 #langDrop{
-  position:absolute;top:calc(100% + 6px);right:0;min-width:80px;
+  position:fixed;min-width:90px;
   background:var(--card);border-radius:var(--rs);box-shadow:var(--sh2);
-  border:1px solid var(--border);z-index:9999;
-  opacity:0;transform:translateY(-4px) scale(.97);pointer-events:none;
-  transition:opacity .16s,transform .16s;
+  border:1px solid var(--border);z-index:10000;
+  opacity:0;transform:translateY(-6px) scale(.96);pointer-events:none;
+  transition:opacity .18s,transform .18s;
   overflow:hidden;
 }
 #langDrop.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;}
-.lOpt{padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text);transition:background .12s;}
+.lOpt{padding:11px 18px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text);transition:background .12s;}
 .lOpt:hover,.lOpt.active{color:var(--green);}
 .lOpt:hover{background:var(--green-l);}
 
 /* Theme btn */
 #themeBtn{
-  width:34px;height:34px;border-radius:10px;background:#f1f5f9;border:none;
+  width:34px;height:34px;border-radius:10px;background:#f2f4f7;border:none;
   cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;
 }
 body.dark #themeBtn{background:#2d3142;}
 
 /* Login btn */
 #loginBtn{
-  padding:7px 13px;border:none;border-radius:12px;background:var(--green);
+  padding:7px 14px;border:none;border-radius:12px;background:var(--green);
   color:#fff;font-size:12px;font-weight:700;font-family:var(--font);
   cursor:pointer;white-space:nowrap;flex-shrink:0;
+  box-shadow:0 2px 8px rgba(0,168,89,0.28);
 }
 #loginBtn:active{opacity:.82;}
 
@@ -120,7 +125,7 @@ body.dark #themeBtn{background:#2d3142;}
 .hRow2{padding:0 14px 8px;}
 #searchWrap{
   display:flex;align-items:center;gap:8px;
-  background:var(--bg);border-radius:14px;padding:0 12px;
+  background:#f2f4f7;border-radius:14px;padding:0 12px;
   border:1.5px solid var(--border);
 }
 body.dark #searchWrap{background:#161a24;}
@@ -151,6 +156,9 @@ body.dark .catChip{background:#1c1f26;}
   top:var(--controls-top, 170px);
   z-index:15;
   display:flex;flex-direction:column;gap:8px;
+  /* Жёстко фиксируем, чтобы не уезжало при перерендере */
+  will-change:top;
+  transform:translateZ(0);
 }
 .zoomBtn{
   width:44px;height:44px;border-radius:50%;
@@ -183,6 +191,9 @@ body.dark .zoomBtn{border-color:rgba(255,255,255,0.12);}
   display:flex;align-items:center;justify-content:center;
   box-shadow:var(--sh-float);
   transition:transform .15s;
+  /* Жёстко фиксируем */
+  will-change:top;
+  transform:translateZ(0);
 }
 body.dark #geoBtn{border-color:rgba(255,255,255,0.12);}
 #geoBtn:active{transform:scale(.88);}
@@ -206,66 +217,121 @@ body.dark #geoBtn{border-color:rgba(255,255,255,0.12);}
 /* ===== FIND NEAREST BUTTON ===== */
 #findNearestBtn{
   position:fixed;
-  bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 16px);
+  bottom:calc(var(--nav-offset) + 12px);
   left:50%;transform:translateX(-50%);z-index:15;
   display:flex;align-items:center;gap:7px;
-  padding:12px 24px;
-  background:var(--glass-bg);
-  backdrop-filter:var(--glass-blur);
-  -webkit-backdrop-filter:var(--glass-blur);
-  border:1px solid rgba(255,255,255,0.55);
+  padding:12px 22px;
+  background:var(--panel-bg);
+  border:1px solid var(--panel-border);
   border-radius:30px;
   font-size:13px;font-weight:700;font-family:var(--font);color:var(--green);
   cursor:pointer;white-space:nowrap;
   box-shadow:var(--sh-float);
   transition:transform .15s,opacity .15s;
 }
-body.dark #findNearestBtn{border-color:rgba(255,255,255,0.12);}
 #findNearestBtn:active{transform:translateX(-50%) scale(.96);opacity:.85;}
 
-/* ===== BOTTOM NAV — glassmorphism floating ===== */
+/* ===== BOTTOM NAV — iOS floating card, идентична headerCard ===== */
 #bottomNav{
-  position:fixed;bottom:0;left:0;right:0;z-index:20;
-  background:var(--glass-bg);
-  backdrop-filter:var(--glass-blur);
-  -webkit-backdrop-filter:var(--glass-blur);
-  border-top:1px solid rgba(255,255,255,0.45);
-  display:flex;align-items:flex-end;justify-content:space-around;
-  padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px));
-  box-shadow:0 -4px 24px rgba(0,0,0,0.08);
+  position:fixed;
+  bottom:calc(env(safe-area-inset-bottom,0px) + var(--side-gap));
+  left:var(--side-gap);right:var(--side-gap);
+  z-index:20;
+  background:var(--panel-bg);
+  border:1px solid var(--panel-border);
+  border-radius:24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 0 12px;
+  box-shadow:var(--sh-float);
 }
 body.dark #bottomNav{
-  border-top-color:rgba(255,255,255,0.08);
-  box-shadow:0 -4px 24px rgba(0,0,0,0.3);
+  background:var(--panel-bg);
+  border-color:var(--panel-border);
 }
-  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
-  background:none;border:none;cursor:pointer;color:var(--text2);
-  padding:2px 0;transition:color .18s;font-family:var(--font);
+
+/* Боковые кнопки (Карта / Профиль) */
+.navBtn{
+  flex:1;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  background:none;border:none;cursor:pointer;
+  color:var(--text2);
+  font-family:var(--font);
+  padding:0;
+  transition:color .18s;
+  /* Отступ от края: первый — слева, последний — справа */
+}
+/* Левая кнопка (Карта) */
+.navBtn:first-child{
+  padding-left:36px;
+  align-items:center;
+}
+/* Правая кнопка (Профиль) */
+.navBtn:last-child{
+  padding-right:36px;
+  align-items:center;
 }
 .navBtn.active{color:var(--green);}
-.navLabel{font-size:10px;font-weight:600;}
-.navIco svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
-.navCenter{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding-bottom:2px;}
+
+.navLabel{
+  font-size:10px;font-weight:600;
+  letter-spacing:-.1px;
+  text-align:center;
+  font-family:var(--font);
+}
+.navIco svg{
+  width:24px;height:24px;
+  stroke:currentColor;fill:none;
+  stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
+}
+
+/* Центральная кнопка (Добавить) — зелёный круг */
+.navCenter{
+  flex:0 0 auto;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  cursor:pointer;
+  padding:0 16px;
+}
 .navCenterCircle{
   width:52px;height:52px;border-radius:50%;
   background:var(--green);
   display:flex;align-items:center;justify-content:center;
-  box-shadow:0 4px 18px rgba(1,148,81,.45);
-  margin-top:-20px;transition:transform .15s;
+  box-shadow:0 4px 16px rgba(0,168,89,0.38);
+  margin-top:-22px;
+  transition:transform .15s, box-shadow .15s;
 }
-.navCenterCircle:active{transform:scale(.92);}
-.navCenterCircle svg{width:24px;height:24px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
-.navCenterLabel{font-size:10px;font-weight:600;color:var(--text2);font-family:var(--font);}
+.navCenterCircle:active{
+  transform:scale(.92);
+  box-shadow:0 2px 8px rgba(0,168,89,0.28);
+}
+.navCenterCircle svg{
+  width:24px;height:24px;
+  stroke:#fff;fill:none;
+  stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;
+}
+.navCenterLabel{
+  font-size:10px;font-weight:600;
+  color:var(--text2);
+  font-family:var(--font);
+  letter-spacing:-.1px;
+  text-align:center;
+}
 </style>
 
 <style>
 /* ===== SHEET BACKDROP ===== */
 #sheetBackdrop{
   position:fixed;inset:0;z-index:28;
-  background:rgba(0,0,0,0);pointer-events:none;
+  background:rgba(0,0,0,0);
+  /* Всегда pointer-events:none по умолчанию — включается только JS */
+  pointer-events:none;
   transition:background .3s;
 }
-#sheetBackdrop.vis{background:rgba(0,0,0,0.32);pointer-events:auto;}
+#sheetBackdrop.vis{
+  background:rgba(0,0,0,0.32);
+  /* pointer-events управляется только через JS, не CSS */
+}
 
 /* ===== BOTTOM SHEET ===== */
 #toiletSheet{
@@ -396,8 +462,8 @@ body.dark .phoneCode{background:#2d3142;}
   position:fixed;top:0;left:0;right:0;bottom:0;z-index:18;
   background:var(--bg);display:flex;flex-direction:column;align-items:center;
   overflow-y:auto;
-  padding-top:80px; /* fallback, JS обновляет динамически */
-  padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 16px);
+  padding-top:80px;
+  padding-bottom:calc(var(--nav-offset) + 16px);
 }
 .tScreen.hidden{display:none!important;}
 .hidden{display:none!important;}
@@ -491,7 +557,7 @@ body.dark .phoneCode{background:#2d3142;}
 /* ===== TOAST — glassmorphic pill ===== */
 #toast{
   position:fixed;
-  bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 76px);
+  bottom:calc(var(--nav-offset) + 72px);
   left:50%;transform:translateX(-50%) translateY(16px);
   background:rgba(20,20,30,0.75);
   backdrop-filter:blur(20px);
@@ -615,7 +681,7 @@ body.dark #toast{
 </div>
 
 <!-- SHEET BACKDROP -->
-<div id="sheetBackdrop" onclick="closeSheet()"></div>
+<div id="sheetBackdrop"></div>
 
 <!-- BOTTOM SHEET -->
 <div id="toiletSheet">
@@ -821,9 +887,20 @@ applyTheme();
 function toggleLangDrop(){
   const btn=document.getElementById('langBtn');
   const dd=document.getElementById('langDrop');
-  const open=dd.classList.toggle('open');
-  btn.classList.toggle('open',open);
-  if(open)setTimeout(()=>document.addEventListener('click',closeLangOut,{once:true,capture:true}),10);
+  const isOpen=dd.classList.contains('open');
+  if(isOpen){
+    dd.classList.remove('open');
+    btn.classList.remove('open');
+    return;
+  }
+  // Позиционируем dropdown как fixed относительно кнопки
+  const rect=btn.getBoundingClientRect();
+  dd.style.top=(rect.bottom+6)+'px';
+  dd.style.right=(window.innerWidth-rect.right)+'px';
+  dd.style.left='auto';
+  dd.classList.add('open');
+  btn.classList.add('open');
+  setTimeout(()=>document.addEventListener('click',closeLangOut,{once:true,capture:true}),10);
 }
 function closeLangOut(e){
   if(!document.querySelector('.langWrap').contains(e.target)){
@@ -986,50 +1063,63 @@ function mosqueSVG(){
 
 <script>
 // ── BOTTOM SHEET OPEN ──
+let isSheetOpen=false;
+
+function _openBackdrop(){
+  const bd=document.getElementById('sheetBackdrop');
+  bd.classList.add('vis');
+  // Включаем pointer-events только через JS после добавления класса
+  requestAnimationFrame(()=>{ bd.style.pointerEvents='auto'; });
+}
+function _closeBackdrop(){
+  const bd=document.getElementById('sheetBackdrop');
+  // Сначала блокируем клики, потом убираем класс
+  bd.style.pointerEvents='none';
+  bd.classList.remove('vis');
+}
+
 async function openSheet(toilet){
+  if(isSheetOpen)return; // защита от двойного открытия
+  isSheetOpen=true;
   selectedToilet=toilet;
   document.getElementById('sTitle').textContent=toilet.title;
-  // Distance from real GPS or fallback
   const ref=userCoords||TASHKENT;
   const isFallback=!userCoords;
   document.getElementById('sDistPill').textContent=formatDist(haversine(ref[0],ref[1],toilet.lat,toilet.lon),isFallback);
-  // Status pills
   const op=document.getElementById('sOpenPill');
   op.textContent=toilet.isOpen?t('open'):t('closed');
   op.className='mPill '+(toilet.isOpen?'pGreen':'pRed');
   const fp=document.getElementById('sFreePill');
   fp.textContent=toilet.isFree?t('free'):t('paid');
   fp.className='mPill '+(toilet.isFree?'pGreen2':'pBlue');
-  // Taharatkhana
   document.getElementById('taharatBlock').classList.toggle('hidden',!toilet.isTaharatkhana);
-  // Badges
   const bads=[];
   if(toilet.hasSoap)bads.push('🧼 Мыло');
   if(toilet.hasPaper)bads.push('🧻 Бумага');
   if(toilet.isAccessible)bads.push('♿ Доступность');
   document.getElementById('sBadges').innerHTML=bads.map(b=>`<span class="sBadge">${b}</span>`).join('');
-  // Desc
   const desc=document.getElementById('sDesc');
   desc.textContent=toilet.description||'';
   desc.style.display=toilet.description?'block':'none';
-  // Reviews
   const reviews=await getReviews(toilet.id);
   const avg=reviews.length?(reviews.reduce((s,r)=>s+r.rating,0)/reviews.length):0;
   document.getElementById('sRatingVal').textContent=avg>0?avg.toFixed(1):'—';
   renderReviews(reviews);
   resetReviewForm();
-  // Open sheet + backdrop
+  // Открываем шторку и backdrop
   document.getElementById('toiletSheet').classList.add('open');
-  document.getElementById('sheetBackdrop').classList.add('vis');
+  _openBackdrop();
 }
+
 function closeSheet(){
+  if(!isSheetOpen)return;
+  isSheetOpen=false;
   const sheet=document.getElementById('toiletSheet');
-  const backdrop=document.getElementById('sheetBackdrop');
+  // Немедленно блокируем backdrop
+  _closeBackdrop();
   sheet.classList.remove('open');
-  sheet.style.transform='';        // сбрасываем inline transform от drag
-  sheet.style.transition='';       // восстанавливаем transition после drag
-  backdrop.classList.remove('vis');
-  backdrop.style.pointerEvents='none'; // гарантируем снятие pointer-events
+  sheet.style.transform='';
+  sheet.style.transition='';
   selectedToilet=null;
 }
 function resetReviewForm(){
@@ -1123,24 +1213,31 @@ document.getElementById('authNotice').addEventListener('click',openAuthModal);
 <script>
 // ── iOS DRAG-TO-DISMISS (sheet + modals) ──
 function initDrag(dragZone,panel,onDismiss){
-  let startY=0,startT=0,curY=0,dragging=false;
+  let startY=0,startT=0,curY=0,dragging=false,dismissing=false;
   const isMobile=()=>window.matchMedia('(pointer:coarse)').matches;
   function onStart(clientY){
+    if(dismissing)return;
     startY=clientY;startT=Date.now();curY=0;dragging=true;
     panel.style.transition='none';
   }
   function onMove(clientY){
-    if(!dragging)return;
+    if(!dragging||dismissing)return;
     curY=Math.max(0,clientY-startY);
     panel.style.transform=`translateY(${curY}px)`;
   }
   function onEnd(){
-    if(!dragging)return;dragging=false;
-    panel.style.transition='';  // восстанавливаем до проверки
+    if(!dragging||dismissing)return;
+    dragging=false;
+    panel.style.transition='';
     const vel=(curY)/(Date.now()-startT);
     if(curY>panel.offsetHeight*0.45||vel>0.6){
+      dismissing=true;
       panel.style.transform='translateY(100%)';
-      setTimeout(()=>{onDismiss();panel.style.transform='';},320);
+      setTimeout(()=>{
+        dismissing=false;
+        panel.style.transform='';
+        onDismiss();
+      },320);
     } else {
       panel.style.transform='';
     }
@@ -1154,6 +1251,8 @@ function initDrag(dragZone,panel,onDismiss){
 }
 // Sheet drag
 initDrag(document.getElementById('sDragZone'),document.getElementById('toiletSheet'),closeSheet);
+// Backdrop click — только через JS
+document.getElementById('sheetBackdrop').addEventListener('click',()=>{ if(isSheetOpen)closeSheet(); });
 // Auth modal drag
 initDrag(document.getElementById('authDrag'),document.getElementById('authBox'),()=>closeOverlay('authOverlay'));
 // Admin modal drag
@@ -1221,20 +1320,41 @@ function switchTab(tab){
 
   const isMap=tab==='map';
 
-  // Показываем/скрываем map-специфичные элементы включая весь headerPanel
-  const mapOnly=['mapControls','zoomControls','geoBtn','findNearestBtn'];
+  // headerPanel — только на вкладке Карта
+  const hp=document.getElementById('headerPanel');
+  if(hp){
+    hp.style.display=isMap?'':'none';
+    hp.style.visibility=isMap?'':'hidden';
+  }
+
+  // Элементы, видимые только на карте
+  const mapOnly=['zoomControls','geoBtn','findNearestBtn'];
   mapOnly.forEach(id=>{
     const el=document.getElementById(id);
-    if(el)el.style.display=isMap?'':'none';
+    if(!el)return;
+    if(isMap){
+      el.style.display='';
+      el.style.visibility='visible';
+    } else {
+      el.style.display='none';
+      el.style.visibility='hidden';
+    }
   });
 
-  // headerPanel: на карте — полный, на других вкладках — скрыт полностью
-  const hp=document.getElementById('headerPanel');
-  if(hp)hp.style.display=isMap?'':'none';
+  // mapControls (строка поиска + чипы) — тоже только на карте
+  const mc=document.getElementById('mapControls');
+  if(mc)mc.style.display=isMap?'':'none';
 
   if(isMap){
-    // Возврат на карту — пересчитываем позиции контролов
-    setTimeout(adjustControlsPosition,50);
+    // Восстанавливаем headerPanel видимость ПЕРЕД пересчётом позиций
+    if(hp){hp.style.display='';hp.style.visibility='visible';}
+    if(mc)mc.style.display='';
+    // Пересчитываем позиции контролов с задержкой после рендера
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        adjustControlsPosition();
+      });
+    });
   } else {
     setScreenPaddingTop();
   }
@@ -1254,7 +1374,6 @@ function switchTab(tab){
     const ps=document.getElementById('profileScreen');
     ps.classList.remove('hidden');
     if(currentUser){
-      // Аватар — первая буква телефона/логина
       const label=currentUser.phone||currentUser.login||'?';
       document.getElementById('pAvatarLetter').textContent=label.replace(/\+/g,'').slice(0,1).toUpperCase();
       document.getElementById('pAvatarWrap').style.background=
@@ -1353,14 +1472,17 @@ window.addEventListener('offline',()=>showOfflineBanner());
 if(!navigator.onLine)showOfflineBanner();
 
 // ── ADJUST FLOATING CONTROLS POSITION ──
+let _lastControlsTop=170,_lastGeoTop=286;
 function adjustControlsPosition(){
-  const card=document.querySelector('.headerCard');
   const hp=document.getElementById('headerPanel');
-  if(!card||!hp||hp.style.display==='none')return;
+  const card=document.querySelector('.headerCard');
+  if(!card||!hp||hp.style.display==='none'||hp.style.visibility==='hidden')return;
   const rect=card.getBoundingClientRect();
-  if(rect.height===0)return;
+  if(rect.height<10)return; // карточка ещё не отрендерена
   const bottom=rect.bottom+8;
   const geoTop=bottom+44+8+44+16;
+  _lastControlsTop=bottom;
+  _lastGeoTop=geoTop;
   document.documentElement.style.setProperty('--controls-top', bottom+'px');
   document.documentElement.style.setProperty('--geo-top', geoTop+'px');
   const ob=document.getElementById('offlineBanner');
