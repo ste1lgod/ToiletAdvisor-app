@@ -441,21 +441,31 @@ body.dark .sBadge{background:#2d3142;color:#94a3b8;}
 }
 .rvItem{
   display:flex;gap:12px;
-  padding:14px;
+  padding:14px 14px 12px;
   margin-bottom:10px;
   background:var(--bg);
-  border-radius:12px;
+  border-radius:14px;
   border:1px solid var(--border);
+  box-shadow:0 1px 4px rgba(0,0,0,0.04);
 }
-body.dark .rvItem{background:#161a24;}
+body.dark .rvItem{background:#161a24;box-shadow:none;}
 .rvItem:last-child{margin-bottom:0;}
-.rvAvatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;flex-shrink:0;}
+.rvAvatar{
+  width:42px;height:42px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:14px;color:#fff;flex-shrink:0;
+  box-shadow:0 2px 8px rgba(0,0,0,0.15);
+}
 .rvBody{flex:1;min-width:0;}
-.rvHeader{display:flex;align-items:center;gap:4px;margin-bottom:4px;}
-.rvName{font-weight:700;font-size:14.5px;color:var(--text);}
-.rvDate{font-size:11px;color:var(--text2);margin-left:auto;white-space:nowrap;flex-shrink:0;}
-.rvStars{color:var(--star);font-size:13px;letter-spacing:1px;margin-bottom:5px;}
-.rvText{font-size:13px;color:var(--text2);line-height:1.55;word-break:break-word;}
+.rvHeader{
+  display:flex;align-items:center;
+  justify-content:space-between;
+  gap:8px;margin-bottom:5px;
+}
+.rvName{font-weight:800;font-size:15px;color:var(--text);letter-spacing:-.2px;}
+.rvDate{font-size:11px;color:var(--text2);white-space:nowrap;flex-shrink:0;}
+.rvStars{color:var(--star);font-size:13px;letter-spacing:1px;margin-bottom:6px;}
+.rvText{font-size:13.5px;color:var(--text2);line-height:1.55;word-break:break-word;}
 
 /* Review form */
 #reviewForm{margin-top:16px;padding-top:16px;border-top:1px solid var(--border);}
