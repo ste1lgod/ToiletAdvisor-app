@@ -18,13 +18,13 @@ const TOILETS = [
     title: 'Туалет на вокзале Ташкент-Главный',
     description: 'Платный туалет в здании главного железнодорожного вокзала',
     lat: 41.3174, lon: 69.2870,
-    isOpen: true, isFree: false, hasSoap: true, hasPaper: true, isAccessible: true, isTaharatkhana: false
+    isOpen: false, isFree: false, hasSoap: true, hasPaper: true, isAccessible: true, isTaharatkhana: false
   },
   {
     title: 'Туалет в парке Алишера Навои',
     description: 'Общественный туалет в центральной части парка Навои',
     lat: 41.3058, lon: 69.2714,
-    isOpen: true, isFree: true, hasSoap: false, hasPaper: true, isAccessible: false, isTaharatkhana: false
+    isOpen: false, isFree: true, hasSoap: false, hasPaper: true, isAccessible: false, isTaharatkhana: false
   },
   {
     title: 'Тахаратхана в мечети Хастимом',
