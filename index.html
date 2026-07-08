@@ -1205,11 +1205,11 @@ function renderMarkers(){
     let svg, sz, off;
     if(toilet.isTaharatkhana){
       svg=mosqueSVG();
-      sz=[48,60];off=[-24,-60];
+      sz=[52,64];off=[-26,-64];
     } else {
       const color=toilet.isOpen?'#00A86B':'#E53935';
       svg=pinSVG(color,'🚻');
-      sz=[44,56];off=[-22,-56];
+      sz=[48,60];off=[-24,-60];
     }
     const pm=new ymaps.Placemark([toilet.lat,toilet.lon],{hintContent:toilet.title},{
       iconLayout:'default#image',
