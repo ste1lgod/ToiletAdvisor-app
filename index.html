@@ -63,15 +63,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 }
 .headerCard{
   margin:calc(env(safe-area-inset-top,0px) + 8px) var(--side-gap) 0;
-  background:var(--panel-bg);
+  background:var(--glass-bg);
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
   border-radius:24px;
-  border:1px solid var(--panel-border);
+  border:1px solid rgba(255,255,255,0.6);
   box-shadow:var(--sh-float);
   padding-top:0;
 }
 body.dark .headerCard{
-  background:var(--panel-bg);
-  border-color:var(--panel-border);
+  background:var(--glass-bg);
+  border-color:rgba(255,255,255,0.10);
 }
 .hRow1{
   display:flex;align-items:center;gap:8px;
@@ -217,37 +219,55 @@ body.dark #geoBtn{border-color:rgba(255,255,255,0.12);}
 /* ===== FIND NEAREST BUTTON ===== */
 #findNearestBtn{
   position:fixed;
-  bottom:calc(var(--nav-offset) + 12px);
+  bottom:calc(var(--nav-offset) + 68px);
   left:50%;transform:translateX(-50%);z-index:15;
   display:flex;align-items:center;gap:7px;
   padding:12px 22px;
-  background:var(--panel-bg);
-  border:1px solid var(--panel-border);
+  background:var(--glass-bg);
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
+  border:1px solid rgba(255,255,255,0.6);
   border-radius:30px;
   font-size:13px;font-weight:700;font-family:var(--font);color:var(--green);
   cursor:pointer;white-space:nowrap;
   box-shadow:var(--sh-float);
   transition:transform .15s,opacity .15s;
 }
+body.dark #findNearestBtn{border-color:rgba(255,255,255,0.12);}
 #findNearestBtn:active{transform:translateX(-50%) scale(.96);opacity:.85;}
 
-/* ===== BOTTOM NAV — iOS floating card, идентична headerCard ===== */
+/* ===== BOTTOM NAV — iOS floating card, glassmorphism ===== */
 #bottomNav{
   position:fixed;
-  bottom:calc(env(safe-area-inset-bottom,0px) + var(--side-gap));
+  bottom:calc(env(safe-area-inset-bottom,0px) + 4px);
   left:var(--side-gap);right:var(--side-gap);
   z-index:20;
-  background:var(--panel-bg);
-  border:1px solid var(--panel-border);
+  background:var(--glass-bg);
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
+  border:1px solid rgba(255,255,255,0.6);
   border-radius:24px;
   display:flex;
   align-items:center;
-  padding:10px 0 12px;
+  /* Нижний паддинг учитывает home indicator iOS */
+  padding:10px 0 calc(12px + env(safe-area-inset-bottom,0px));
   box-shadow:var(--sh-float);
+  /* Скрываем логотип Яндекс и home indicator под панелью */
+  overflow:hidden;
 }
 body.dark #bottomNav{
-  background:var(--panel-bg);
-  border-color:var(--panel-border);
+  background:var(--glass-bg);
+  border-color:rgba(255,255,255,0.10);
+}
+
+/* Скрываем логотип Яндекс.Карт */
+.ymaps-2-1-79-copyright,
+.ymaps-2-1-79-gotoymaps,
+[class*="ymaps"][class*="copyright"],
+[class*="ymaps"][class*="gotoymaps"]{
+  display:none!important;
+  opacity:0!important;
+  pointer-events:none!important;
 }
 
 /* Боковые кнопки (Карта / Профиль) — каждая занимает треть */
@@ -953,7 +973,22 @@ function initMap(){
     loadToilets();
     startGeo();
     setTimeout(adjustControlsPosition,200);
+    // Скрываем логотип Яндекс
+    setTimeout(hideYandexLogo,800);
+    setTimeout(hideYandexLogo,2000);
   }catch(err){console.error('Map:',err);}
+}
+function hideYandexLogo(){
+  // Яндекс использует динамические имена классов — ищем по атрибутам и содержимому
+  document.querySelectorAll('[class*="copyright"],[class*="Copyright"],[class*="gotoymaps"],[class*="logo"]').forEach(el=>{
+    if(el.closest('#map')){el.style.cssText='display:none!important;opacity:0!important;pointer-events:none!important;';}
+  });
+  // Также через MutationObserver для элементов которые добавляются позже
+  const mapEl=document.getElementById('map');
+  if(mapEl&&!mapEl._logoObserver){
+    mapEl._logoObserver=new MutationObserver(()=>hideYandexLogo());
+    mapEl._logoObserver.observe(mapEl,{childList:true,subtree:true});
+  }
 }
 if(typeof ymaps!=='undefined')ymaps.ready(initMap);
 
