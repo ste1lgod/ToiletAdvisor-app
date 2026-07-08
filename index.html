@@ -702,7 +702,12 @@ body.dark .phoneCode{background:#2d3142;}
 }
 
 /* Add screen */
-#addScreen{padding-left:16px;padding-right:16px;align-items:stretch;}
+#addScreen{
+  padding-left:16px;padding-right:16px;
+  align-items:stretch;
+  justify-content:flex-start;
+  padding-top:calc(env(safe-area-inset-top,0px) + 15vh);
+}
 #addScreenTitle{font-size:20px;font-weight:700;color:var(--text);text-align:center;padding:0 0 10px;font-family:var(--font);}
 #addMapHint{font-size:13px;color:var(--green);text-align:center;margin:0 0 14px;padding:11px;background:var(--green-l);border-radius:var(--rs);font-weight:500;}
 #addForm{display:flex;flex-direction:column;gap:10px;}
