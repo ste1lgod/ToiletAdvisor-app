@@ -1854,6 +1854,10 @@ function switchTab(tab){
       addCoords=null;
     } else {
       document.getElementById('adminDeniedScreen').classList.remove('hidden');
+      // Обновляем текст под текущий язык
+      document.getElementById('adTitle').textContent=t('adminDeniedTitle');
+      document.getElementById('adText').textContent=t('adminDenied');
+      document.getElementById('adBtnLabel').textContent=t('adminDeniedBtn');
     }
   } else if(tab==='profile'){
     const ps=document.getElementById('profileScreen');
