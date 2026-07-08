@@ -1548,9 +1548,8 @@ function resetReviewForm(){
 <script>
 // ── REVIEWS ──
 async function getReviews(id){
+  await _loadFirebase();
   try{
-    await _loadFirebase();
-    // orderBy + limit — требует составной индекс toiletId + createdAt в Firestore Console
     const snap=await db.collection('reviews')
       .where('toiletId','==',id)
       .orderBy('createdAt','desc')
@@ -1558,20 +1557,16 @@ async function getReviews(id){
       .get();
     return snap.docs.map(d=>({id:d.id,...d.data()}));
   }catch(e){
-    // Fallback без orderBy если индекс ещё не создан
-    try{
-      const snap=await db.collection('reviews').where('toiletId','==',id).get();
-      return snap.docs.map(d=>({id:d.id,...d.data()}));
-    }catch(e2){
-      console.warn('Ошибка загрузки отзывов:',e2.message);
-      return[];
-    }
+    console.warn('[getReviews] indexed query failed, reason:',e.code, e.message);
+    // Fallback — simple where без orderBy (медленнее, но работает без индекса)
+    const snap=await db.collection('reviews').where('toiletId','==',id).limit(50).get();
+    return snap.docs.map(d=>({id:d.id,...d.data()}));
   }
 }
 function renderReviews(reviews){
   const c=document.getElementById('reviewsList');
   if(!reviews.length){c.innerHTML=`<p class="rvNoReviews">${t('noReviews')}</p>`;return;}
-  // Сортируем: новые сверху
+  // Firestore уже вернул desc, сортируем только если нужно
   const sorted=[...reviews].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
   c.innerHTML=sorted.map(r=>{
     const name=r.userPhone||r.userLogin||'Аноним';
