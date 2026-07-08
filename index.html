@@ -155,7 +155,7 @@ body.dark .catChip{background:#1c1f26;}
 #zoomControls{
   position:fixed;
   left:var(--side-gap);
-  top:var(--controls-top, 170px);
+  top:calc(var(--controls-top, 170px) + 32px);
   z-index:15;
   display:flex;flex-direction:column;gap:8px;
   /* Жёстко фиксируем, чтобы не уезжало при перерендере */
