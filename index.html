@@ -1416,14 +1416,17 @@ function resetReviewForm(){
   const sl2=document.getElementById('submitLabel');
   if(sl2)sl2.textContent=t('submit');
   const notice=document.getElementById('authNotice');
+  // Всегда показываем textarea и кнопку — скрываем только notice
+  document.getElementById('reviewText').style.display='block';
+  document.getElementById('submitReviewBtn').style.display='flex';
   if(currentUser){
     notice.classList.add('hidden');
-    document.getElementById('reviewText').style.display='block';
-    document.getElementById('submitReviewBtn').style.display='block';
+    document.getElementById('reviewText').disabled=false;
+    document.getElementById('submitReviewBtn').style.opacity='1';
   } else {
     notice.classList.remove('hidden');
-    document.getElementById('reviewText').style.display='none';
-    document.getElementById('submitReviewBtn').style.display='none';
+    document.getElementById('reviewText').disabled=false; // видима, но клик ведёт к логину
+    document.getElementById('submitReviewBtn').style.opacity='0.72';
   }
 }
 </script>
