@@ -1,118 +1,77 @@
-const https = require('https');
-const API = 'toiletadvisor-server.onrender.com';
+/**
+ * seed.js — Инициализация Firestore: admin-аккаунт + туалеты
+ *
+ * Запуск:
+ *   1. npm install firebase-admin   (один раз)
+ *   2. Скачай serviceAccountKey.json из Firebase Console →
+ *      Project settings (шестерёнка) → Service accounts →
+ *      "Generate new private key" → сохрани как serviceAccountKey.json рядом с этим файлом
+ *   3. node seed.js
+ */
 
-const TOILETS = [
-  {
-    title: 'Туалет в Tashkent City Mall',
-    description: 'Чистый туалет на 1-м этаже ТРЦ Tashkent City Mall, рядом с фуд-кортом',
-    lat: 41.2956, lon: 69.2797,
-    isOpen: true, isFree: true, hasSoap: true, hasPaper: true, isAccessible: true, isTaharatkhana: false
-  },
-  {
-    title: 'Тахаратхана у мечети Минор',
-    description: 'Место для омовения при мечети Минор. Горячая вода, мыло, тапочки',
-    lat: 41.2871, lon: 69.2768,
-    isOpen: true, isFree: true, hasSoap: true, hasPaper: false, isAccessible: false, isTaharatkhana: true
-  },
-  {
-    title: 'Туалет на вокзале Ташкент-Главный',
-    description: 'Платный туалет в здании главного железнодорожного вокзала',
-    lat: 41.3174, lon: 69.2870,
-    isOpen: false, isFree: false, hasSoap: true, hasPaper: true, isAccessible: true, isTaharatkhana: false
-  },
-  {
-    title: 'Туалет в парке Алишера Навои',
-    description: 'Общественный туалет в центральной части парка Навои',
-    lat: 41.3058, lon: 69.2714,
-    isOpen: false, isFree: true, hasSoap: false, hasPaper: true, isAccessible: false, isTaharatkhana: false
-  },
-  {
-    title: 'Тахаратхана в мечети Хастимом',
-    description: 'Тахаратхана при соборной мечети Хасти-Имом, рядом с медресе',
-    lat: 41.3276, lon: 69.2623,
-    isOpen: true, isFree: true, hasSoap: true, hasPaper: false, isAccessible: false, isTaharatkhana: true
-  },
-  {
-    title: 'Туалет в ТРЦ Next',
-    description: 'Туалет на 2-м этаже торгового центра Next на Юнусабаде',
-    lat: 41.3376, lon: 69.2841,
-    isOpen: true, isFree: true, hasSoap: true, hasPaper: true, isAccessible: true, isTaharatkhana: false
-  },
-  {
-    title: 'Туалет на Broadway (пешеходная зона)',
-    description: 'Общественный платный туалет на пешеходной улице Сайилгох (Broadway)',
-    lat: 41.2983, lon: 69.2717,
-    isOpen: true, isFree: false, hasSoap: true, hasPaper: true, isAccessible: false, isTaharatkhana: false
-  }
+const admin = require('firebase-admin');
+const crypto = require('crypto');
+
+let serviceAccount;
+try {
+  serviceAccount = require('./serviceAccountKey.json');
+} catch (e) {
+  console.error('❌ Файл serviceAccountKey.json не найден!');
+  console.error('   Скачай его: Firebase Console → Project settings → Service accounts → Generate new private key');
+  process.exit(1);
+}
+
+admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+const db = admin.firestore();
+
+function hashPassword(pass) {
+  return crypto.createHash('sha256').update(pass).digest('hex');
+}
+
+const SEED_TOILETS = [
+  { id:'seed-0001-tashkent-city-mall', lat:41.2956, lon:69.2797, title:'Туалет в Tashkent City Mall', description:'Чистый туалет на 1-м этаже ТРЦ Tashkent City Mall, рядом с фуд-кортом', isOpen:true,  isFree:true,  hasSoap:true,  hasPaper:true,  isAccessible:true,  isTaharatkhana:false },
+  { id:'seed-0002-masjid-minor',       lat:41.2871, lon:69.2768, title:'Тахаратхана у мечети Минор',         description:'Место для омовения при мечети Минор. Горячая вода, мыло, тапочки',         isOpen:true,  isFree:true,  hasSoap:true,  hasPaper:false, isAccessible:false, isTaharatkhana:true  },
+  { id:'seed-0003-railway-station',    lat:41.3174, lon:69.2870, title:'Туалет на вокзале Ташкент-Главный',  description:'Платный туалет в здании главного железнодорожного вокзала',                isOpen:false, isFree:false, hasSoap:true,  hasPaper:true,  isAccessible:true,  isTaharatkhana:false },
+  { id:'seed-0004-navoi-park',         lat:41.3058, lon:69.2714, title:'Туалет в парке Алишера Навои',       description:'Общественный туалет в центральной части парка Навои',                      isOpen:false, isFree:true,  hasSoap:false, hasPaper:true,  isAccessible:false, isTaharatkhana:false },
+  { id:'seed-0005-khastimom',          lat:41.3276, lon:69.2623, title:'Тахаратхана в мечети Хастимом',      description:'Тахаратхана при соборной мечети Хасти-Имом, рядом с медресе',              isOpen:true,  isFree:true,  hasSoap:true,  hasPaper:false, isAccessible:false, isTaharatkhana:true  },
+  { id:'seed-0006-next-mall',          lat:41.3376, lon:69.2841, title:'Туалет в ТРЦ Next',                  description:'Туалет на 2-м этаже торгового центра Next на Юнусабаде',                  isOpen:true,  isFree:true,  hasSoap:true,  hasPaper:true,  isAccessible:true,  isTaharatkhana:false },
+  { id:'seed-0007-broadway',           lat:41.2983, lon:69.2717, title:'Туалет на Broadway (пешеходная зона)', description:'Общественный платный туалет на пешеходной улице Сайилгох (Broadway)',    isOpen:true,  isFree:false, hasSoap:true,  hasPaper:true,  isAccessible:false, isTaharatkhana:false },
 ];
 
-function postJSON(path, body, token) {
-  return new Promise((resolve, reject) => {
-    const data = JSON.stringify(body);
-    const headers = { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(data) };
-    if (token) headers['Authorization'] = 'Bearer ' + token;
-    const req = https.request({ hostname: API, path, method: 'POST', headers }, res => {
-      let raw = '';
-      res.on('data', c => raw += c);
-      res.on('end', () => { try { resolve(JSON.parse(raw)); } catch(e) { resolve(raw); } });
-    });
-    req.on('error', reject);
-    req.write(data);
-    req.end();
-  });
-}
-
-function deleteJSON(path, token) {
-  return new Promise((resolve, reject) => {
-    const headers = { 'Content-Type': 'application/json' };
-    if (token) headers['Authorization'] = 'Bearer ' + token;
-    const req = https.request({ hostname: API, path, method: 'DELETE', headers }, res => {
-      let raw = '';
-      res.on('data', c => raw += c);
-      res.on('end', () => { try { resolve(JSON.parse(raw)); } catch(e) { resolve(raw); } });
-    });
-    req.on('error', reject);
-    req.end();
-  });
-}
-
-function getJSON(path, token) {
-  return new Promise((resolve, reject) => {
-    const headers = {};
-    if (token) headers['Authorization'] = 'Bearer ' + token;
-    const req = https.request({ hostname: API, path, method: 'GET', headers }, res => {
-      let raw = '';
-      res.on('data', c => raw += c);
-      res.on('end', () => { try { resolve(JSON.parse(raw)); } catch(e) { resolve(raw); } });
-    });
-    req.on('error', reject);
-    req.end();
-  });
-}
-
 async function main() {
-  console.log('Logging in as admin...');
-  const auth = await postJSON('/api/admin/login', { login: 'admin', password: 'admin123' });
-  if (!auth.token) { console.error('Auth failed:', auth); process.exit(1); }
-  console.log('Token OK');
+  // ── 1. Admin-аккаунт ──────────────────────────────────────
+  console.log('\n👤 Создаём admin-аккаунт...');
+  const adminSnap = await db.collection('users')
+    .where('role', '==', 'admin').limit(1).get();
 
-  // Удаляем все старые туалеты
-  console.log('Clearing existing toilets...');
-  const existing = await getJSON('/api/toilets', auth.token);
-  if (Array.isArray(existing)) {
-    for (const t of existing) {
-      await deleteJSON(`/api/toilets/${t.id}`, auth.token);
-      console.log(`🗑️  Deleted: ${t.title}`);
-    }
+  if (!adminSnap.empty) {
+    console.log('   ✅ Admin уже существует, пропускаем');
+  } else {
+    await db.collection('users').doc('admin').set({
+      login: 'admin',
+      passwordHash: hashPassword('admin123'),
+      role: 'admin',
+      createdAt: new Date().toISOString()
+    });
+    console.log('   ✅ Admin создан: логин "admin", пароль "admin123"');
   }
 
-  // Заливаем новые данные
-  console.log('Seeding new toilets...');
-  for (const t of TOILETS) {
-    const res = await postJSON('/api/toilets', t, auth.token);
-    console.log(res.id ? `✅ ${res.title} (isOpen: ${res.isOpen})` : `❌ ${t.title}: ${JSON.stringify(res)}`);
+  // ── 2. Туалеты ────────────────────────────────────────────
+  console.log('\n🚽 Заливаем туалеты...');
+  const batch = db.batch();
+  for (const toilet of SEED_TOILETS) {
+    const { id, ...data } = toilet;
+    batch.set(db.collection('toilets').doc(id), {
+      ...data,
+      addedBy: 'system',
+      createdAt: new Date().toISOString()
+    }, { merge: false });
   }
-  console.log('Done!');
+  await batch.commit();
+  console.log(`   ✅ Записано ${SEED_TOILETS.length} туалетов`);
+
+  console.log('\n🎉 Готово! Firestore инициализирован.\n');
+  process.exit(0);
 }
 
-main().catch(console.error);
+main().catch(e => { console.error('❌ Ошибка:', e.message); process.exit(1); });
