@@ -1584,8 +1584,8 @@ async function getReviews(id){
 function renderReviews(reviews){
   const c=document.getElementById('reviewsList');
   if(!reviews.length){c.innerHTML=`<p class="rvNoReviews">${t('noReviews')}</p>`;return;}
-  // Firestore уже вернул desc, сортируем только если нужно
-  const sorted=[...reviews].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+  // Сортируем: старые сверху (первый комментарий — вверху)
+  const sorted=[...reviews].sort((a,b)=>new Date(a.createdAt)-new Date(b.createdAt));
   c.innerHTML=sorted.map(r=>{
     const name=r.userPhone||r.userLogin||'Аноним';
     const col=COLORS[name.charCodeAt(0)%COLORS.length];
