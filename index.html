@@ -1277,9 +1277,17 @@ function renderMarkers(){
     const pm=new ymaps.Placemark([toilet.lat,toilet.lon],{hintContent:toilet.title},{
       iconLayout:'default#image',
       iconImageHref:'data:image/svg+xml;utf8,'+encodeURIComponent(svg),
-      iconImageSize:sz,iconImageOffset:off
+      iconImageSize:sz,
+      iconImageOffset:off,
+      // Явный высокий zIndex чтобы маркеры не перекрывались оверлеями
+      zIndex:200,
+      zIndexHover:210
     });
-    pm.events.add('click',()=>{ if(!isPanning) openSheet(toilet); });
+    // Используем замыкание через IIFE чтобы не терять ссылку на toilet
+    pm.events.add('click',(()=>{
+      const _toilet=toilet;
+      return ()=>{ if(!isPanning) openSheet(_toilet); };
+    })());
     myMap.geoObjects.add(pm);
   });
 }
