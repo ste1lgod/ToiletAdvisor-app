@@ -1091,8 +1091,8 @@ function findNearest(){
   allToilets.forEach(t=>{const d=haversine(ref[0],ref[1],t.lat,t.lon);if(d<bd){bd=d;best=t;}});
   if(best){
     isPanning=true;
-    myMap.panTo([best.lat,best.lon],{flying:true,duration:600});
-    setTimeout(()=>{isPanning=false;},900);
+    myMap.setCenter([best.lat,best.lon],17,{duration:700,timingFunction:'ease-in-out'});
+    setTimeout(()=>{isPanning=false;},1000);
   }
 }
 </script>
