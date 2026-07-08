@@ -527,14 +527,39 @@ body.dark #reviewText{background:#161a24;border-color:#2d3142;}
 #routeBtn{
   display:flex;align-items:center;justify-content:center;gap:8px;
   padding:13px;
-  background:transparent;color:var(--green);
-  border:2px solid var(--green);
+  background:transparent;
+  color:#2563eb;
+  border:2px solid #2563eb;
   border-radius:var(--rs);
   font-size:14px;font-weight:700;
   font-family:var(--font);cursor:pointer;
-  transition:background .15s;
+  transition:background .15s,color .15s;
 }
-#routeBtn:hover{background:var(--green-l);}
+#routeBtn:hover{background:#eff6ff;}
+body.dark #routeBtn{color:#60a5fa;border-color:#60a5fa;}
+body.dark #routeBtn:hover{background:rgba(96,165,250,0.1);}
+
+/* ── SKELETON LOADER ── */
+@keyframes skeletonPulse{
+  0%,100%{opacity:1;}
+  50%{opacity:.4;}
+}
+.rvSkeleton{
+  display:flex;gap:12px;
+  padding:14px;margin-bottom:10px;
+  background:var(--bg);border-radius:14px;
+  border:1px solid var(--border);
+  animation:skeletonPulse 1.4s ease-in-out infinite;
+}
+body.dark .rvSkeleton{background:#161a24;}
+.rvSkAvatar{width:42px;height:42px;border-radius:50%;background:#e5e7eb;flex-shrink:0;}
+body.dark .rvSkAvatar{background:#2d3142;}
+.rvSkBody{flex:1;display:flex;flex-direction:column;gap:8px;justify-content:center;}
+.rvSkLine{height:10px;border-radius:6px;background:#e5e7eb;}
+body.dark .rvSkLine{background:#2d3142;}
+.rvSkLine.w60{width:60%;}
+.rvSkLine.w80{width:80%;}
+.rvSkLine.w40{width:40%;}
 </style>
 
 <style>
