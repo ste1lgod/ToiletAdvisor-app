@@ -1207,9 +1207,8 @@ function renderMarkers(){
       svg=mosqueSVG();
       sz=[48,60];off=[-24,-60];
     } else {
-      // Зелёный если открыт, красный если закрыт
       const color=toilet.isOpen?'#1DB954':'#E53935';
-      svg=pinSVG(color);
+      svg=pinSVG(color,'🚻');
       sz=[44,56];off=[-22,-56];
     }
     const pm=new ymaps.Placemark([toilet.lat,toilet.lon],{hintContent:toilet.title},{
@@ -1223,121 +1222,35 @@ function renderMarkers(){
 }
 
 // ── MARKER SVGs ──
-
-// WC-иконка: силуэты мужчина + женщина
-const WC_ICON=`<g>
-  <!-- Женщина: голова -->
-  <circle cx="14.5" cy="14.5" r="2.3" fill="white"/>
-  <!-- Платье -->
-  <path d="M11 24l1.5-5.5c.3-.8 1-1.3 1.8-1.3h.4c.8 0 1.5.5 1.8 1.3l1.5 5.5z" fill="white"/>
-  <!-- Ноги -->
-  <line x1="13" y1="24" x2="12.5" y2="27.5" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
-  <line x1="16" y1="24" x2="16.5" y2="27.5" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
-
-  <!-- Мужчина: голова -->
-  <circle cx="28.5" cy="14.5" r="2.3" fill="white"/>
-  <!-- Тело -->
-  <rect x="25.5" y="18" width="6" height="5.5" rx="1.2" fill="white"/>
-  <!-- Ноги -->
-  <line x1="27" y1="23.5" x2="26.5" y2="27.5" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
-  <line x1="30" y1="23.5" x2="30.5" y2="27.5" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
-
-  <!-- Разделитель -->
-  <line x1="21.5" y1="13" x2="21.5" y2="28" stroke="white" stroke-width="1" stroke-dasharray="2 1.5" opacity="0.6"/>
-</g>`;
-
-function pinSVG(color){
-  const cLight=lighten(color,55);
-  const filterId='pf'+color.replace('#','');
-  const gradId='pg'+color.replace('#','');
+function pinSVG(color, emoji){
+  const cLight=lighten(color,60);
+  const fid='pf'+color.replace('#','');
+  const gid='pg'+color.replace('#','');
   return `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="56" viewBox="0 0 44 56">
   <defs>
-    <filter id="${filterId}" x="-40%" y="-25%" width="180%" height="170%">
-      <feDropShadow dx="0" dy="3" stdDeviation="3.5" flood-color="rgba(0,0,0,0.30)"/>
+    <filter id="${fid}" x="-40%" y="-30%" width="180%" height="175%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3.5" flood-color="rgba(0,0,0,0.32)"/>
     </filter>
-    <radialGradient id="${gradId}" cx="36%" cy="28%" r="70%">
+    <radialGradient id="${gid}" cx="35%" cy="28%" r="72%">
       <stop offset="0%" stop-color="${cLight}"/>
       <stop offset="100%" stop-color="${color}"/>
     </radialGradient>
   </defs>
-  <!-- Тень-пятно под острием -->
-  <ellipse cx="22" cy="54.5" rx="6.5" ry="2.2" fill="rgba(0,0,0,0.16)"/>
-  <!-- Тело пина -->
-  <path filter="url(#${filterId})"
+  <ellipse cx="22" cy="54.5" rx="6" ry="2" fill="rgba(0,0,0,0.15)"/>
+  <path filter="url(#${fid})"
     d="M22 2C13.2 2 6 9.2 6 18c0 11.5 16 34 16 34S38 29.5 38 18C38 9.2 30.8 2 22 2z"
-    fill="url(#${gradId})"/>
-  <!-- Внутренний круг (белая подложка иконки) -->
-  <circle cx="22" cy="18" r="11.5" fill="rgba(255,255,255,0.15)"/>
-  <circle cx="22" cy="18" r="10" fill="rgba(255,255,255,0.94)"/>
-  <!-- WC иконка (цветная, под тон пина) -->
-  <g transform="translate(0,0)">
-    <!-- Женщина -->
-    <circle cx="15" cy="13" r="2.3" fill="${color}"/>
-    <path d="M11.5 23l1.6-5.8c.2-.7.9-1.2 1.7-1.2h.4c.8 0 1.5.5 1.7 1.2l1.6 5.8z" fill="${color}"/>
-    <line x1="13" y1="23" x2="12.5" y2="26.5" stroke="${color}" stroke-width="1.7" stroke-linecap="round"/>
-    <line x1="16" y1="23" x2="16.5" y2="26.5" stroke="${color}" stroke-width="1.7" stroke-linecap="round"/>
-    <!-- Разделитель -->
-    <line x1="22" y1="11.5" x2="22" y2="27" stroke="${color}" stroke-width="1" stroke-dasharray="2 1.5" opacity="0.35"/>
-    <!-- Мужчина -->
-    <circle cx="29" cy="13" r="2.3" fill="${color}"/>
-    <rect x="26" y="17" width="6" height="5.5" rx="1.2" fill="${color}"/>
-    <line x1="27.5" y1="22.5" x2="27" y2="26.5" stroke="${color}" stroke-width="1.7" stroke-linecap="round"/>
-    <line x1="30.5" y1="22.5" x2="31" y2="26.5" stroke="${color}" stroke-width="1.7" stroke-linecap="round"/>
-  </g>
+    fill="url(#${gid})"/>
+  <circle cx="22" cy="18" r="11" fill="rgba(255,255,255,0.92)"/>
+  <text x="22" y="22.5" font-size="14" text-anchor="middle" dominant-baseline="middle"
+    font-family="Apple Color Emoji,Segoe UI Emoji,Noto Color Emoji,sans-serif">${emoji}</text>
 </svg>`;
 }
 
 function mosqueSVG(){
-  const color='#C8860A'; // глубокий золотой
-  const cLight='#F0B429';
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="60" viewBox="0 0 48 60">
-  <defs>
-    <filter id="mf" x="-40%" y="-25%" width="180%" height="170%">
-      <feDropShadow dx="0" dy="3" stdDeviation="3.5" flood-color="rgba(0,0,0,0.30)"/>
-    </filter>
-    <radialGradient id="mg" cx="36%" cy="28%" r="70%">
-      <stop offset="0%" stop-color="${cLight}"/>
-      <stop offset="100%" stop-color="${color}"/>
-    </radialGradient>
-  </defs>
-  <!-- Тень-пятно -->
-  <ellipse cx="24" cy="58.5" rx="7" ry="2.2" fill="rgba(0,0,0,0.16)"/>
-  <!-- Тело пина -->
-  <path filter="url(#mf)"
-    d="M24 2C14.6 2 7 9.6 7 19c0 12.5 17 37 17 37S41 31.5 41 19C41 9.6 33.4 2 24 2z"
-    fill="url(#mg)"/>
-  <!-- Внутренний круг -->
-  <circle cx="24" cy="19" r="12.5" fill="rgba(255,255,255,0.15)"/>
-  <circle cx="24" cy="19" r="11" fill="rgba(255,255,255,0.94)"/>
-  <!-- Мечеть-иконка (цвет пина) -->
-  <g fill="${color}">
-    <!-- Купол основной -->
-    <path d="M24 8.5c-4 0-6.5 3.2-6.5 6.5v1.5h13v-1.5c0-3.3-2.5-6.5-6.5-6.5z"/>
-    <!-- Шпиль -->
-    <rect x="23.2" y="5.5" width="1.6" height="3.2" rx=".8"/>
-    <!-- Полумесяц наверху -->
-    <path d="M24 4.5c-.5 0-1 .1-1.4.4.8.3 1.4 1 1.4 1.9s-.6 1.6-1.4 1.9c.4.2.9.3 1.4.3 1.5 0 2.7-1.2 2.7-2.7s-1.2-2.8-2.7-2.8z"/>
-    <!-- Минарет левый -->
-    <rect x="12" y="19" width="3.5" height="8" rx="1.2"/>
-    <path d="M13.75 19a2 2 0 100-4 2 2 0 000 4z"/>
-    <rect x="13.1" y="15" width="1.3" height="2.5" rx=".6"/>
-    <!-- Минарет правый -->
-    <rect x="32.5" y="19" width="3.5" height="8" rx="1.2"/>
-    <path d="M34.25 19a2 2 0 100-4 2 2 0 000 4z"/>
-    <rect x="33.6" y="15" width="1.3" height="2.5" rx=".6"/>
-    <!-- Основание-здание -->
-    <rect x="15" y="16.5" width="18" height="11" rx="2"/>
-    <!-- Дверная арка -->
-    <path d="M21.5 27.5v-4.2c0-1.4 1.1-2.5 2.5-2.5s2.5 1.1 2.5 2.5v4.2" fill="rgba(255,255,255,0.85)"/>
-    <!-- Окна -->
-    <ellipse cx="18" cy="21.5" rx="1.5" ry="2" fill="rgba(255,255,255,0.7)"/>
-    <ellipse cx="30" cy="21.5" rx="1.5" ry="2" fill="rgba(255,255,255,0.7)"/>
-  </g>
-</svg>`;
+  return pinSVG('#D4900A','🕌').replace('width="44" height="56" viewBox="0 0 44 56"','width="48" height="60" viewBox="0 0 44 56"');
 }
 
-// Осветление цвета для градиента
-function lighten(hex, amount=50){
+function lighten(hex, amount=55){
   const n=parseInt(hex.replace('#',''),16);
   const r=Math.min(255,((n>>16)&255)+amount);
   const g=Math.min(255,((n>>8)&255)+amount);
