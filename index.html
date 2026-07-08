@@ -926,7 +926,37 @@ body.dark #toast{
 <div id="toast"></div>
 
 <script>
-const API='https://toiletadvisor-server.onrender.com/api';
+// ── FIREBASE INIT ──
+const FIREBASE_CONFIG={
+  apiKey:"AIzaSyDpqKxUd6LBKhukaPq0vTgbf_qEdkWx6L4",
+  authDomain:"toiletadvisorrr.firebaseapp.com",
+  projectId:"toiletadvisorrr",
+  storageBucket:"toiletadvisorrr.firebasestorage.app",
+  messagingSenderId:"768746623109",
+  appId:"1:768746623109:web:a6a7aa641e3bcef1af59ec"
+};
+
+// Динамически загружаем Firebase SDK (compat версия — работает без bundler)
+let db=null;
+function _loadFirebase(){
+  return new Promise(resolve=>{
+    if(window.firebase&&window.firebase.firestore){resolve();return;}
+    const s1=document.createElement('script');
+    s1.src='https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js';
+    s1.onload=()=>{
+      const s2=document.createElement('script');
+      s2.src='https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js';
+      s2.onload=()=>{
+        if(!firebase.apps.length)firebase.initializeApp(FIREBASE_CONFIG);
+        db=firebase.firestore();
+        resolve();
+      };
+      document.head.appendChild(s2);
+    };
+    document.head.appendChild(s1);
+  });
+}
+
 const COLORS=['#019451','#3b82f6','#8b5cf6','#f59e0b','#ef4444','#06b6d4','#ec4899'];
 const TASHKENT=[41.2995,69.2401];
 const FALLBACK_TOILETS=[
@@ -962,8 +992,13 @@ let currentUser=null,allToilets=[],currentCat='all';
 let selectedToilet=null,reviewRating=0,authTab='login';
 let addCoords=null,myMap=null,searchTimer=null;
 let userCoords=null,userPlacemark=null;
-let localReviews=JSON.parse(localStorage.getItem('ta_reviews')||'{}');
 try{const s=localStorage.getItem('ta_user');if(s)currentUser=JSON.parse(s);}catch(e){}
+
+// Хэширование пароля (простой SHA-256 через Web Crypto)
+async function hashPassword(pass){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pass));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
 </script>
 
 <script>
