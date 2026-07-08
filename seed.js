@@ -9,7 +9,8 @@
  *   3. node seed.js
  */
 
-const admin = require('firebase-admin');
+const { initializeApp, cert } = require('firebase-admin/app');
+const { getFirestore } = require('firebase-admin/firestore');
 const crypto = require('crypto');
 
 let serviceAccount;
@@ -21,8 +22,8 @@ try {
   process.exit(1);
 }
 
-admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
-const db = admin.firestore();
+initializeApp({ credential: cert(serviceAccount) });
+const db = getFirestore();
 
 function hashPassword(pass) {
   return crypto.createHash('sha256').update(pass).digest('hex');
