@@ -1083,13 +1083,16 @@ function goToMyLocation(){
     ()=>showToast('Геолокация недоступна')
   );
 }
+let isPanning=false;
 function findNearest(){
   if(!allToilets.length){showToast('Нет точек на карте');return;}
   const ref=userCoords||TASHKENT;
   let best=null,bd=Infinity;
   allToilets.forEach(t=>{const d=haversine(ref[0],ref[1],t.lat,t.lon);if(d<bd){bd=d;best=t;}});
   if(best){
+    isPanning=true;
     myMap.panTo([best.lat,best.lon],{flying:true,duration:600});
+    setTimeout(()=>{isPanning=false;},900);
   }
 }
 </script>
@@ -1132,7 +1135,7 @@ function renderMarkers(){
       iconImageHref:'data:image/svg+xml;utf8,'+encodeURIComponent(svg),
       iconImageSize:sz,iconImageOffset:off
     });
-    pm.events.add('click',()=>openSheet(toilet));
+    pm.events.add('click',()=>{ if(!isPanning) openSheet(toilet); });
     myMap.geoObjects.add(pm);
   });
 }
