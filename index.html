@@ -47,12 +47,13 @@
   --glass-blur:blur(18px);
 }
 body.dark{
-  --bg:#060912;--card:#0e111a;--text:#f1f5f9;--text2:#94a3b8;
-  --border:#1a1e2e;
+  --bg:#0a0d16;--card:#161b28;--text:#f1f5f9;--text2:#94a3b8;
+  --border:#252d40;
   --sh:0 2px 12px rgba(0,0,0,0.5),0 6px 24px rgba(0,0,0,0.4);
-  --panel-bg:#0e111a;
-  --panel-border:rgba(255,255,255,0.06);
-  --glass-bg:rgba(6,9,18,0.92);
+  --panel-bg:#161b28;
+  --panel-border:rgba(255,255,255,0.08);
+  --glass-bg:rgba(10,13,22,0.93);
+  --green-l:#0a2e1c;
 }
 
 html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-family:var(--font);color:var(--text);}
@@ -2132,7 +2133,7 @@ function pickLocationOnMap(){
   document.getElementById('addOverlay').classList.remove('hidden');
   document.getElementById('addOverlay').style.opacity='0';
   document.getElementById('addOverlay').style.pointerEvents='none';
-}
+} 
 function submitAddToilet(){
   pickLocationOnMap();
 }
