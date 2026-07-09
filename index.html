@@ -3039,34 +3039,31 @@ function wizInitSearch(){
 }
 
 function wizShowSuggest(items){
-  const box = document.getElementById('wizPickSuggest');
-  if(!box) return;
+  const inner = document.getElementById('wizPickSuggestInner');
+  const divider = document.getElementById('wizPickDivider');
+  if(!inner) return;
   if(!items.length){wizHideSuggest();return;}
-  box.innerHTML = items.map(it=>`
-    <div class="wizPickSuggestItem" onclick="wizSelectSuggest(${it.coords[0]},${it.coords[1]})">
-      <span class="sugIco">📍</span>
+
+  inner.innerHTML = items.map(it=>{
+    // Разбиваем name на основное и подзаголовок
+    const parts = it.name.split(', ');
+    const main = parts[0] || it.name;
+    const sub = parts.slice(1).join(', ');
+    return `<div class="wizPickSuggestItem" onclick="wizSelectSuggest(${it.coords[0]},${it.coords[1]})">
+      <div class="sugIco">📍</div>
       <div class="sugText">
-        <div>${it.name}</div>
-        ${it.desc ? `<div class="sugSub">${it.desc}</div>` : ''}
+        <div class="sugName">${main}</div>
+        ${sub ? `<div class="sugSub">${sub}</div>` : ''}
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
+
+  if(divider) divider.classList.add('vis');
+  inner.style.display = 'block';
 
   // Скрываем hint пока список открыт
   const hint = document.getElementById('wizPickHint');
   if(hint) hint.style.visibility = 'hidden';
-
-  // Позиционируем: берём нижний край строки поиска (#wizPickTopRow)
-  // и добавляем отступ, без учёта hint
-  const topRow = document.getElementById('wizPickTopRow');
-  if(topRow){
-    const rect = topRow.getBoundingClientRect();
-    box.style.top = (rect.bottom + 8) + 'px';
-  } else {
-    // fallback — под safe area + header
-    const safeTop = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sat') || '0');
-    box.style.top = (safeTop + 80) + 'px';
-  }
-  box.classList.remove('hidden');
 }
 
 function wizHideSuggest(){
