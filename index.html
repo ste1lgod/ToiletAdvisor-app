@@ -47,12 +47,12 @@
   --glass-blur:blur(18px);
 }
 body.dark{
-  --bg:#060912;--card:#1c2033;--text:#f1f5f9;--text2:#8b95b0;
-  --border:#2e344d;
+  --bg:#060912;--card:#0e111a;--text:#f1f5f9;--text2:#94a3b8;
+  --border:#1a1e2e;
   --sh:0 2px 12px rgba(0,0,0,0.5),0 6px 24px rgba(0,0,0,0.4);
-  --panel-bg:#1c2033;
-  --panel-border:rgba(255,255,255,0.08);
-  --glass-bg:rgba(6,9,18,0.93);
+  --panel-bg:#0e111a;
+  --panel-border:rgba(255,255,255,0.06);
+  --glass-bg:rgba(6,9,18,0.92);
 }
 
 html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-family:var(--font);color:var(--text);}
@@ -313,7 +313,6 @@ body.dark #bottomNav{
   cursor:pointer;padding:0;min-width:0;
   color:var(--text2);
   transition:color .18s;
-  background:none;border:none;font-family:var(--font);
 }
 .navCenter.active{color:#7c3aed;}
 .navCenterCircle{
@@ -397,10 +396,6 @@ body.dark #sHandle{background:#4b5568;}
 .pGreen{background:#d1fae5;color:#065f46;}
 .pGreen2{background:#dcfce7;color:#166534;}
 .pRed{background:#fee2e2;color:#b91c1c;}
-body.dark .pBlue{background:#1e3a6e;color:#93c5fd;}
-body.dark .pGreen{background:#064e3b;color:#6ee7b7;}
-body.dark .pGreen2{background:#065f46;color:#a7f3d0;}
-body.dark .pRed{background:#5b1a1a;color:#fca5a5;}
 
 /* Блок доп. тегов (мыло, бумага, доступность) — теперь рендерятся внутри #sPills */
 #sBadges{display:none;}
@@ -411,7 +406,7 @@ body.dark .pRed{background:#5b1a1a;color:#fca5a5;}
   line-height:1.3;letter-spacing:.1px;
   background:#f1f5f9;color:#334155;
 }
-body.dark .sBadge{background:#252a3a;color:#e2e8f0;}
+body.dark .sBadge{background:#1e2235;color:#cbd5e1;}
 
 /* taharatBlock */
 #taharatBlock{
@@ -562,37 +557,21 @@ body.dark #routeBtn{background:var(--card);color:#60a5fa;box-shadow:0 2px 12px r
 /* ── SKELETON LOADER ── */
 @keyframes skeletonPulse{
   0%,100%{opacity:1;}
-  50%{opacity:.35;}
+  50%{opacity:.4;}
 }
-/* Базовый skeleton элемент */
-.skEl{
-  background:#e8eaed;border-radius:8px;
-  animation:skeletonPulse 1.4s ease-in-out infinite;
-}
-body.dark .skEl{background:#252a3a;}
-
-/* Skeleton шторки */
-.shSkeleton{padding:4px 0;}
-.shSkTitle{height:26px;width:75%;border-radius:10px;margin-bottom:14px;}
-.shSkRating{height:18px;width:40%;border-radius:8px;margin-bottom:18px;}
-.shSkPills{display:flex;gap:6px;margin-bottom:18px;}
-.shSkPill{height:26px;width:80px;border-radius:20px;}
-.shSkDesc{height:60px;border-radius:16px;margin-bottom:28px;}
-.shSkReviewTitle{height:20px;width:50%;border-radius:8px;margin:0 auto 16px;}
-/* Отзывы skeleton */
 .rvSkeleton{
   display:flex;gap:12px;
-  padding:18px 16px;margin-bottom:12px;
-  background:var(--card);border-radius:20px;
-  box-shadow:0 2px 10px rgba(0,0,0,0.05);
+  padding:14px;margin-bottom:10px;
+  background:var(--bg);border-radius:14px;
+  border:1px solid var(--border);
   animation:skeletonPulse 1.4s ease-in-out infinite;
 }
-body.dark .rvSkeleton{background:var(--card);box-shadow:none;}
-.rvSkAvatar{width:48px;height:48px;border-radius:50%;background:#e8eaed;flex-shrink:0;}
-body.dark .rvSkAvatar{background:#252a3a;}
+body.dark .rvSkeleton{background:var(--card);}
+.rvSkAvatar{width:42px;height:42px;border-radius:50%;background:#e5e7eb;flex-shrink:0;}
+body.dark .rvSkAvatar{background:var(--border);}
 .rvSkBody{flex:1;display:flex;flex-direction:column;gap:8px;justify-content:center;}
-.rvSkLine{height:10px;border-radius:6px;background:#e8eaed;}
-body.dark .rvSkLine{background:#252a3a;}
+.rvSkLine{height:10px;border-radius:6px;background:#e5e7eb;}
+body.dark .rvSkLine{background:#2d3142;}
 .rvSkLine.w60{width:60%;}
 .rvSkLine.w80{width:80%;}
 .rvSkLine.w40{width:40%;}
@@ -787,51 +766,8 @@ body.dark .adminDashBtn{background:var(--card);}
   align-self:flex-start;
 }
 
-/* Add screen steps */
-#addStepsBar{
-  display:flex;align-items:center;
-  margin-bottom:24px;margin-top:4px;
-}
-.addStep{
-  display:flex;flex-direction:column;align-items:center;gap:4px;
-  flex-shrink:0;
-}
-.addStep span{
-  width:32px;height:32px;border-radius:50%;
-  background:var(--border);color:var(--text2);
-  display:flex;align-items:center;justify-content:center;
-  font-size:13px;font-weight:700;font-family:var(--font);
-  transition:background .2s,color .2s;
-}
-.addStep.active span{background:var(--green);color:#fff;}
-.addStep.done span{background:#059669;color:#fff;}
-.addStepLabel{font-size:10px;font-weight:600;color:var(--text2);font-family:var(--font);}
-.addStep.active .addStepLabel{color:var(--green);}
-.addStepLine{flex:1;height:2px;background:var(--border);margin:0 6px;margin-bottom:14px;transition:background .2s;}
-.addStepLine.done{background:var(--green);}
-
-.addStepView{display:flex;flex-direction:column;gap:10px;width:100%;}
-.addStepView.hidden{display:none!important;}
-.addStepTitle{font-size:18px;font-weight:800;color:var(--text);font-family:var(--font);letter-spacing:-.2px;margin-bottom:4px;}
-.addStepDesc{font-size:13px;color:var(--text2);line-height:1.5;}
-.addNextBtn{
-  padding:15px;background:var(--green);color:#fff;
-  border:none;border-radius:18px;
-  font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);
-  box-shadow:0 4px 16px rgba(0,168,89,0.35);
-  margin-top:4px;
-}
-.addNextBtn:disabled{background:var(--border);color:var(--text2);box-shadow:none;cursor:not-allowed;}
-.addBackStepBtn{
-  padding:13px;background:var(--card);color:var(--text2);
-  border:none;border-radius:16px;
-  font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);
-}
-.addPreviewCard{
-  background:var(--card);border-radius:20px;padding:16px;
-  font-size:14px;color:var(--text);line-height:1.7;
-  box-shadow:0 2px 12px rgba(0,0,0,0.07);
-}
+#addScreenTitle{font-size:20px;font-weight:800;color:var(--text);text-align:center;padding:0 0 10px;font-family:var(--font);letter-spacing:-.3px;}
+#addMapHint{font-size:13px;color:var(--green);text-align:center;margin:0 0 16px;padding:12px;background:var(--green-l);border-radius:16px;font-weight:600;}
 #addForm{display:flex;flex-direction:column;gap:10px;}
 #addForm input[type=text]{
   width:100%;padding:14px 16px;
@@ -998,12 +934,12 @@ body.dark #toast{
     <div class="navIco"><svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></div>
     <span class="navLabel">Карта</span>
   </button>
-  <button class="navCenter" onclick="switchTab('add')">
+  <div class="navCenter" onclick="switchTab('add')">
     <div class="navCenterCircle">
       <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </div>
     <span class="navCenterLabel">Admin</span>
-  </button>
+  </div>
   <button class="navBtn" data-tab="profile" onclick="switchTab('profile')">
     <div class="navIco"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
     <span class="navLabel">Профиль</span>
@@ -1119,56 +1055,27 @@ body.dark #toast{
     </div>
   </div>
 
-  <!-- Сабвью: форма добавления туалета — 3 шага -->
+  <!-- Сабвью: форма добавления туалета -->
   <div id="adminSubAddForm" class="adminSubview hidden">
     <button class="adminBackBtn" onclick="showAdminDashboard()">‹ Назад</button>
-
-    <!-- Индикатор шагов -->
-    <div id="addStepsBar">
-      <div class="addStep active" id="addStep1Dot"><span>1</span><div class="addStepLabel">Место</div></div>
-      <div class="addStepLine"></div>
-      <div class="addStep" id="addStep2Dot"><span>2</span><div class="addStepLabel">Данные</div></div>
-      <div class="addStepLine"></div>
-      <div class="addStep" id="addStep3Dot"><span>3</span><div class="addStepLabel">Готово</div></div>
-    </div>
-
-    <!-- Шаг 1: выбор места на карте -->
-    <div id="addStep1" class="addStepView">
-      <div class="addStepTitle">📍 Выберите место</div>
-      <div class="addStepDesc">Нажмите на кнопку ниже, затем тапните по карте чтобы выбрать точное место туалета</div>
-      <div id="addCoordsDisplay" style="display:none;padding:12px 16px;background:var(--green-l);border-radius:16px;font-size:13px;color:var(--green);font-weight:600;text-align:center;margin:12px 0;"></div>
-      <button id="addPickMapBtn" onclick="pickLocationOnMap()">�️ Открыть карту и выбрать место</button>
-      <button id="addStep1Next" onclick="addGoStep(2)" disabled class="addNextBtn">Далее →</button>
-    </div>
-
-    <!-- Шаг 2: название, описание, теги -->
-    <div id="addStep2" class="addStepView hidden">
-      <div class="addStepTitle">✏️ Заполните данные</div>
-      <div id="addForm">
-        <input type="text" id="addTitle" placeholder="Название туалета *" oninput="addValidateStep2()">
-        <input type="text" id="addDesc" placeholder="Описание (необязательно)">
-        <input type="text" id="addPhoto" placeholder="Ссылка на фото (необязательно)">
-        <div class="chkGrid">
-          <label><input type="checkbox" id="addIsFree" checked> 🆓 Бесплатно</label>
-          <label><input type="checkbox" id="addIsOpen" checked> 🟢 Открыто</label>
-          <label><input type="checkbox" id="addHasSoap"> 🧼 Мыло</label>
-          <label><input type="checkbox" id="addHasPaper"> 🧻 Бумага</label>
-          <label><input type="checkbox" id="addIsAccessible"> ♿ Доступно</label>
-          <label><input type="checkbox" id="addIsTaharatkhana"> 🕌 Тахаратхана</label>
-        </div>
+    <div id="addScreenTitle">➕ Добавить точку</div>
+    <div id="addMapHint">📍 Сначала выберите место на карте</div>
+    <div id="addForm">
+      <input type="text" id="addTitle" placeholder="Название туалета">
+      <input type="text" id="addDesc" placeholder="Описание (необязательно)">
+      <input type="text" id="addPhoto" placeholder="Ссылка на фото (необязательно)">
+      <div class="chkGrid">
+        <label><input type="checkbox" id="addIsFree" checked> 🆓 Бесплатно</label>
+        <label><input type="checkbox" id="addIsOpen" checked> 🟢 Открыто</label>
+        <label><input type="checkbox" id="addHasSoap"> 🧼 Мыло</label>
+        <label><input type="checkbox" id="addHasPaper"> 🧻 Бумага</label>
+        <label><input type="checkbox" id="addIsAccessible"> ♿ Доступно</label>
+        <label><input type="checkbox" id="addIsTaharatkhana"> 🕌 Тахаратхана</label>
       </div>
-      <button onclick="addGoStep(1)" class="addBackStepBtn">← Назад</button>
-      <button id="addStep2Next" onclick="addGoStep(3)" disabled class="addNextBtn">Далее →</button>
+      <button id="addPickMapBtn" onclick="pickLocationOnMap()">📍 Выбрать место на карте</button>
+      <div id="addCoordsDisplay" style="display:none;padding:10px 14px;background:var(--green-l);border-radius:var(--rs);font-size:13px;color:var(--green);font-weight:600;text-align:center;"></div>
+      <button id="addSubmitBtn" onclick="submitAddToiletDirect()">✅ Добавить</button>
     </div>
-
-    <!-- Шаг 3: подтверждение и сохранение -->
-    <div id="addStep3" class="addStepView hidden">
-      <div class="addStepTitle">✅ Подтвердите</div>
-      <div id="addPreview" class="addPreviewCard"></div>
-      <button onclick="addGoStep(2)" class="addBackStepBtn">← Назад</button>
-      <button id="addSubmitBtn" onclick="submitAddToiletDirect()">✅ Добавить туалет</button>
-    </div>
-
   </div>
 
   <!-- Сабвью: модерация отзывов -->
@@ -1441,17 +1348,10 @@ function initMap(){
           ao.classList.add('hidden');
           ao.style.opacity='';
           ao.style.pointerEvents='';
-          // Обновляем подсказку координат
+          // Обновляем подсказку координат на addScreen
           const cd=document.getElementById('addCoordsDisplay');
-          if(cd){
-            cd.textContent=`📍 Выбрано: ${addCoords[0].toFixed(4)}, ${addCoords[1].toFixed(4)}`;
-            cd.style.display='block';
-          }
-          // Активируем кнопку "Далее" на шаге 1 и переходим на шаг 2
-          const step1Next=document.getElementById('addStep1Next');
-          if(step1Next)step1Next.disabled=false;
+          if(cd){cd.textContent=`📍 Выбрано: ${addCoords[0].toFixed(4)}, ${addCoords[1].toFixed(4)}`;cd.style.display='block';}
           switchTab('add');
-          setTimeout(()=>addGoStep(2),100);
         }
       }
     });
@@ -1724,27 +1624,6 @@ async function openSheet(toilet){
   if(isSheetOpen)return;
   isSheetOpen=true;
   selectedToilet=toilet;
-
-  // Сначала показываем шторку — моментально со skeleton
-  document.getElementById('sRatingVal').textContent='—';
-  // Skeleton на все секции
-  document.getElementById('sTitle').innerHTML=`<div class="skEl shSkTitle"></div>`;
-  document.getElementById('sDistPill').innerHTML=`<span style="opacity:0">...</span>`;
-  document.getElementById('sOpenPill').innerHTML=`<span style="opacity:0">...</span>`;
-  document.getElementById('sFreePill').innerHTML=`<span style="opacity:0">...</span>`;
-  const descEl=document.getElementById('sDesc');
-  descEl.innerHTML=`<div class="skEl shSkDesc"></div>`;
-  descEl.style.display='block';
-  document.getElementById('reviewsList').innerHTML=`
-    <div class="rvSkeleton"><div class="rvSkAvatar"></div><div class="rvSkBody"><div class="rvSkLine w80"></div><div class="rvSkLine w60"></div><div class="rvSkLine w40"></div></div></div>
-    <div class="rvSkeleton"><div class="rvSkAvatar"></div><div class="rvSkBody"><div class="rvSkLine w60"></div><div class="rvSkLine w80"></div><div class="rvSkLine w40"></div></div></div>
-    <div class="rvSkeleton"><div class="rvSkAvatar"></div><div class="rvSkBody"><div class="rvSkLine w40"></div><div class="rvSkLine w60"></div><div class="rvSkLine w80"></div></div></div>
-  `;
-  resetReviewForm();
-  document.getElementById('toiletSheet').classList.add('open');
-  _openBackdrop();
-
-  // Заполняем реальные данные
   document.getElementById('sTitle').textContent=toilet.title;
   const ref=userCoords||TASHKENT;
   const isFallback=!userCoords;
@@ -1756,15 +1635,36 @@ async function openSheet(toilet){
   fp.textContent=toilet.isFree?t('free'):t('paid');
   fp.className='mPill '+(toilet.isFree?'pGreen2':'pBlue');
   document.getElementById('taharatBlock').classList.toggle('hidden',!toilet.isTaharatkhana);
-  const pillsEl=document.getElementById('sPills');
-  pillsEl.querySelectorAll('.sBadge').forEach(el=>el.remove());
   const bads=[];
   if(toilet.hasSoap)bads.push('🧼 Мыло');
   if(toilet.hasPaper)bads.push('🧻 Бумага');
   if(toilet.isAccessible)bads.push('♿ Доступность');
-  bads.forEach(b=>{const s=document.createElement('span');s.className='sBadge';s.textContent=b;pillsEl.appendChild(s);});
-  descEl.textContent=toilet.description||'';
-  descEl.style.display=toilet.description?'block':'none';
+  // Добавляем доп. теги прямо в #sPills чтобы не было лишнего отступа между строками
+  document.getElementById('sBadges').innerHTML='';
+  const pillsEl=document.getElementById('sPills');
+  // Убираем старые доп. теги из sPills (если были)
+  pillsEl.querySelectorAll('.sBadge').forEach(el=>el.remove());
+  bads.forEach(b=>{
+    const s=document.createElement('span');
+    s.className='sBadge';
+    s.textContent=b;
+    pillsEl.appendChild(s);
+  });
+  const desc=document.getElementById('sDesc');
+  desc.textContent=toilet.description||'';
+  desc.style.display=toilet.description?'block':'none';
+
+  // Сначала показываем шторку — моментально
+  document.getElementById('sRatingVal').textContent='—';
+  // Skeleton loader вместо текста
+  document.getElementById('reviewsList').innerHTML=`
+    <div class="rvSkeleton"><div class="rvSkAvatar"></div><div class="rvSkBody"><div class="rvSkLine w80"></div><div class="rvSkLine w60"></div><div class="rvSkLine w40"></div></div></div>
+    <div class="rvSkeleton"><div class="rvSkAvatar"></div><div class="rvSkBody"><div class="rvSkLine w60"></div><div class="rvSkLine w80"></div><div class="rvSkLine w40"></div></div></div>
+    <div class="rvSkeleton"><div class="rvSkAvatar"></div><div class="rvSkBody"><div class="rvSkLine w40"></div><div class="rvSkLine w60"></div><div class="rvSkLine w80"></div></div></div>
+  `;
+  resetReviewForm();
+  document.getElementById('toiletSheet').classList.add('open');
+  _openBackdrop();
 
   // Отзывы грузим в фоне после открытия
   try{
@@ -2182,8 +2082,6 @@ function showAdminSubview(id){
   document.querySelectorAll('.adminSubview').forEach(el=>el.classList.add('hidden'));
   if(id==='addForm'){
     document.getElementById('adminSubAddForm').classList.remove('hidden');
-    addCoords=null;
-    addGoStep(1);
   } else if(id==='moderation'){
     document.getElementById('adminSubModeration').classList.remove('hidden');
     loadModerationReviews();
@@ -2223,60 +2121,17 @@ async function deleteReview(id, btn){
   }catch(e){showToast('Ошибка: '+e.message);}
 }
 
-// ── MULTI-STEP ДОБАВЛЕНИЕ ──
-function addGoStep(step){
-  [1,2,3].forEach(i=>{
-    const dot=document.getElementById('addStep'+i+'Dot');
-    const view=document.getElementById('addStep'+i);
-    if(dot){dot.classList.toggle('active',i===step);dot.classList.toggle('done',i<step);}
-    if(view){view.classList.toggle('hidden',i!==step);}
-  });
-  document.querySelectorAll('.addStepLine').forEach((l,i)=>{
-    l.classList.toggle('done',i<step-1);
-  });
-  if(step===3)addFillPreview();
-}
-function addValidateStep2(){
-  const title=document.getElementById('addTitle').value.trim();
-  const btn=document.getElementById('addStep2Next');
-  if(btn)btn.disabled=!title;
-}
-function addFillPreview(){
-  const title=document.getElementById('addTitle').value.trim();
-  const desc=document.getElementById('addDesc').value.trim();
-  const isOpen=document.getElementById('addIsOpen').checked;
-  const isFree=document.getElementById('addIsFree').checked;
-  const hasSoap=document.getElementById('addHasSoap').checked;
-  const hasPaper=document.getElementById('addHasPaper').checked;
-  const isAccessible=document.getElementById('addIsAccessible').checked;
-  const isTaharatkhana=document.getElementById('addIsTaharatkhana').checked;
-  const coords=addCoords?`${addCoords[0].toFixed(4)}, ${addCoords[1].toFixed(4)}`:'не выбрано';
-  const tags=[
-    isOpen?'🟢 Открыто':'🔴 Закрыто',
-    isFree?'🆓 Бесплатно':'💰 Платно',
-    hasSoap?'🧼 Мыло':'',
-    hasPaper?'🧻 Бумага':'',
-    isAccessible?'♿ Доступно':'',
-    isTaharatkhana?'🕌 Тахаратхана':''
-  ].filter(Boolean).join('  ');
-  const prev=document.getElementById('addPreview');
-  if(prev)prev.innerHTML=`
-    <div style="font-weight:800;font-size:16px;margin-bottom:8px;">${title}</div>
-    ${desc?`<div style="color:var(--text2);margin-bottom:8px;">${desc}</div>`:''}
-    <div style="margin-bottom:8px;font-size:13px;">${tags}</div>
-    <div style="font-size:12px;color:var(--text2);">📍 ${coords}</div>
-  `;
-  const sb=document.getElementById('addSubmitBtn');
-  if(sb)sb.disabled=!addCoords||!title;
-}
-
 // ── ADD TOILET ──
 function pickLocationOnMap(){
+  // Переключаемся на карту, ждём тап
   addCoords=null;
+  document.getElementById('addCoordsDisplay').style.display='none';
   switchTab('map');
   showToast('📍 Нажмите на карту чтобы выбрать место');
-  // Используем флаг вместо overlay чтобы не перекрывать UI
-  window._waitingForMapClick = true;
+  // Открываем невидимый overlay чтобы map click handler работал
+  document.getElementById('addOverlay').classList.remove('hidden');
+  document.getElementById('addOverlay').style.opacity='0';
+  document.getElementById('addOverlay').style.pointerEvents='none';
 }
 function submitAddToilet(){
   pickLocationOnMap();
@@ -2286,8 +2141,6 @@ async function submitAddToiletDirect(){
   const title=document.getElementById('addTitle').value.trim();
   if(!title){showToast('Введите название');return;}
   if(!addCoords){showToast('Сначала выберите место на карте');return;}
-  const btn=document.getElementById('addSubmitBtn');
-  if(btn){btn.textContent='⏳ Сохранение...';btn.disabled=true;}
   const body={lat:addCoords[0],lon:addCoords[1],title,
     description:document.getElementById('addDesc').value.trim()||'',
     photo:document.getElementById('addPhoto').value.trim()||'',
@@ -2305,18 +2158,8 @@ async function submitAddToiletDirect(){
     document.getElementById('addTitle').value='';
     document.getElementById('addDesc').value='';
     document.getElementById('addPhoto').value='';
-    const cd=document.getElementById('addCoordsDisplay');
-    if(cd)cd.style.display='none';
+    document.getElementById('addCoordsDisplay').style.display='none';
     addCoords=null;
-    await loadToilets();
-    showToast('✅ Туалет добавлен!');
-    showAdminDashboard();
-  }catch(e){
-    showToast('Ошибка: '+e.message);
-    if(btn){btn.textContent='✅ Добавить туалет';btn.disabled=false;}
-    console.error(e);
-  }
-}
     await loadToilets();
     showToast('✅ Туалет добавлен!');
     switchTab('map');
