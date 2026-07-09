@@ -2483,6 +2483,15 @@ function switchTab(tab){
     // Восстанавливаем headerPanel видимость ПЕРЕД пересчётом позиций
     if(hp){hp.style.display='';hp.style.visibility='visible';}
     if(mc)mc.style.display='';
+    // Если активен режим выбора — скрываем обычный UI карты
+    if(wizPickMode){
+      if(hp){hp.style.display='none';hp.style.visibility='hidden';}
+      if(mc)mc.style.display='none';
+      ['findNearestBtn'].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el){el.style.display='none';el.style.visibility='hidden';}
+      });
+    }
     // Пересчитываем позиции контролов с задержкой после рендера
     requestAnimationFrame(()=>{
       requestAnimationFrame(()=>{
