@@ -2196,31 +2196,41 @@ async function doAuth(){
     }
   }catch(e){showToast('Ошибка: '+e.message);console.error(e);}
 }
+let _adminLoginInProgress=false;
 async function doAdminLogin(){
+  if(_adminLoginInProgress)return;
   const login=document.getElementById('adminLogin').value.trim();
   const pass=document.getElementById('adminPass').value.trim();
   if(!login||!pass){showToast('Заполните все поля');return;}
+  _adminLoginInProgress=true;
   const btn=document.querySelector('#adminBox .mainBtn');
   if(btn){btn.textContent='⏳ Вход...';btn.disabled=true;}
+  // Скрываем клавиатуру перед запросом
+  document.getElementById('adminPass').blur();
+  document.getElementById('adminLogin').blur();
   try{
     await _loadFirebase();
     const passHash=await hashPassword(pass);
-    const snap=await db.collection('users').where('login','==',login).where('role','==','admin').limit(1).get();
-    if(snap.empty){showToast('Администратор не найден');if(btn){btn.textContent='Войти';btn.disabled=false;}return;}
+    // Firestore запрос с таймаутом 8 сек
+    const queryPromise=db.collection('users').where('login','==',login).where('role','==','admin').limit(1).get();
+    const timeoutPromise=new Promise((_,rej)=>setTimeout(()=>rej(new Error('Превышено время ожидания. Проверьте интернет и попробуйте снова.')),8000));
+    const snap=await Promise.race([queryPromise,timeoutPromise]);
+    if(snap.empty){showToast('Администратор не найден');return;}
     const userDoc=snap.docs[0];
     const userData=userDoc.data();
-    if(userData.passwordHash!==passHash){showToast('Неверный пароль');if(btn){btn.textContent='Войти';btn.disabled=false;}return;}
+    if(userData.passwordHash!==passHash){showToast('Неверный пароль');return;}
     currentUser={id:userDoc.id,login:userData.login,role:'admin'};
     localStorage.setItem('ta_user',JSON.stringify(currentUser));
     closeOverlay('adminOverlay');
     updateLoginBtn();
     showToast('✓ Вы вошли как администратор');
-    // Всегда переключаем на вкладку add после входа админа
-    setTimeout(()=>switchTab('add'), 200);
+    setTimeout(()=>switchTab('add'),200);
   }catch(e){
     showToast('Ошибка: '+e.message);
-    if(btn){btn.textContent='Войти';btn.disabled=false;}
     console.error(e);
+  }finally{
+    _adminLoginInProgress=false;
+    if(btn){btn.textContent='Войти';btn.disabled=false;}
   }
 }
 function doLogout(){
