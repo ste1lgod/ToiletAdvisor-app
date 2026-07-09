@@ -779,44 +779,27 @@ body.dark .adminDashBtn{background:#1a2133;border-color:#252d40;box-shadow:none;
 /* ===== ADD POINT WIZARD ===== */
 #addWizard{width:100%;display:flex;flex-direction:column;gap:0;}
 
-/* Stepper */
-.wizStepper{
-  display:flex;align-items:center;justify-content:center;
-  gap:0;margin-bottom:28px;margin-top:4px;
+/* Заголовок шага */
+#wizStepTitle{
+  font-size:24px;font-weight:800;color:var(--text);
+  letter-spacing:-.4px;line-height:1.2;
+  margin-bottom:24px;margin-top:4px;
+  padding:0 2px;
 }
-.wizStep{
-  display:flex;flex-direction:column;align-items:center;gap:5px;
-  position:relative;
-}
-.wizStepCircle{
-  width:32px;height:32px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:13px;font-weight:700;
-  background:var(--border);color:var(--text2);
-  transition:background .25s,color .25s;
-  border:2px solid var(--border);
-}
-.wizStep.active .wizStepCircle{background:var(--green);color:#fff;border-color:var(--green);}
-.wizStep.done .wizStepCircle{background:#d1fae5;color:#065f46;border-color:#6ee7b7;}
-body.dark .wizStep.done .wizStepCircle{background:#064e3b;color:#6ee7b7;border-color:#059669;}
-.wizStepLabel{font-size:10px;font-weight:600;color:var(--text2);white-space:nowrap;}
-.wizStep.active .wizStepLabel{color:var(--green);}
-.wizStepLine{width:36px;height:2px;background:var(--border);margin-bottom:18px;flex-shrink:0;}
-.wizStepLine.done{background:var(--green);}
 
 /* Step panels */
 .wizPanel{display:none;flex-direction:column;gap:0;width:100%;}
 .wizPanel.active{display:flex;}
 
 /* Step 1 — map pick */
-#wizStep1{align-items:center;text-align:center;}
+#wizStep1{align-items:stretch;text-align:left;}
 #wizMapHint{
-  font-size:14px;font-weight:700;color:var(--text);
-  margin-bottom:8px;
+  font-size:17px;font-weight:700;color:var(--text);
+  margin-bottom:6px;
 }
 #wizMapSub{
-  font-size:13px;color:var(--text2);line-height:1.5;
-  margin-bottom:24px;
+  font-size:14px;color:var(--text2);line-height:1.6;
+  margin-bottom:28px;
 }
 #wizPickBtn{
   display:flex;align-items:center;justify-content:center;gap:10px;
@@ -825,163 +808,186 @@ body.dark .wizStep.done .wizStepCircle{background:#064e3b;color:#6ee7b7;border-c
   border:none;border-radius:20px;
   font-size:15px;font-weight:700;font-family:var(--font);
   cursor:pointer;
-  box-shadow:0 4px 18px rgba(0,168,89,0.35);
+  box-shadow:0 4px 20px rgba(0,168,89,0.4);
   transition:opacity .15s,transform .12s;
-  margin-bottom:12px;
+  margin-bottom:14px;
 }
 #wizPickBtn:active{opacity:.85;transform:scale(.98);}
 #wizCoordsConfirmed{
   display:none;
-  padding:12px 16px;
-  background:var(--green-l);
-  border:1.5px solid var(--green);
+  padding:14px 16px;
+  background:rgba(0,168,89,0.1);
+  border:1.5px solid rgba(0,168,89,0.35);
   border-radius:16px;
   font-size:13px;font-weight:700;
   color:var(--green);
   text-align:center;
   margin-bottom:16px;
+  backdrop-filter:blur(8px);
 }
-body.dark #wizCoordsConfirmed{background:#0a2e1c;color:#4ade80;border-color:#059669;}
+body.dark #wizCoordsConfirmed{background:rgba(0,168,89,0.08);color:#4ade80;border-color:rgba(0,200,89,0.3);}
 
 /* Step 2 — form */
-#wizStep2{gap:10px;}
-
-/* Блок-карточка — группирует поля */
 .wizBlock{
   background:var(--glass-bg);
   backdrop-filter:var(--glass-blur);
   -webkit-backdrop-filter:var(--glass-blur);
-  border:1px solid var(--panel-border);
-  border-radius:20px;
+  border:1px solid rgba(255,255,255,0.18);
+  border-radius:22px;
   overflow:hidden;
-  box-shadow:var(--sh);
-  margin-bottom:10px;
+  box-shadow:0 4px 24px rgba(0,0,0,0.08),0 1px 4px rgba(0,0,0,0.04);
+  margin-bottom:14px;
 }
-body.dark .wizBlock{background:rgba(22,27,40,0.85);border-color:#252d40;}
-.wizBlockTags{padding:14px 14px 10px;}
-.wizBlockDivider{height:1px;background:var(--border);margin:0 16px;}
+body.dark .wizBlock{
+  background:rgba(255,255,255,0.05);
+  border-color:rgba(255,255,255,0.09);
+  box-shadow:0 4px 24px rgba(0,0,0,0.3);
+}
+.wizBlockTags{padding:16px;}
 .wizTagsLabel{
   font-size:11px;font-weight:700;
   color:var(--text2);text-transform:uppercase;
-  letter-spacing:.6px;margin-bottom:10px;
+  letter-spacing:.8px;margin-bottom:10px;
 }
-.wizTagsDivider{height:1px;background:var(--border);margin:10px 0;}
+.wizTagsDivider{height:1px;background:rgba(255,255,255,0.08);margin:14px 0;}
+body.dark .wizTagsDivider{background:rgba(255,255,255,0.06);}
 
 .wizInput{
-  width:100%;padding:15px 16px;
+  width:100%;padding:16px 18px;
   border:none;
   background:transparent;
   font-size:15px;color:var(--text);
   outline:none;font-family:var(--font);
   display:block;
 }
-.wizInputLast{border-radius:0 0 20px 20px;}
 .wizInput::placeholder{color:var(--text2);}
+.wizInputSep{
+  height:1px;
+  background:rgba(0,0,0,0.06);
+  margin:0 18px;
+}
+body.dark .wizInputSep{background:rgba(255,255,255,0.06);}
 
-/* Tag toggles — iOS pill стиль */
-.tagGrid{display:flex;flex-wrap:wrap;gap:7px;}
+/* Tag toggles — iOS pill */
+.tagGrid{display:flex;flex-wrap:wrap;gap:8px;}
 .tagToggle{
-  display:flex;align-items:center;gap:6px;
-  padding:9px 13px;
-  border:1px solid var(--border);
+  display:flex;align-items:center;gap:7px;
+  padding:10px 14px;
+  border:1px solid rgba(255,255,255,0.15);
   border-radius:30px;
-  background:var(--glass-bg);
-  backdrop-filter:var(--glass-blur);
-  -webkit-backdrop-filter:var(--glass-blur);
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
   font-size:13px;font-weight:600;color:var(--text2);
-  cursor:pointer;
-  font-family:var(--font);
-  transition:all .18s;
-  user-select:none;
+  cursor:pointer;font-family:var(--font);
+  transition:all .18s;user-select:none;
   box-shadow:0 1px 4px rgba(0,0,0,0.06);
 }
-body.dark .tagToggle{background:rgba(26,33,51,0.7);border-color:#252d40;}
+body.dark .tagToggle{
+  background:rgba(255,255,255,0.05);
+  border-color:rgba(255,255,255,0.08);
+}
 .tagToggle.on{
   background:rgba(0,168,89,0.15);
-  border-color:var(--green);
+  border-color:rgba(0,168,89,0.5);
   color:var(--green);
-  box-shadow:0 0 0 1px rgba(0,168,89,0.2);
+  box-shadow:0 0 0 1px rgba(0,168,89,0.15),0 2px 8px rgba(0,168,89,0.15);
 }
-body.dark .tagToggle.on{background:rgba(0,168,89,0.12);color:#4ade80;border-color:#059669;}
+body.dark .tagToggle.on{
+  background:rgba(0,168,89,0.12);
+  color:#4ade80;border-color:rgba(0,200,89,0.35);
+}
 .tagSpecial.on{
-  background:rgba(202,138,4,0.13);
-  border-color:#ca8a04;
-  color:#ca8a04;
-  box-shadow:0 0 0 1px rgba(202,138,4,0.2);
+  background:rgba(202,138,4,0.12);
+  border-color:rgba(202,138,4,0.45);
+  color:#b45309;
+  box-shadow:0 0 0 1px rgba(202,138,4,0.12),0 2px 8px rgba(202,138,4,0.12);
 }
-body.dark .tagSpecial.on{background:rgba(202,138,4,0.12);color:#fcd34d;border-color:#b45309;}
-.tagToggle .tagIco{font-size:14px;}
+body.dark .tagSpecial.on{
+  background:rgba(202,138,4,0.1);
+  color:#fcd34d;border-color:rgba(202,138,4,0.3);
+}
+.tagToggle .tagIco{font-size:15px;}
 .tagToggle .tagChk{
-  width:15px;height:15px;border-radius:50%;
-  background:var(--border);
+  width:16px;height:16px;border-radius:50%;
+  background:rgba(255,255,255,0.15);
+  border:1.5px solid rgba(255,255,255,0.2);
   display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;
-  transition:background .15s;
+  flex-shrink:0;transition:all .15s;
 }
-.tagToggle.on .tagChk{background:var(--green);}
-body.dark .tagToggle.on .tagChk{background:#059669;}
-.tagSpecial.on .tagChk{background:#ca8a04;}
-body.dark .tagSpecial.on .tagChk{background:#b45309;}
+body.dark .tagToggle .tagChk{background:rgba(255,255,255,0.08);}
+.tagToggle.on .tagChk{
+  background:var(--green);border-color:var(--green);
+}
+body.dark .tagToggle.on .tagChk{background:#059669;border-color:#059669;}
+.tagSpecial.on .tagChk{background:#ca8a04;border-color:#ca8a04;}
+body.dark .tagSpecial.on .tagChk{background:#b45309;border-color:#b45309;}
 .tagToggle .tagChk::after{
-  content:'✓';font-size:9px;font-weight:800;color:#fff;
+  content:'✓';font-size:9px;font-weight:900;color:#fff;
   opacity:0;transition:opacity .15s;
 }
 .tagToggle.on .tagChk::after{opacity:1;}
 
-/* Nav buttons — компактные, не на всю ширину */
+/* Nav buttons */
 .wizNavRow{
   display:flex;gap:10px;
   justify-content:center;
-  margin-top:20px;
-  padding-bottom:4px;
+  margin-top:24px;
+  padding-bottom:8px;
 }
 .wizBtnPrev{
   display:flex;align-items:center;gap:5px;
-  padding:11px 18px;
-  background:var(--glass-bg);
-  backdrop-filter:var(--glass-blur);
-  -webkit-backdrop-filter:var(--glass-blur);
-  border:1px solid var(--border);
+  padding:12px 20px;
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.14);
   border-radius:30px;
-  font-size:13px;font-weight:600;color:var(--text2);
+  font-size:14px;font-weight:600;color:var(--text2);
   cursor:pointer;font-family:var(--font);
   transition:opacity .15s,transform .12s;
   white-space:nowrap;
-  box-shadow:0 1px 6px rgba(0,0,0,0.07);
+  box-shadow:0 2px 8px rgba(0,0,0,0.08);
 }
-body.dark .wizBtnPrev{background:rgba(26,33,51,0.7);border-color:#252d40;}
-.wizBtnPrev:active{opacity:.75;transform:scale(.96);}
+body.dark .wizBtnPrev{border-color:rgba(255,255,255,0.1);}
+.wizBtnPrev:active{opacity:.7;transform:scale(.96);}
 .wizBtnNext{
-  display:flex;align-items:center;gap:5px;
-  padding:11px 24px;
+  display:flex;align-items:center;gap:6px;
+  padding:12px 26px;
   background:var(--green);color:#fff;
   border:none;border-radius:30px;
-  font-size:13px;font-weight:700;font-family:var(--font);
+  font-size:14px;font-weight:700;font-family:var(--font);
   cursor:pointer;
-  box-shadow:0 3px 14px rgba(0,168,89,0.35);
+  box-shadow:0 4px 16px rgba(0,168,89,0.4);
   transition:opacity .15s,transform .12s;
   white-space:nowrap;
 }
 .wizBtnNext:active{opacity:.85;transform:scale(.96);}
-.wizBtnNext:disabled{opacity:.4;pointer-events:none;}
+.wizBtnNext:disabled{opacity:.35;pointer-events:none;}
 
 /* Step 3 — confirm */
-#wizStep3{gap:12px;}
 .wizConfirmCard{
-  background:var(--bg);
-  border:1.5px solid var(--border);
-  border-radius:20px;
-  padding:16px 18px;
-  display:flex;flex-direction:column;gap:8px;
+  background:var(--glass-bg);
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
+  border:1px solid rgba(255,255,255,0.14);
+  border-radius:22px;
+  padding:18px;
+  display:flex;flex-direction:column;gap:14px;
+  box-shadow:0 4px 24px rgba(0,0,0,0.08);
+  margin-bottom:4px;
 }
-body.dark .wizConfirmCard{background:#1a2133;border-color:#252d40;}
+body.dark .wizConfirmCard{
+  background:rgba(255,255,255,0.05);
+  border-color:rgba(255,255,255,0.09);
+}
 .wizConfirmRow{
-  display:flex;align-items:flex-start;gap:10px;
+  display:flex;align-items:flex-start;gap:12px;
   font-size:14px;
 }
 .wizConfirmLabel{
   font-size:11px;font-weight:700;color:var(--text2);
-  min-width:68px;padding-top:1px;
+  min-width:72px;padding-top:1px;
   text-transform:uppercase;letter-spacing:.5px;
 }
 .wizConfirmVal{font-weight:600;color:var(--text);flex:1;line-height:1.4;}
