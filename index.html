@@ -1406,28 +1406,43 @@ body.dark #wizPickAddressBar{border-color:rgba(255,255,255,0.10);}
 
       <!-- Шаг 2: заполнение -->
       <div class="wizPanel" id="wizPanel2">
-        <input class="wizInput" type="text" id="wizTitle" placeholder="Название туалета *" maxlength="80">
-        <input class="wizInput" type="text" id="wizDesc" placeholder="Описание (необязательно)" maxlength="200">
-        <div class="tagGrid" id="wizTagGrid">
-          <div class="tagToggle on" data-tag="isFree" onclick="wizToggleTag(this)">
-            <span class="tagIco">🆓</span><span>Бесплатно</span><span class="tagChk"></span>
+
+        <!-- Блок 1: название + описание -->
+        <div class="wizBlock">
+          <input class="wizInput" type="text" id="wizTitle" placeholder="Название туалета *" maxlength="80">
+          <div class="wizBlockDivider"></div>
+          <input class="wizInput wizInputLast" type="text" id="wizDesc" placeholder="Описание (необязательно)" maxlength="200">
+        </div>
+
+        <!-- Блок 2: теги -->
+        <div class="wizBlock wizBlockTags">
+          <div class="wizTagsLabel">Особые категории</div>
+          <div class="tagGrid" id="wizTagGridSpecial">
+            <div class="tagToggle tagSpecial" data-tag="isTaharatkhana" onclick="wizToggleTag(this)">
+              <span class="tagIco">🕌</span><span>Тахаратхана</span><span class="tagChk"></span>
+            </div>
           </div>
-          <div class="tagToggle on" data-tag="isOpen" onclick="wizToggleTag(this)">
-            <span class="tagIco">🟢</span><span>Открыто</span><span class="tagChk"></span>
-          </div>
-          <div class="tagToggle" data-tag="hasSoap" onclick="wizToggleTag(this)">
-            <span class="tagIco">🧼</span><span>Мыло</span><span class="tagChk"></span>
-          </div>
-          <div class="tagToggle" data-tag="hasPaper" onclick="wizToggleTag(this)">
-            <span class="tagIco">🧻</span><span>Бумага</span><span class="tagChk"></span>
-          </div>
-          <div class="tagToggle" data-tag="isAccessible" onclick="wizToggleTag(this)">
-            <span class="tagIco">♿</span><span>Доступно</span><span class="tagChk"></span>
-          </div>
-          <div class="tagToggle" data-tag="isTaharatkhana" onclick="wizToggleTag(this)">
-            <span class="tagIco">🕌</span><span>Тахаратхана</span><span class="tagChk"></span>
+          <div class="wizTagsDivider"></div>
+          <div class="wizTagsLabel">Характеристики</div>
+          <div class="tagGrid" id="wizTagGrid">
+            <div class="tagToggle on" data-tag="isFree" onclick="wizToggleTag(this)">
+              <span class="tagIco">🆓</span><span>Бесплатно</span><span class="tagChk"></span>
+            </div>
+            <div class="tagToggle on" data-tag="isOpen" onclick="wizToggleTag(this)">
+              <span class="tagIco">🟢</span><span>Открыто</span><span class="tagChk"></span>
+            </div>
+            <div class="tagToggle" data-tag="hasSoap" onclick="wizToggleTag(this)">
+              <span class="tagIco">�</span><span>Мыло</span><span class="tagChk"></span>
+            </div>
+            <div class="tagToggle" data-tag="hasPaper" onclick="wizToggleTag(this)">
+              <span class="tagIco">🧻</span><span>Бумага</span><span class="tagChk"></span>
+            </div>
+            <div class="tagToggle" data-tag="isAccessible" onclick="wizToggleTag(this)">
+              <span class="tagIco">♿</span><span>Доступно</span><span class="tagChk"></span>
+            </div>
           </div>
         </div>
+
         <div class="wizNavRow">
           <button class="wizBtnPrev" onclick="wizGoStep(1)">← Назад</button>
           <button class="wizBtnNext" onclick="wizGoStep(3)">Далее →</button>
