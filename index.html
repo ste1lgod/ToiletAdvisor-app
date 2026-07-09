@@ -1644,35 +1644,7 @@ async function openSheet(toilet){
   if(isSheetOpen)return;
   isSheetOpen=true;
   selectedToilet=toilet;
-  document.getElementById('sTitle').textContent=toilet.title;
-  const ref=userCoords||TASHKENT;
-  const isFallback=!userCoords;
-  document.getElementById('sDistPill').textContent=formatDist(haversine(ref[0],ref[1],toilet.lat,toilet.lon),isFallback);
-  const op=document.getElementById('sOpenPill');
-  op.textContent=toilet.isOpen?t('open'):t('closed');
-  op.className='mPill '+(toilet.isOpen?'pGreen':'pRed');
-  const fp=document.getElementById('sFreePill');
-  fp.textContent=toilet.isFree?t('free'):t('paid');
-  fp.className='mPill '+(toilet.isFree?'pGreen2':'pBlue');
-  document.getElementById('taharatBlock').classList.toggle('hidden',!toilet.isTaharatkhana);
-  const bads=[];
-  if(toilet.hasSoap)bads.push('🧼 Мыло');
-  if(toilet.hasPaper)bads.push('🧻 Бумага');
-  if(toilet.isAccessible)bads.push('♿ Доступность');
-  // Добавляем доп. теги прямо в #sPills чтобы не было лишнего отступа между строками
-  document.getElementById('sBadges').innerHTML='';
-  const pillsEl=document.getElementById('sPills');
-  // Убираем старые доп. теги из sPills (если были)
-  pillsEl.querySelectorAll('.sBadge').forEach(el=>el.remove());
-  bads.forEach(b=>{
-    const s=document.createElement('span');
-    s.className='sBadge';
-    s.textContent=b;
-    pillsEl.appendChild(s);
-  });
-  const desc=document.getElementById('sDesc');
-  desc.textContent=toilet.description||'';
-  desc.style.display=toilet.description?'block':'none';
+  document.getElementById('sBadges').innerHTML=';
 
   // Сначала показываем шторку — моментально со skeleton
   document.getElementById('sRatingVal').textContent='—';
