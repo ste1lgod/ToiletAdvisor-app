@@ -1907,23 +1907,24 @@ function switchTab(tab){
       document.getElementById('pAvatarWrap').style.background=
         currentUser.role==='admin'?'#7c3aed':'var(--green)';
       document.getElementById('pHeader').textContent=
-        currentUser.role==='admin'?'Администратор':'Профиль';
+        currentUser.role==='admin'?t('profileAdmin'):t('profile');
       document.getElementById('pSub').textContent=label;
       document.getElementById('pInfoCard').classList.remove('hidden');
       document.getElementById('pInfoPhone').textContent=label;
       document.getElementById('pInfoRole').textContent=
-        currentUser.role==='admin'?'⚙️ Администратор':'👤 Пользователь';
+        currentUser.role==='admin'?('⚙️ '+t('profileAdmin')):('👤 '+t('profileRole'));
       document.getElementById('pLogoutBtn').classList.remove('hidden');
       document.getElementById('pLoginPromptBtn').classList.add('hidden');
     } else {
       document.getElementById('pAvatarLetter').textContent='?';
       document.getElementById('pAvatarWrap').style.background='#9ca3af';
-      document.getElementById('pHeader').textContent='Профиль';
-      document.getElementById('pSub').textContent='Войдите чтобы увидеть данные';
+      document.getElementById('pHeader').textContent=t('profile');
+      document.getElementById('pSub').textContent=t('profileSub');
       document.getElementById('pInfoCard').classList.add('hidden');
       document.getElementById('pLogoutBtn').classList.add('hidden');
       document.getElementById('pLoginPromptBtn').classList.remove('hidden');
     }
+    _updateProfileTexts();
   }
 }
 
