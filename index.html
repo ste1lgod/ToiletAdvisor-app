@@ -1859,11 +1859,8 @@ async function doAdminLogin(){
     closeOverlay('adminOverlay');
     updateLoginBtn();
     showToast('✓ Вы вошли как администратор');
-    // Принудительно обновляем текущую вкладку
-    const activeBtn=document.querySelector('.navBtn.active');
-    const currentTab=activeBtn?activeBtn.dataset.tab:'map';
-    // Небольшая задержка чтобы toast успел показаться
-    setTimeout(()=>switchTab(currentTab),300);
+    // Всегда переключаем на вкладку add после входа админа
+    setTimeout(()=>switchTab('add'), 200);
   }catch(e){
     showToast('Ошибка: '+e.message);
     if(btn){btn.textContent='Войти';btn.disabled=false;}
