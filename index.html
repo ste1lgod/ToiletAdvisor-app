@@ -1461,10 +1461,11 @@ body.dark #wizPickAddressBar{border-color:rgba(255,255,255,0.10);}
             <div id="wizCoordsConfirmed"></div>
           </div>
           <div class="wizNavRow" id="wizNavRow1" style="display:none;">
+            <button class="wizBtnBack" onclick="showAdminDashboard()">‹ В меню</button>
             <button class="wizBtnNext" id="wizNext1" onclick="wizGoStep(2)">Далее →</button>
           </div>
-          <!-- Кнопка назад в дашборд — только на шаге 1, снизу -->
-          <div style="display:flex;justify-content:center;margin-top:16px;">
+          <!-- Кнопка В меню пока Далее не показана -->
+          <div id="wizMenuBtnRow" style="display:flex;justify-content:center;margin-top:16px;">
             <button class="wizBtnBack" onclick="showAdminDashboard()">‹ В меню</button>
           </div>
         </div>
