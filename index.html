@@ -1084,39 +1084,48 @@ body.dark #toast{
 /* ===== WIZ PICK OVERLAY ===== */
 #wizPickOverlay{
   position:fixed;inset:0;z-index:22;
-  pointer-events:none; /* Пропускаем все тапы на карту */
+  pointer-events:none;
 }
-/* Только интерактивные элементы внутри кликабельны */
 #wizPickHeader,
 #wizPickAddressBar{
   pointer-events:auto;
 }
-/* Список вне оверлея — сам кликабелен */
 #wizPickSuggest{
   pointer-events:auto;
 }
 
-/* Верхняя панель */
+/* ── Верхняя панель — единая карточка поиск+список ── */
 #wizPickHeader{
   position:fixed;top:0;left:0;right:0;
   padding:calc(env(safe-area-inset-top,0px) + 8px) 12px 0;
   z-index:23;
   display:flex;flex-direction:column;gap:0;
 }
+
+/* Единая карточка: поиск сверху, список снизу — одна белая карточка */
+#wizPickCard{
+  background:var(--card);
+  border-radius:18px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.13),0 2px 8px rgba(0,0,0,0.07);
+  border:1px solid var(--border);
+  overflow:hidden;
+}
+body.dark #wizPickCard{
+  background:var(--card);
+  border-color:var(--border);
+  box-shadow:0 8px 32px rgba(0,0,0,0.4),0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* Строка поиска внутри карточки */
 #wizPickTopRow{
   display:flex;align-items:center;gap:10px;
-  background:var(--glass-bg);
-  backdrop-filter:var(--glass-blur);
-  -webkit-backdrop-filter:var(--glass-blur);
-  border:1px solid rgba(255,255,255,0.6);
-  border-radius:16px;
-  padding:0 12px;
-  box-shadow:var(--sh-float);
-  height:54px;
+  background:transparent;
+  padding:0 14px;
+  height:52px;
+  border-bottom:none;
 }
-body.dark #wizPickTopRow{border-color:rgba(255,255,255,0.10);}
 #wizPickCancelBtn{
-  width:36px;height:36px;flex-shrink:0;
+  width:34px;height:34px;flex-shrink:0;
   background:none;border:none;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
   color:var(--text2);border-radius:10px;
@@ -1129,7 +1138,7 @@ body.dark #wizPickTopRow{border-color:rgba(255,255,255,0.10);}
 }
 #wizPickSearch{
   flex:1;border:none;background:transparent;
-  font-size:20px;font-weight:500;
+  font-size:17px;font-weight:500;
   color:var(--text);
   outline:none;font-family:var(--font);
   padding:0;margin:0;height:100%;
@@ -1140,9 +1149,39 @@ body.dark #wizPickTopRow{border-color:rgba(255,255,255,0.10);}
 #wizPickSearchClear{
   background:none;border:none;cursor:pointer;
   color:var(--text2);display:flex;align-items:center;padding:4px;
+  border-radius:50%;
+  transition:color .15s;
 }
+#wizPickSearchClear:active{color:var(--text);}
 
-/* Подпись-подсказка — ниже z-index чем suggest */
+/* Разделитель между поиском и списком — появляется только когда список открыт */
+#wizPickDivider{
+  height:1px;
+  background:var(--border);
+  margin:0;
+  display:none;
+}
+#wizPickDivider.vis{display:block;}
+
+/* Список результатов — внутри той же карточки */
+#wizPickSuggestInner{
+  max-height:220px;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;
+  scrollbar-color:#d1d5db transparent;
+}
+#wizPickSuggestInner::-webkit-scrollbar{
+  display:block !important;
+  width:4px !important;
+}
+#wizPickSuggestInner::-webkit-scrollbar-track{background:transparent;}
+#wizPickSuggestInner::-webkit-scrollbar-thumb{
+  background:#d1d5db;border-radius:2px;
+}
+body.dark #wizPickSuggestInner::-webkit-scrollbar-thumb{background:#3d4258;}
+
+/* Подпись-подсказка — отдельно под карточкой */
 #wizPickHint{
   margin:8px 4px 0;
   font-size:12px;font-weight:600;color:var(--green);
@@ -1151,66 +1190,41 @@ body.dark #wizPickTopRow{border-color:rgba(255,255,255,0.10);}
   border-radius:14px;
   border:1px solid rgba(0,168,89,0.25);
   text-align:center;
-  position:relative;
-  z-index:24;
 }
 body.dark #wizPickHint{background:#0a2e1c;border-color:#059669;}
 
-/* Выпадающий список — вне всех stacking context, всегда поверх */
-#wizPickSuggest{
-  position:fixed;
-  left:12px;right:12px;
-  /* top задаётся через JS при открытии */
-  z-index:9999 !important;
-  background:var(--card);
-  border-radius:18px;
-  border:1px solid var(--border);
-  overflow:hidden;
-  box-shadow:0 16px 48px rgba(0,0,0,0.25),0 4px 12px rgba(0,0,0,0.15);
-  max-height:240px;
-  overflow-y:scroll !important;
-  -webkit-overflow-scrolling:touch;
-  /* Видимый скроллбар — переопределяем глобальный сброс */
-  scrollbar-width:thin !important;
-  scrollbar-color:#d1d5db transparent !important;
-  /* transform для исправления stacking context */
-  transform:translateZ(0);
-}
-#wizPickSuggest::-webkit-scrollbar{
-  display:block !important;
-  width:6px !important;
-}
-#wizPickSuggest::-webkit-scrollbar-track{
-  background:transparent;
-}
-#wizPickSuggest::-webkit-scrollbar-thumb{
-  background:#d1d5db;
-  border-radius:3px;
-}
-body.dark #wizPickSuggest::-webkit-scrollbar-thumb{
-  background:#4b5568;
-}
-body.dark #wizPickSuggest{
-  background:var(--card);
-  border-color:var(--border);
-}
+/* ── Элементы выпадающего списка ── */
 .wizPickSuggestItem{
   padding:13px 16px;
-  font-size:14px;font-weight:500;
+  font-size:14px;font-weight:400;
   color:var(--text);
   cursor:pointer;
   border-bottom:1px solid var(--border);
-  display:flex;align-items:flex-start;gap:10px;
+  display:flex;align-items:center;gap:12px;
   transition:background .1s;
   -webkit-tap-highlight-color:transparent;
+  line-height:1.4;
 }
 body.dark .wizPickSuggestItem{border-bottom-color:var(--border);}
 .wizPickSuggestItem:last-child{border-bottom:none;}
-.wizPickSuggestItem:active,.wizPickSuggestItem:hover{background:var(--green-l);}
-body.dark .wizPickSuggestItem:active,body.dark .wizPickSuggestItem:hover{background:rgba(0,168,89,0.1);}
-.wizPickSuggestItem .sugIco{font-size:16px;flex-shrink:0;margin-top:1px;}
-.wizPickSuggestItem .sugText{flex:1;line-height:1.3;}
-.wizPickSuggestItem .sugSub{font-size:12px;color:var(--text2);margin-top:3px;}
+.wizPickSuggestItem:active,.wizPickSuggestItem:hover{background:var(--bg);}
+.wizPickSuggestItem .sugIco{
+  font-size:15px;flex-shrink:0;
+  width:28px;height:28px;
+  display:flex;align-items:center;justify-content:center;
+}
+.wizPickSuggestItem .sugText{flex:1;min-width:0;}
+.wizPickSuggestItem .sugName{
+  font-size:14px;font-weight:500;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.wizPickSuggestItem .sugSub{
+  font-size:12px;color:var(--text2);margin-top:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+/* Устаревший #wizPickSuggest — оставляем пустым (элемент в body) */
+#wizPickSuggest{display:none!important;}
 
 /* Центральный пин */
 #wizPickPin{
