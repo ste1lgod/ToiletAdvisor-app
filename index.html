@@ -2215,14 +2215,58 @@ async function deleteReview(id, btn){
   }catch(e){showToast('Ошибка: '+e.message);}
 }
 
+// ── MULTI-STEP ДОБАВЛЕНИЕ ──
+function addGoStep(step){
+  [1,2,3].forEach(i=>{
+    const dot=document.getElementById('addStep'+i+'Dot');
+    const view=document.getElementById('addStep'+i);
+    if(dot){dot.classList.toggle('active',i===step);dot.classList.toggle('done',i<step);}
+    if(view){view.classList.toggle('hidden',i!==step);}
+  });
+  document.querySelectorAll('.addStepLine').forEach((l,i)=>{
+    l.classList.toggle('done',i<step-1);
+  });
+  if(step===3)addFillPreview();
+}
+function addValidateStep2(){
+  const title=document.getElementById('addTitle').value.trim();
+  const btn=document.getElementById('addStep2Next');
+  if(btn)btn.disabled=!title;
+}
+function addFillPreview(){
+  const title=document.getElementById('addTitle').value.trim();
+  const desc=document.getElementById('addDesc').value.trim();
+  const isOpen=document.getElementById('addIsOpen').checked;
+  const isFree=document.getElementById('addIsFree').checked;
+  const hasSoap=document.getElementById('addHasSoap').checked;
+  const hasPaper=document.getElementById('addHasPaper').checked;
+  const isAccessible=document.getElementById('addIsAccessible').checked;
+  const isTaharatkhana=document.getElementById('addIsTaharatkhana').checked;
+  const coords=addCoords?`${addCoords[0].toFixed(4)}, ${addCoords[1].toFixed(4)}`:'не выбрано';
+  const tags=[
+    isOpen?'🟢 Открыто':'🔴 Закрыто',
+    isFree?'🆓 Бесплатно':'💰 Платно',
+    hasSoap?'🧼 Мыло':'',
+    hasPaper?'🧻 Бумага':'',
+    isAccessible?'♿ Доступно':'',
+    isTaharatkhana?'🕌 Тахаратхана':''
+  ].filter(Boolean).join('  ');
+  const prev=document.getElementById('addPreview');
+  if(prev)prev.innerHTML=`
+    <div style="font-weight:800;font-size:16px;margin-bottom:8px;">${title}</div>
+    ${desc?`<div style="color:var(--text2);margin-bottom:8px;">${desc}</div>`:''}
+    <div style="margin-bottom:8px;font-size:13px;">${tags}</div>
+    <div style="font-size:12px;color:var(--text2);">📍 ${coords}</div>
+  `;
+  const sb=document.getElementById('addSubmitBtn');
+  if(sb)sb.disabled=!addCoords||!title;
+}
+
 // ── ADD TOILET ──
 function pickLocationOnMap(){
-  // Переключаемся на карту, ждём тап
   addCoords=null;
-  document.getElementById('addCoordsDisplay').style.display='none';
   switchTab('map');
   showToast('📍 Нажмите на карту чтобы выбрать место');
-  // Открываем невидимый overlay чтобы map click handler работал
   document.getElementById('addOverlay').classList.remove('hidden');
   document.getElementById('addOverlay').style.opacity='0';
   document.getElementById('addOverlay').style.pointerEvents='none';
