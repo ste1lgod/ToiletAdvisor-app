@@ -2918,11 +2918,12 @@ function wizShowSuggest(items){
   const box = document.getElementById('wizPickSuggest');
   if(!box) return;
   if(!items.length){wizHideSuggest();return;}
-  box.innerHTML = items.map((it,i)=>`
+  box.innerHTML = items.map(it=>`
     <div class="wizPickSuggestItem" onclick="wizSelectSuggest(${it.coords[0]},${it.coords[1]})">
       <span class="sugIco">📍</span>
       <div class="sugText">
         <div>${it.name}</div>
+        ${it.desc ? `<div class="sugSub">${it.desc}</div>` : ''}
       </div>
     </div>`).join('');
   box.classList.remove('hidden');
