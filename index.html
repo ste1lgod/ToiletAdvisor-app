@@ -1440,10 +1440,17 @@ function initMap(){
           ao.classList.add('hidden');
           ao.style.opacity='';
           ao.style.pointerEvents='';
-          // Обновляем подсказку координат на addScreen
+          // Обновляем подсказку координат
           const cd=document.getElementById('addCoordsDisplay');
-          if(cd){cd.textContent=`📍 Выбрано: ${addCoords[0].toFixed(4)}, ${addCoords[1].toFixed(4)}`;cd.style.display='block';}
+          if(cd){
+            cd.textContent=`📍 Выбрано: ${addCoords[0].toFixed(4)}, ${addCoords[1].toFixed(4)}`;
+            cd.style.display='block';
+          }
+          // Активируем кнопку "Далее" на шаге 1 и переходим на шаг 2
+          const step1Next=document.getElementById('addStep1Next');
+          if(step1Next)step1Next.disabled=false;
           switchTab('add');
+          setTimeout(()=>addGoStep(2),100);
         }
       }
     });
