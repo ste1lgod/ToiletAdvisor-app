@@ -1166,6 +1166,8 @@ function setLang(l){
   if(adText)adText.textContent=t('adminDenied');
   const adBtnLabel=document.getElementById('adBtnLabel');
   if(adBtnLabel)adBtnLabel.textContent=t('adminDeniedBtn');
+  // Обновляем профиль
+  _updateProfileTexts();
   updateLoginBtn();
   if(typeof updateOfflineText==='function')updateOfflineText();
 }
