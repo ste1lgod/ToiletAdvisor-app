@@ -2037,6 +2037,7 @@ function switchTab(tab){
     if(currentUser&&currentUser.role==='admin'){
       document.getElementById('addScreen').classList.remove('hidden');
       addCoords=null;
+      showAdminDashboard();
     } else {
       document.getElementById('adminDeniedScreen').classList.remove('hidden');
       // Обновляем текст под текущий язык
