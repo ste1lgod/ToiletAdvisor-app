@@ -1844,19 +1844,32 @@ async function doAdminLogin(){
   const login=document.getElementById('adminLogin').value.trim();
   const pass=document.getElementById('adminPass').value.trim();
   if(!login||!pass){showToast('Заполните все поля');return;}
+  const btn=document.querySelector('#adminBox .mainBtn');
+  if(btn){btn.textContent='⏳ Вход...';btn.disabled=true;}
   try{
     await _loadFirebase();
     const passHash=await hashPassword(pass);
     const snap=await db.collection('users').where('login','==',login).where('role','==','admin').limit(1).get();
-    if(snap.empty){showToast('Администратор не найден');return;}
+    if(snap.empty){showToast('Администратор не найден');if(btn){btn.textContent='Войти';btn.disabled=false;}return;}
     const userDoc=snap.docs[0];
     const userData=userDoc.data();
-    if(userData.passwordHash!==passHash){showToast('Неверный пароль');return;}
+    if(userData.passwordHash!==passHash){showToast('Неверный пароль');if(btn){btn.textContent='Войти';btn.disabled=false;}return;}
     currentUser={id:userDoc.id,login:userData.login,role:'admin'};
     localStorage.setItem('ta_user',JSON.stringify(currentUser));
-    closeOverlay('adminOverlay');updateLoginBtn();
+    closeOverlay('adminOverlay');
+    updateLoginBtn();
     showToast('✓ Вы вошли как администратор');
-  }catch(e){showToast('Ошибка: '+e.message);console.error(e);}
+    // Сразу обновляем текущую вкладку если это профиль или добавить
+    const activeTab=document.querySelector('.navBtn.active');
+    if(activeTab){
+      const tab=activeTab.dataset.tab;
+      if(tab==='profile'||tab==='add')switchTab(tab);
+    }
+  }catch(e){
+    showToast('Ошибка: '+e.message);
+    if(btn){btn.textContent='Войти';btn.disabled=false;}
+    console.error(e);
+  }
 }
 function doLogout(){
   currentUser=null;localStorage.removeItem('ta_user');
