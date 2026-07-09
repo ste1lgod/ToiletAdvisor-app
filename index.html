@@ -3314,6 +3314,8 @@ window.addEventListener('resize',()=>{
 setLang(currentLang);
 applyTheme();
 updateLoginBtn();
+// Гарантируем что все fixed-дочерние элементы оверлея скрыты при старте
+_wizHideOverlay();
 
 // ── KEYBOARD LIFT — visualViewport API ──
 // Поднимаем .overlay когда появляется клавиатура (iOS/Android)
