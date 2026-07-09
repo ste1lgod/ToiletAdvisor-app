@@ -1499,7 +1499,17 @@ async function openSheet(toilet){
   if(toilet.hasSoap)bads.push('🧼 Мыло');
   if(toilet.hasPaper)bads.push('🧻 Бумага');
   if(toilet.isAccessible)bads.push('♿ Доступность');
-  document.getElementById('sBadges').innerHTML=bads.map(b=>`<span class="sBadge">${b}</span>`).join('');
+  // Добавляем доп. теги прямо в #sPills чтобы не было лишнего отступа между строками
+  document.getElementById('sBadges').innerHTML='';
+  const pillsEl=document.getElementById('sPills');
+  // Убираем старые доп. теги из sPills (если были)
+  pillsEl.querySelectorAll('.sBadge').forEach(el=>el.remove());
+  bads.forEach(b=>{
+    const s=document.createElement('span');
+    s.className='sBadge';
+    s.textContent=b;
+    pillsEl.appendChild(s);
+  });
   const desc=document.getElementById('sDesc');
   desc.textContent=toilet.description||'';
   desc.style.display=toilet.description?'block':'none';
