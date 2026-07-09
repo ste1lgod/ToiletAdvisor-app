@@ -1138,7 +1138,7 @@ body.dark #wizPickTopRow{border-color:rgba(255,255,255,0.10);}
   color:var(--text2);display:flex;align-items:center;padding:4px;
 }
 
-/* Подпись-подсказка */
+/* Подпись-подсказка — ниже z-index чем suggest */
 #wizPickHint{
   margin:8px 4px 0;
   font-size:12px;font-weight:600;color:var(--green);
@@ -1147,6 +1147,8 @@ body.dark #wizPickTopRow{border-color:rgba(255,255,255,0.10);}
   border-radius:14px;
   border:1px solid rgba(0,168,89,0.25);
   text-align:center;
+  position:relative;
+  z-index:20;
 }
 body.dark #wizPickHint{background:#0a2e1c;border-color:#059669;}
 
