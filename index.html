@@ -1654,9 +1654,10 @@ body.dark #wizPickAddressBar{border-color:rgba(255,255,255,0.10);}
     </div>
     <!-- Подпись вместо чипов -->
     <div id="wizPickHint">📍 Укажите координаты — переместите карту или найдите улицу</div>
-    <!-- Выпадающий список — внутри header, position:absolute top:100% -->
-    <div id="wizPickSuggest" class="hidden"></div>
   </div>
+
+  <!-- Выпадающий список — position:fixed, top задаётся через JS -->
+  <div id="wizPickSuggest" class="hidden"></div>
 
   <!-- Центральный маркер -->
   <div id="wizPickPin">
