@@ -128,17 +128,20 @@ body.dark #themeBtn{background:var(--card);}
 #loginBtn:active{opacity:.82;}
 
 /* Search */
-.hRow2{padding:0 14px 8px;}
+/* Поиск туалета в хедере */
+.hRow2{padding:0 14px 10px;}
 #searchWrap{
-  display:flex;align-items:center;gap:8px;
-  background:#f2f4f7;border-radius:14px;padding:0 12px;
+  display:flex;align-items:center;gap:10px;
+  background:#f2f4f7;border-radius:18px;padding:0 16px;
   border:1.5px solid var(--border);
+  min-height:50px;
 }
 body.dark #searchWrap{background:var(--bg);}
-#searchIco{display:flex;color:var(--text2);}
+#searchIco{display:flex;color:var(--text2);flex-shrink:0;}
+#searchIco svg{width:20px;height:20px;}
 #searchInput{
-  flex:1;border:none;background:transparent;padding:10px 4px;
-  font-size:14px;color:var(--text);outline:none;font-family:var(--font);
+  flex:1;border:none;background:transparent;padding:12px 4px;
+  font-size:16px;color:var(--text);outline:none;font-family:var(--font);
 }
 #searchInput::placeholder{color:var(--text2);}
 
