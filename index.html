@@ -2442,6 +2442,8 @@ function wizStartPickLocation(){
   wizPickMode=true;
   switchTab('map');
   showToast('📍 Тапните на карту чтобы выбрать место');
+  const hint=document.getElementById('wizMapPickHint');
+  if(hint) hint.classList.remove('hidden');
 }
 
 function wizOnMapClick(coords){
