@@ -1075,27 +1075,56 @@ body.dark #toast{
     </div>
   </div>
 
-  <!-- Сабвью: форма добавления туалета -->
+  <!-- Сабвью: форма добавления туалета — 3 шага -->
   <div id="adminSubAddForm" class="adminSubview hidden">
     <button class="adminBackBtn" onclick="showAdminDashboard()">‹ Назад</button>
-    <div id="addScreenTitle">➕ Добавить точку</div>
-    <div id="addMapHint">📍 Сначала выберите место на карте</div>
-    <div id="addForm">
-      <input type="text" id="addTitle" placeholder="Название туалета">
-      <input type="text" id="addDesc" placeholder="Описание (необязательно)">
-      <input type="text" id="addPhoto" placeholder="Ссылка на фото (необязательно)">
-      <div class="chkGrid">
-        <label><input type="checkbox" id="addIsFree" checked> 🆓 Бесплатно</label>
-        <label><input type="checkbox" id="addIsOpen" checked> 🟢 Открыто</label>
-        <label><input type="checkbox" id="addHasSoap"> 🧼 Мыло</label>
-        <label><input type="checkbox" id="addHasPaper"> 🧻 Бумага</label>
-        <label><input type="checkbox" id="addIsAccessible"> ♿ Доступно</label>
-        <label><input type="checkbox" id="addIsTaharatkhana"> 🕌 Тахаратхана</label>
-      </div>
-      <button id="addPickMapBtn" onclick="pickLocationOnMap()">📍 Выбрать место на карте</button>
-      <div id="addCoordsDisplay" style="display:none;padding:10px 14px;background:var(--green-l);border-radius:var(--rs);font-size:13px;color:var(--green);font-weight:600;text-align:center;"></div>
-      <button id="addSubmitBtn" onclick="submitAddToiletDirect()">✅ Добавить</button>
+
+    <!-- Индикатор шагов -->
+    <div id="addStepsBar">
+      <div class="addStep active" id="addStep1Dot"><span>1</span><div class="addStepLabel">Место</div></div>
+      <div class="addStepLine"></div>
+      <div class="addStep" id="addStep2Dot"><span>2</span><div class="addStepLabel">Данные</div></div>
+      <div class="addStepLine"></div>
+      <div class="addStep" id="addStep3Dot"><span>3</span><div class="addStepLabel">Готово</div></div>
     </div>
+
+    <!-- Шаг 1: выбор места на карте -->
+    <div id="addStep1" class="addStepView">
+      <div class="addStepTitle">📍 Выберите место</div>
+      <div class="addStepDesc">Нажмите на кнопку ниже, затем тапните по карте чтобы выбрать точное место туалета</div>
+      <div id="addCoordsDisplay" style="display:none;padding:12px 16px;background:var(--green-l);border-radius:16px;font-size:13px;color:var(--green);font-weight:600;text-align:center;margin:12px 0;"></div>
+      <button id="addPickMapBtn" onclick="pickLocationOnMap()">�️ Открыть карту и выбрать место</button>
+      <button id="addStep1Next" onclick="addGoStep(2)" disabled class="addNextBtn">Далее →</button>
+    </div>
+
+    <!-- Шаг 2: название, описание, теги -->
+    <div id="addStep2" class="addStepView hidden">
+      <div class="addStepTitle">✏️ Заполните данные</div>
+      <div id="addForm">
+        <input type="text" id="addTitle" placeholder="Название туалета *" oninput="addValidateStep2()">
+        <input type="text" id="addDesc" placeholder="Описание (необязательно)">
+        <input type="text" id="addPhoto" placeholder="Ссылка на фото (необязательно)">
+        <div class="chkGrid">
+          <label><input type="checkbox" id="addIsFree" checked> 🆓 Бесплатно</label>
+          <label><input type="checkbox" id="addIsOpen" checked> 🟢 Открыто</label>
+          <label><input type="checkbox" id="addHasSoap"> 🧼 Мыло</label>
+          <label><input type="checkbox" id="addHasPaper"> 🧻 Бумага</label>
+          <label><input type="checkbox" id="addIsAccessible"> ♿ Доступно</label>
+          <label><input type="checkbox" id="addIsTaharatkhana"> 🕌 Тахаратхана</label>
+        </div>
+      </div>
+      <button onclick="addGoStep(1)" class="addBackStepBtn">← Назад</button>
+      <button id="addStep2Next" onclick="addGoStep(3)" disabled class="addNextBtn">Далее →</button>
+    </div>
+
+    <!-- Шаг 3: подтверждение и сохранение -->
+    <div id="addStep3" class="addStepView hidden">
+      <div class="addStepTitle">✅ Подтвердите</div>
+      <div id="addPreview" class="addPreviewCard"></div>
+      <button onclick="addGoStep(2)" class="addBackStepBtn">← Назад</button>
+      <button id="addSubmitBtn" onclick="submitAddToiletDirect()">✅ Добавить туалет</button>
+    </div>
+
   </div>
 
   <!-- Сабвью: модерация отзывов -->
