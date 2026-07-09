@@ -777,33 +777,173 @@ body.dark .adminDashBtn{background:#1a2133;border-color:#252d40;box-shadow:none;
   align-self:flex-start;
 }
 
-#addScreenTitle{font-size:20px;font-weight:800;color:var(--text);text-align:center;padding:0 0 10px;font-family:var(--font);letter-spacing:-.3px;}
-#addMapHint{font-size:13px;color:var(--green);text-align:center;margin:0 0 16px;padding:12px;background:var(--green-l);border-radius:16px;font-weight:600;}
-#addForm{display:flex;flex-direction:column;gap:10px;}
-#addForm input[type=text]{
+/* ===== ADD POINT WIZARD ===== */
+#addWizard{width:100%;display:flex;flex-direction:column;gap:0;}
+
+/* Stepper */
+.wizStepper{
+  display:flex;align-items:center;justify-content:center;
+  gap:0;margin-bottom:28px;margin-top:4px;
+}
+.wizStep{
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  position:relative;
+}
+.wizStepCircle{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;
+  background:var(--border);color:var(--text2);
+  transition:background .25s,color .25s;
+  border:2px solid var(--border);
+}
+.wizStep.active .wizStepCircle{background:var(--green);color:#fff;border-color:var(--green);}
+.wizStep.done .wizStepCircle{background:#d1fae5;color:#065f46;border-color:#6ee7b7;}
+body.dark .wizStep.done .wizStepCircle{background:#064e3b;color:#6ee7b7;border-color:#059669;}
+.wizStepLabel{font-size:10px;font-weight:600;color:var(--text2);white-space:nowrap;}
+.wizStep.active .wizStepLabel{color:var(--green);}
+.wizStepLine{width:36px;height:2px;background:var(--border);margin-bottom:18px;flex-shrink:0;}
+.wizStepLine.done{background:var(--green);}
+
+/* Step panels */
+.wizPanel{display:none;flex-direction:column;gap:0;width:100%;}
+.wizPanel.active{display:flex;}
+
+/* Step 1 — map pick */
+#wizStep1{align-items:center;text-align:center;}
+#wizMapHint{
+  font-size:14px;font-weight:700;color:var(--text);
+  margin-bottom:8px;
+}
+#wizMapSub{
+  font-size:13px;color:var(--text2);line-height:1.5;
+  margin-bottom:24px;
+}
+#wizPickBtn{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;padding:18px;
+  background:var(--green);color:#fff;
+  border:none;border-radius:20px;
+  font-size:15px;font-weight:700;font-family:var(--font);
+  cursor:pointer;
+  box-shadow:0 4px 18px rgba(0,168,89,0.35);
+  transition:opacity .15s,transform .12s;
+  margin-bottom:12px;
+}
+#wizPickBtn:active{opacity:.85;transform:scale(.98);}
+#wizCoordsConfirmed{
+  display:none;
+  padding:12px 16px;
+  background:var(--green-l);
+  border:1.5px solid var(--green);
+  border-radius:16px;
+  font-size:13px;font-weight:700;
+  color:var(--green);
+  text-align:center;
+  margin-bottom:16px;
+}
+body.dark #wizCoordsConfirmed{background:#0a2e1c;color:#4ade80;border-color:#059669;}
+
+/* Step 2 — form */
+#wizStep2{gap:10px;}
+.wizInput{
   width:100%;padding:14px 16px;
-  border:none;border-radius:16px;
-  background:var(--card);
+  border:1.5px solid var(--border);
+  border-radius:16px;
+  background:var(--bg);
   font-size:14px;color:var(--text);
   outline:none;font-family:var(--font);
-  box-shadow:0 2px 8px rgba(0,0,0,0.06);
+  transition:border-color .2s;
 }
-body.dark #addForm input[type=text]{background:var(--card);box-shadow:none;}
-#addForm input[type=text]:focus{box-shadow:0 0 0 2px rgba(0,168,89,0.25);}
-#addPickMapBtn{
-  width:100%;padding:14px;
-  background:var(--card);color:var(--green);
+body.dark .wizInput{background:#1a2133;border-color:#252d40;}
+.wizInput:focus{border-color:var(--green);}
+
+/* Tag toggles — крупные визуальные кнопки */
+.tagGrid{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+.tagToggle{
+  display:flex;align-items:center;gap:6px;
+  padding:10px 14px;
+  border:1.5px solid var(--border);
+  border-radius:14px;
+  background:var(--bg);
+  font-size:13px;font-weight:600;color:var(--text2);
+  cursor:pointer;
+  font-family:var(--font);
+  transition:all .15s;
+  user-select:none;
+}
+body.dark .tagToggle{background:#1a2133;border-color:#252d40;}
+.tagToggle.on{
+  background:var(--green-l);
+  border-color:var(--green);
+  color:var(--green);
+}
+body.dark .tagToggle.on{background:#0a2e1c;color:#4ade80;border-color:#059669;}
+.tagToggle .tagIco{font-size:15px;}
+.tagToggle .tagChk{
+  width:16px;height:16px;border-radius:4px;
+  background:var(--border);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  transition:background .15s;
+}
+.tagToggle.on .tagChk{background:var(--green);}
+body.dark .tagToggle.on .tagChk{background:#059669;}
+.tagToggle .tagChk::after{
+  content:'✓';font-size:10px;font-weight:800;color:#fff;
+  opacity:0;transition:opacity .15s;
+}
+.tagToggle.on .tagChk::after{opacity:1;}
+
+/* Nav buttons */
+.wizNavRow{
+  display:flex;gap:10px;margin-top:16px;
+}
+.wizBtnPrev{
+  flex:0 0 auto;
+  padding:14px 20px;
+  background:var(--bg);
+  border:1.5px solid var(--border);
+  border-radius:16px;
+  font-size:14px;font-weight:700;color:var(--text2);
+  cursor:pointer;font-family:var(--font);
+  transition:opacity .15s;
+}
+body.dark .wizBtnPrev{background:#1a2133;border-color:#252d40;}
+.wizBtnNext{
+  flex:1;
+  padding:14px;
+  background:var(--green);color:#fff;
   border:none;border-radius:16px;
-  font-size:14px;font-weight:700;font-family:var(--font);cursor:pointer;
-  box-shadow:0 2px 8px rgba(0,0,0,0.06);
+  font-size:15px;font-weight:700;font-family:var(--font);
+  cursor:pointer;
+  box-shadow:0 4px 16px rgba(0,168,89,0.3);
+  transition:opacity .15s,transform .12s;
 }
-body.dark #addPickMapBtn{background:var(--card);}
-#addSubmitBtn{
-  padding:15px;background:var(--green);color:#fff;
-  border:none;border-radius:18px;
-  font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);
-  box-shadow:0 4px 16px rgba(0,168,89,0.35);
+.wizBtnNext:active{opacity:.85;transform:scale(.98);}
+.wizBtnNext:disabled{opacity:.45;pointer-events:none;}
+
+/* Step 3 — confirm */
+#wizStep3{gap:12px;}
+.wizConfirmCard{
+  background:var(--bg);
+  border:1.5px solid var(--border);
+  border-radius:20px;
+  padding:16px 18px;
+  display:flex;flex-direction:column;gap:8px;
 }
+body.dark .wizConfirmCard{background:#1a2133;border-color:#252d40;}
+.wizConfirmRow{
+  display:flex;align-items:flex-start;gap:10px;
+  font-size:14px;
+}
+.wizConfirmLabel{
+  font-size:11px;font-weight:700;color:var(--text2);
+  min-width:68px;padding-top:1px;
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.wizConfirmVal{font-weight:600;color:var(--text);flex:1;line-height:1.4;}
+.wizConfirmTags{display:flex;flex-wrap:wrap;gap:6px;}
 
 /* ===== OFFLINE PILL ===== */
 #offlineBanner{
