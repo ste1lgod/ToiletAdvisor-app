@@ -1413,23 +1413,8 @@ body.dark #wizPickAddressBar{border-color:rgba(255,255,255,0.10);}
     <button class="adminBackBtn" onclick="showAdminDashboard()">‹ Назад</button>
 
     <div id="addWizard">
-      <!-- Stepper -->
-      <div class="wizStepper">
-        <div class="wizStep active" id="wizStepInd1">
-          <div class="wizStepCircle">1</div>
-          <div class="wizStepLabel">Место</div>
-        </div>
-        <div class="wizStepLine" id="wizLine1"></div>
-        <div class="wizStep" id="wizStepInd2">
-          <div class="wizStepCircle">2</div>
-          <div class="wizStepLabel">Детали</div>
-        </div>
-        <div class="wizStepLine" id="wizLine2"></div>
-        <div class="wizStep" id="wizStepInd3">
-          <div class="wizStepCircle">3</div>
-          <div class="wizStepLabel">Сохранить</div>
-        </div>
-      </div>
+      <!-- Заголовок шага — меняется динамически -->
+      <div id="wizStepTitle">📍 Укажите место</div>
 
       <!-- Шаг 1: выбор места -->
       <div class="wizPanel active" id="wizPanel1">
