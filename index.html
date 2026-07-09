@@ -2347,49 +2347,135 @@ async function deleteReview(id, btn){
 }
 
 // ── ADD TOILET ──
-function pickLocationOnMap(){
-  // Переключаемся на карту, ждём тап
-  addCoords=null;
-  document.getElementById('addCoordsDisplay').style.display='none';
-  switchTab('map');
-  showToast('📍 Нажмите на карту чтобы выбрать место');
-  // Открываем невидимый overlay чтобы map click handler работал
-  document.getElementById('addOverlay').classList.remove('hidden');
-  document.getElementById('addOverlay').style.opacity='0';
-  document.getElementById('addOverlay').style.pointerEvents='none';
-} 
-function submitAddToilet(){
-  pickLocationOnMap();
+// ── ADD TOILET WIZARD ──
+let wizCoords = null;
+let wizCurrentStep = 1;
+let wizPickMode = false;
+
+function wizReset(){
+  wizCoords = null;
+  wizCurrentStep = 1;
+  wizPickMode = false;
+  const confirmed = document.getElementById('wizCoordsConfirmed');
+  if(confirmed){confirmed.style.display='none';confirmed.textContent='';}
+  const next1 = document.getElementById('wizNext1');
+  if(next1) next1.disabled = true;
+  const t = document.getElementById('wizTitle');
+  if(t) t.value='';
+  const d = document.getElementById('wizDesc');
+  if(d) d.value='';
+  document.querySelectorAll('.tagToggle').forEach(el=>{
+    const def = el.dataset.tag==='isFree'||el.dataset.tag==='isOpen';
+    el.classList.toggle('on', def);
+  });
+  const pb = document.getElementById('wizPickBtn');
+  if(pb){
+    pb.innerHTML=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg> Указать место на карте`;
+  }
+  wizShowPanel(1);
 }
-async function submitAddToiletDirect(){
+
+function wizShowPanel(step){
+  wizCurrentStep = step;
+  document.querySelectorAll('.wizPanel').forEach((p,i)=>p.classList.toggle('active', i===step-1));
+  [1,2,3].forEach(i=>{
+    const ind = document.getElementById('wizStepInd'+i);
+    if(!ind) return;
+    ind.classList.remove('active','done');
+    if(i===step) ind.classList.add('active');
+    else if(i<step) ind.classList.add('done');
+    if(i<3){
+      const line = document.getElementById('wizLine'+i);
+      if(line) line.classList.toggle('done', i<step);
+    }
+  });
+}
+
+function wizGoStep(step){
+  if(step===2){
+    if(!wizCoords){showToast('Сначала укажите место на карте');return;}
+  }
+  if(step===3){
+    const title = document.getElementById('wizTitle').value.trim();
+    if(!title){showToast('Введите название туалета');document.getElementById('wizTitle').focus();return;}
+    wizFillConfirm();
+  }
+  wizShowPanel(step);
+}
+
+function wizFillConfirm(){
+  document.getElementById('wizConfCoords').textContent=`${wizCoords[0].toFixed(5)}, ${wizCoords[1].toFixed(5)}`;
+  document.getElementById('wizConfTitle').textContent=document.getElementById('wizTitle').value.trim();
+  const desc=document.getElementById('wizDesc').value.trim();
+  document.getElementById('wizConfDesc').textContent=desc;
+  document.getElementById('wizConfDescRow').style.display=desc?'':'none';
+  const tagsEl=document.getElementById('wizConfTags');
+  tagsEl.innerHTML='';
+  const tagLabels={isFree:'🆓 Бесплатно',isOpen:'🟢 Открыто',hasSoap:'🧼 Мыло',hasPaper:'🧻 Бумага',isAccessible:'♿ Доступно',isTaharatkhana:'🕌 Тахаратхана'};
+  document.querySelectorAll('.tagToggle.on').forEach(el=>{
+    const span=document.createElement('span');
+    span.className='sBadge';
+    span.textContent=tagLabels[el.dataset.tag]||el.dataset.tag;
+    tagsEl.appendChild(span);
+  });
+}
+
+function wizToggleTag(el){el.classList.toggle('on');}
+
+function wizStartPickLocation(){
+  wizPickMode=true;
+  switchTab('map');
+  showToast('📍 Тапните на карту чтобы выбрать место');
+}
+
+function wizOnMapClick(coords){
+  wizCoords=coords;
+  wizPickMode=false;
+  const confirmed=document.getElementById('wizCoordsConfirmed');
+  if(confirmed){
+    confirmed.style.display='block';
+    confirmed.textContent=`✓ Место выбрано: ${coords[0].toFixed(4)}, ${coords[1].toFixed(4)}`;
+  }
+  const btn=document.getElementById('wizNext1');
+  if(btn) btn.disabled=false;
+  setTimeout(()=>switchTab('add'),200);
+}
+
+async function wizSaveToilet(){
   if(!currentUser||currentUser.role!=='admin'){showToast('Требуются права администратора');return;}
-  const title=document.getElementById('addTitle').value.trim();
+  if(!wizCoords){showToast('Не выбрано место');return;}
+  const title=document.getElementById('wizTitle').value.trim();
   if(!title){showToast('Введите название');return;}
-  if(!addCoords){showToast('Сначала выберите место на карте');return;}
-  const body={lat:addCoords[0],lon:addCoords[1],title,
-    description:document.getElementById('addDesc').value.trim()||'',
-    photo:document.getElementById('addPhoto').value.trim()||'',
-    isOpen:document.getElementById('addIsOpen').checked,
-    isFree:document.getElementById('addIsFree').checked,
-    hasSoap:document.getElementById('addHasSoap').checked,
-    hasPaper:document.getElementById('addHasPaper').checked,
-    isAccessible:document.getElementById('addIsAccessible').checked,
-    isTaharatkhana:document.getElementById('addIsTaharatkhana').checked,
-    addedBy:currentUser.id,createdAt:new Date().toISOString()};
+  const btn=document.getElementById('wizSaveBtn');
+  if(btn){btn.textContent='⏳ Сохраняю...';btn.disabled=true;}
+  const tags={};
+  document.querySelectorAll('.tagToggle').forEach(el=>{tags[el.dataset.tag]=el.classList.contains('on');});
+  const body={
+    lat:wizCoords[0],lon:wizCoords[1],title,
+    description:document.getElementById('wizDesc').value.trim()||'',
+    photo:'',
+    isOpen:tags.isOpen||false,isFree:tags.isFree||false,
+    hasSoap:tags.hasSoap||false,hasPaper:tags.hasPaper||false,
+    isAccessible:tags.isAccessible||false,isTaharatkhana:tags.isTaharatkhana||false,
+    addedBy:currentUser.id,createdAt:new Date().toISOString()
+  };
   try{
     await _loadFirebase();
     await db.collection('toilets').add(body);
-    // Сбрасываем форму
-    document.getElementById('addTitle').value='';
-    document.getElementById('addDesc').value='';
-    document.getElementById('addPhoto').value='';
-    document.getElementById('addCoordsDisplay').style.display='none';
-    addCoords=null;
     await loadToilets();
     showToast('✅ Туалет добавлен!');
+    wizReset();
+    showAdminDashboard();
     switchTab('map');
-  }catch(e){showToast('Ошибка: '+e.message);console.error(e);}
+  }catch(e){
+    showToast('Ошибка: '+e.message);
+    if(btn){btn.textContent='✅ Сохранить';btn.disabled=false;}
+    console.error(e);
+  }
 }
+
+function pickLocationOnMap(){wizStartPickLocation();}
+async function submitAddToiletDirect(){wizSaveToilet();}
 async function submitAddToiletModal(){
   if(!currentUser||currentUser.role!=='admin'){showToast('Требуются права администратора');return;}
   const title=document.getElementById('addTitleM').value.trim();
