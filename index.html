@@ -2918,6 +2918,8 @@ function wizConfirmLocation(){
   }
   const next1 = document.getElementById('wizNext1');
   if(next1) next1.disabled = false;
+  const navRow1 = document.getElementById('wizNavRow1');
+  if(navRow1) navRow1.style.display = '';
   // Переходим сразу на шаг 2 — заполнение деталей карточки
   _skipAdminDashboard = true;
   switchTab('add');
