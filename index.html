@@ -1150,24 +1150,25 @@ body.dark #wizPickTopRow{border-color:rgba(255,255,255,0.10);}
 }
 body.dark #wizPickHint{background:#0a2e1c;border-color:#059669;}
 
-/* Выпадающий список — абсолютный, перекрывает hint */
+/* Выпадающий список — прилипает к нижнему краю строки поиска */
 #wizPickSuggest{
   position:absolute;
-  left:12px;right:12px;
-  z-index:30;
-  background:var(--glass-bg);
-  backdrop-filter:blur(24px);
-  -webkit-backdrop-filter:blur(24px);
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,0.18);
+  left:0;right:0;
+  top:100%; /* сразу под #wizPickHeader */
+  z-index:35;
+  background:var(--card);
+  border-radius:0 0 20px 20px;
+  border:1px solid var(--border);
+  border-top:none;
   overflow:hidden;
-  box-shadow:0 8px 32px rgba(0,0,0,0.18),0 2px 8px rgba(0,0,0,0.1);
-  max-height:260px;
+  box-shadow:0 12px 40px rgba(0,0,0,0.18),0 3px 10px rgba(0,0,0,0.08);
+  max-height:240px;
   overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
 }
 body.dark #wizPickSuggest{
-  background:rgba(18,22,36,0.96);
-  border-color:rgba(255,255,255,0.1);
+  background:var(--card);
+  border-color:var(--border);
 }
 .wizPickSuggestItem{
   padding:14px 18px;
