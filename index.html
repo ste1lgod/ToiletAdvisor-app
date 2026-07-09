@@ -994,9 +994,11 @@ body.dark #toast{
 /* ===== WIZ PICK OVERLAY ===== */
 #wizPickOverlay{
   position:fixed;inset:0;z-index:22;
-  pointer-events:none;
+  pointer-events:none; /* Пропускаем все тапы на карту */
 }
-#wizPickOverlay:not(.hidden){
+/* Только интерактивные элементы внутри кликабельны */
+#wizPickHeader,
+#wizPickAddressBar{
   pointer-events:auto;
 }
 
