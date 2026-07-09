@@ -1859,12 +1859,11 @@ async function doAdminLogin(){
     closeOverlay('adminOverlay');
     updateLoginBtn();
     showToast('✓ Вы вошли как администратор');
-    // Сразу обновляем текущую вкладку если это профиль или добавить
-    const activeTab=document.querySelector('.navBtn.active');
-    if(activeTab){
-      const tab=activeTab.dataset.tab;
-      if(tab==='profile'||tab==='add')switchTab(tab);
-    }
+    // Принудительно обновляем текущую вкладку
+    const activeBtn=document.querySelector('.navBtn.active');
+    const currentTab=activeBtn?activeBtn.dataset.tab:'map';
+    // Небольшая задержка чтобы toast успел показаться
+    setTimeout(()=>switchTab(currentTab),300);
   }catch(e){
     showToast('Ошибка: '+e.message);
     if(btn){btn.textContent='Войти';btn.disabled=false;}
