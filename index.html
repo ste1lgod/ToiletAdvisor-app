@@ -1088,7 +1088,10 @@ body.dark #toast{
 }
 /* Только интерактивные элементы внутри кликабельны */
 #wizPickHeader,
-#wizPickAddressBar,
+#wizPickAddressBar{
+  pointer-events:auto;
+}
+/* Список вне оверлея — сам кликабелен */
 #wizPickSuggest{
   pointer-events:auto;
 }
