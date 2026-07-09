@@ -635,23 +635,12 @@ body.dark .phoneCode{background:#2d3142;}
   color:var(--text2);
   border-radius:10px;
   margin-right:4px;
-  transition:color .2s, background .2s, transform .15s;
+  transition:color .18s, transform .15s;
 }
-.eyeBtn:hover{color:var(--green);background:var(--green-l);}
 .eyeBtn:active{transform:scale(.88);}
-.eyeBtn svg{
-  transition:opacity .2s, transform .25s cubic-bezier(.34,1.56,.64,1);
-  animation:eyeAppear .25s cubic-bezier(.34,1.56,.64,1);
-}
-@keyframes eyeAppear{
-  from{opacity:0;transform:scale(.6) rotate(-15deg);}
-  to{opacity:1;transform:scale(1) rotate(0deg);}
-}
-.eyeBtn.open svg{
-  transform:scale(1.1);
-  color:var(--green);
-}
-body.dark .eyeBtn:hover{background:rgba(0,168,89,0.12);}
+.eyeBtn svg{transition:none;}
+.eyeBtn.open{color:var(--green);}
+body.dark .eyeBtn.open{color:#4ade80;}
 
 .pInput{width:100%;padding:13px 14px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--bg);font-size:14px;color:var(--text);outline:none;margin-bottom:10px;display:block;font-family:var(--font);}
 .pInput:focus{border-color:var(--green);}
