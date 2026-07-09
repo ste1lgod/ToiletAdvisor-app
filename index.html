@@ -2753,10 +2753,7 @@ function wizScheduleGeocode(){
     if(!myMap || !wizPickMode) return;
     const center = myMap.getCenter();
     const lat = center[0], lon = center[1];
-    // Обновляем координаты
-    const coordsEl = document.getElementById('wizPickAddressCoords');
-    if(coordsEl) coordsEl.textContent = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
-    // Обратное геокодирование через Яндекс
+    // Обратное геокодирование через Яндекс — показываем только адрес
     try{
       const res = await ymaps.geocode([lat, lon], {results:1});
       const first = res.geoObjects.get(0);
