@@ -2805,58 +2805,56 @@ function wizScheduleGeocode(){
   }, 700);
 }
 
-// Обратное геокодирование — только HTTP API (ymaps.geocode нестабилен)
+// Обратное геокодирование через ymaps JS API (единственный рабочий способ)
 async function wizGeocode(lat, lon){
   try{
-    const url = `https://geocode-maps.yandex.ru/1.x/?apikey=45bd36a1-ed61-4910-bba7-c4c36f55877b&format=json&geocode=${lon},${lat}&results=1&lang=ru_RU&kind=house`;
-    const r = await fetch(url);
-    if(!r.ok) throw new Error('http '+r.status);
-    const data = await r.json();
-    const members = data?.response?.GeoObjectCollection?.featureMember;
-    if(members && members.length > 0){
-      const text = members[0]?.GeoObject?.metaDataProperty?.GeocoderMetaData?.text || '';
-      if(text){
-        // Убираем страну и город из начала — оставляем улицу+дом
-        const parts = text.split(', ');
-        // Находим индекс "Ташкент" и берём что после него
-        const tashIdx = parts.findIndex(p => p.toLowerCase().includes('ташкент') || p.toLowerCase().includes('toshkent'));
-        if(tashIdx >= 0 && tashIdx < parts.length - 1){
-          return parts.slice(tashIdx + 1).join(', ');
+    if(typeof ymaps === 'undefined') throw new Error('no ymaps');
+    const result = await new Promise((resolve, reject)=>{
+      const req = ymaps.geocode([lat, lon], {results:1, kind:'house'});
+      req.then(res=>{
+        const obj = res.geoObjects.get(0);
+        if(obj){
+          // Берём только название объекта (улица + номер), без страны/города
+          const name = obj.properties.get('name');
+          const desc = obj.properties.get('description') || '';
+          // desc обычно "Ташкент, Узбекистан" — нам нужен только name
+          resolve(name || obj.getAddressLine());
+        } else {
+          reject(new Error('empty'));
         }
-        // Иначе берём последние 2 части
-        return parts.slice(-2).join(', ');
-      }
-    }
-  }catch(e){ /* ignore */ }
-  return `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+      }, reject);
+    });
+    return result;
+  }catch(e){
+    // fallback — просто координаты
+    return `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+  }
 }
 
-// Поиск улицы — только HTTP API
+// Поиск улицы через ymaps JS API
 async function wizDoSearch(query){
   if(!query || !wizPickMode) return;
   try{
-    const url = `https://geocode-maps.yandex.ru/1.x/?apikey=45bd36a1-ed61-4910-bba7-c4c36f55877b&format=json&geocode=Узбекистан+Ташкент+${encodeURIComponent(query)}&results=5&lang=ru_RU`;
-    const r = await fetch(url);
-    if(!r.ok) throw new Error('http '+r.status);
-    const data = await r.json();
-    const members = data?.response?.GeoObjectCollection?.featureMember || [];
-    const items = members.map(m=>{
-      const g = m.GeoObject;
-      const pos = g.Point?.pos?.split(' ') || ['69.24','41.30'];
-      const fullText = g.metaDataProperty?.GeocoderMetaData?.text || '';
-      const parts = fullText.split(', ');
-      const tashIdx = parts.findIndex(p => p.toLowerCase().includes('ташкент') || p.toLowerCase().includes('toshkent'));
-      const shortName = tashIdx >= 0 && tashIdx < parts.length - 1
-        ? parts.slice(tashIdx + 1).join(', ')
-        : parts.slice(-2).join(', ');
-      const desc = tashIdx >= 0 ? parts.slice(0, tashIdx + 1).join(', ') : '';
-      return {
-        name: shortName || fullText,
-        desc,
-        coords: [parseFloat(pos[1]), parseFloat(pos[0])]
-      };
-    }).filter(it => it.coords[0] && it.coords[1]);
-    wizShowSuggest(items);
+    if(typeof ymaps === 'undefined') throw new Error('no ymaps');
+    const result = await new Promise((resolve, reject)=>{
+      const req = ymaps.geocode('Ташкент, ' + query, {
+        results: 6,
+        boundedBy: [[41.15, 69.10],[41.45, 69.45]],
+        strictBounds: true
+      });
+      req.then(res => {
+        const items = [];
+        res.geoObjects.each(obj=>{
+          const name = obj.properties.get('name') || '';
+          const desc = obj.properties.get('description') || '';
+          const coords = obj.geometry.getCoordinates();
+          if(name) items.push({name, desc, coords});
+        });
+        resolve(items);
+      }, reject);
+    });
+    if(result.length) wizShowSuggest(result);
+    else wizHideSuggest();
   }catch(e){
     wizHideSuggest();
   }
