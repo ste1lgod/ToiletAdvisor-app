@@ -1150,33 +1150,41 @@ body.dark #wizPickTopRow{border-color:rgba(255,255,255,0.10);}
 }
 body.dark #wizPickHint{background:#0a2e1c;border-color:#059669;}
 
-/* Выпадающие подсказки адреса */
+/* Выпадающий список — абсолютный, перекрывает hint */
 #wizPickSuggest{
-  margin-top:6px;
-  background:var(--card);
-  border-radius:16px;
-  border:1px solid var(--border);
+  position:absolute;
+  left:12px;right:12px;
+  z-index:30;
+  background:var(--glass-bg);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,0.18);
   overflow:hidden;
-  box-shadow:var(--sh2);
-  max-height:220px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.18),0 2px 8px rgba(0,0,0,0.1);
+  max-height:260px;
   overflow-y:auto;
 }
-body.dark #wizPickSuggest{background:#161b28;}
+body.dark #wizPickSuggest{
+  background:rgba(18,22,36,0.96);
+  border-color:rgba(255,255,255,0.1);
+}
 .wizPickSuggestItem{
-  padding:12px 16px;
-  font-size:13px;font-weight:500;
+  padding:14px 18px;
+  font-size:15px;font-weight:500;
   color:var(--text);
   cursor:pointer;
-  border-bottom:1px solid var(--border);
-  display:flex;align-items:flex-start;gap:8px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  display:flex;align-items:flex-start;gap:10px;
   transition:background .1s;
+  -webkit-tap-highlight-color:transparent;
 }
+body.dark .wizPickSuggestItem{border-bottom-color:rgba(255,255,255,0.05);}
 .wizPickSuggestItem:last-child{border-bottom:none;}
-.wizPickSuggestItem:active{background:var(--green-l);}
-body.dark .wizPickSuggestItem:active{background:#0a2e1c;}
-.wizPickSuggestItem .sugIco{font-size:14px;flex-shrink:0;margin-top:1px;}
+.wizPickSuggestItem:active{background:rgba(0,168,89,0.1);}
+.wizPickSuggestItem .sugIco{font-size:16px;flex-shrink:0;margin-top:1px;}
 .wizPickSuggestItem .sugText{flex:1;line-height:1.3;}
-.wizPickSuggestItem .sugSub{font-size:11px;color:var(--text2);margin-top:2px;}
+.wizPickSuggestItem .sugSub{font-size:12px;color:var(--text2);margin-top:3px;}
 
 /* Центральный пин */
 #wizPickPin{
