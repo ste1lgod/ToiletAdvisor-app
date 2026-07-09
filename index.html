@@ -1713,16 +1713,9 @@ async function openSheet(toilet){
   isSheetOpen=true;
   selectedToilet=toilet;
 
-  // Сначала показываем шторку — моментально со skeleton
+  // Сначала показываем шторку — моментально
   document.getElementById('sRatingVal').textContent='—';
-  // Skeleton на все секции
-  document.getElementById('sTitle').innerHTML=`<div class="skEl shSkTitle"></div>`;
-  document.getElementById('sDistPill').innerHTML=`<span style="opacity:0">...</span>`;
-  document.getElementById('sOpenPill').innerHTML=`<span style="opacity:0">...</span>`;
-  document.getElementById('sFreePill').innerHTML=`<span style="opacity:0">...</span>`;
-  const descEl=document.getElementById('sDesc');
-  descEl.innerHTML=`<div class="skEl shSkDesc"></div>`;
-  descEl.style.display='block';
+  // Skeleton только для отзывов
   document.getElementById('reviewsList').innerHTML=`
     <div class="rvSkeleton"><div class="rvSkAvatar"></div><div class="rvSkBody"><div class="rvSkLine w80"></div><div class="rvSkLine w60"></div><div class="rvSkLine w40"></div></div></div>
     <div class="rvSkeleton"><div class="rvSkAvatar"></div><div class="rvSkBody"><div class="rvSkLine w60"></div><div class="rvSkLine w80"></div><div class="rvSkLine w40"></div></div></div>
@@ -1732,7 +1725,7 @@ async function openSheet(toilet){
   document.getElementById('toiletSheet').classList.add('open');
   _openBackdrop();
 
-  // Заполняем реальные данные
+  // Заполняем реальные данные сразу
   document.getElementById('sTitle').textContent=toilet.title;
   const ref=userCoords||TASHKENT;
   const isFallback=!userCoords;
