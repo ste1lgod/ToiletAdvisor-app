@@ -2449,6 +2449,8 @@ function wizStartPickLocation(){
 function wizOnMapClick(coords){
   wizCoords=coords;
   wizPickMode=false;
+  const hint=document.getElementById('wizMapPickHint');
+  if(hint) hint.classList.add('hidden');
   const confirmed=document.getElementById('wizCoordsConfirmed');
   if(confirmed){
     confirmed.style.display='block';
