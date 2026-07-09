@@ -1098,6 +1098,9 @@ body.dark #toast{
   padding:calc(env(safe-area-inset-top,0px) + 8px) 12px 0;
   z-index:23;
   display:flex;flex-direction:column;gap:0;
+  /* relative нужен чтобы #wizPickSuggest с top:100% позиционировался от header */
+  position:relative;
+  /* Но одновременно нам нужен fixed: используем position:fixed через отдельный родитель */
 }
 #wizPickTopRow{
   display:flex;align-items:center;gap:10px;
