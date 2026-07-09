@@ -1658,8 +1658,7 @@ body.dark #wizPickAddressBar{border-color:rgba(255,255,255,0.10);}
     <div id="wizPickHint">📍 Укажите координаты — переместите карту или найдите улицу</div>
   </div>
 
-  <!-- Выпадающий список — position:fixed, top задаётся через JS -->
-  <div id="wizPickSuggest" class="hidden"></div>
+  <!-- Выпадающий список — вынесен ЗА пределы оверлея чтобы не зависел от stacking context -->
 
   <!-- Центральный маркер -->
   <div id="wizPickPin">
