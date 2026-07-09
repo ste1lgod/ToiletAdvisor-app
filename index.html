@@ -1168,22 +1168,25 @@ body.dark #wizPickHint{background:#0a2e1c;border-color:#059669;}
   overflow:hidden;
   box-shadow:0 16px 48px rgba(0,0,0,0.22),0 4px 12px rgba(0,0,0,0.12);
   max-height:240px;
-  overflow-y:auto;
+  overflow-y:scroll !important;
   -webkit-overflow-scrolling:touch;
-  /* Видимый скроллбар */
-  scrollbar-width:thin;
-  scrollbar-color:var(--border) transparent;
+  /* Видимый скроллбар — переопределяем глобальный сброс */
+  scrollbar-width:thin !important;
+  scrollbar-color:#d1d5db transparent !important;
 }
 #wizPickSuggest::-webkit-scrollbar{
-  width:4px;
-  display:block;
+  display:block !important;
+  width:5px !important;
 }
 #wizPickSuggest::-webkit-scrollbar-track{
   background:transparent;
 }
 #wizPickSuggest::-webkit-scrollbar-thumb{
-  background:var(--border);
+  background:#d1d5db;
   border-radius:4px;
+}
+body.dark #wizPickSuggest::-webkit-scrollbar-thumb{
+  background:#4b5568;
 }
 body.dark #wizPickSuggest{
   background:var(--card);
