@@ -2136,9 +2136,18 @@ function closeOverlay(id){document.getElementById(id).classList.add('hidden');}
 function overlayBgClick(e,id){if(e.target.id===id)closeOverlay(id);}
 function toggleEye(id){
   const i=document.getElementById(id);
-  const show=i.type==='password';
-  i.type=show?'text':'password';
   const btn=i.closest('.passRow').querySelector('.eyeBtn');
+  // Запоминаем позицию курсора
+  const selStart=i.selectionStart;
+  const selEnd=i.selectionEnd;
+  const show=i.type==='password';
+  // Меняем тип — не теряем фокус
+  i.type=show?'text':'password';
+  // Восстанавливаем фокус и позицию курсора
+  requestAnimationFrame(()=>{
+    i.focus();
+    try{i.setSelectionRange(selStart,selEnd);}catch(e){}
+  });
   if(!btn)return;
   btn.classList.toggle('open',show);
   btn.innerHTML=show
