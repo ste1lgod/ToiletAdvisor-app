@@ -732,12 +732,34 @@ body.dark .eyeBtn.open{color:#4ade80;}
   justify-content:flex-start;
   padding-top:calc(env(safe-area-inset-top,0px) + 5vh);
 }
-#addScreenTitle{font-size:20px;font-weight:700;color:var(--text);text-align:center;padding:0 0 10px;font-family:var(--font);}
-#addMapHint{font-size:13px;color:var(--green);text-align:center;margin:0 0 14px;padding:11px;background:var(--green-l);border-radius:var(--rs);font-weight:500;}
+#addScreenTitle{font-size:22px;font-weight:800;color:var(--text);text-align:center;padding:0 0 12px;font-family:var(--font);letter-spacing:-.3px;}
+#addMapHint{font-size:13px;color:var(--green);text-align:center;margin:0 0 16px;padding:12px;background:var(--green-l);border-radius:16px;font-weight:600;}
 #addForm{display:flex;flex-direction:column;gap:10px;}
-#addForm input[type=text]{width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--card);font-size:14px;color:var(--text);outline:none;font-family:var(--font);}
-#addForm input[type=text]:focus{border-color:var(--green);}
-#addSubmitBtn{padding:14px;background:var(--green);color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);}
+#addForm input[type=text]{
+  width:100%;padding:14px 16px;
+  border:none;
+  border-radius:16px;
+  background:var(--card);
+  font-size:14px;color:var(--text);
+  outline:none;font-family:var(--font);
+  box-shadow:0 2px 8px rgba(0,0,0,0.06);
+}
+body.dark #addForm input[type=text]{background:#1a1d28;box-shadow:none;}
+#addForm input[type=text]:focus{box-shadow:0 0 0 2px rgba(0,168,89,0.25);}
+#addPickMapBtn{
+  width:100%;padding:14px;
+  background:var(--card);color:var(--green);
+  border:none;border-radius:16px;
+  font-size:14px;font-weight:700;font-family:var(--font);cursor:pointer;
+  box-shadow:0 2px 8px rgba(0,0,0,0.06);
+}
+body.dark #addPickMapBtn{background:#1a1d28;}
+#addSubmitBtn{
+  padding:15px;background:var(--green);color:#fff;
+  border:none;border-radius:18px;
+  font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);
+  box-shadow:0 4px 16px rgba(0,168,89,0.35);
+}
 
 /* ===== OFFLINE PILL ===== */
 #offlineBanner{
