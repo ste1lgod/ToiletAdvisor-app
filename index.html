@@ -2074,6 +2074,55 @@ function switchTab(tab){
   }
 }
 
+// ── ADMIN DASHBOARD ──
+function showAdminDashboard(){
+  document.getElementById('adminDashboard').style.display='';
+  document.querySelectorAll('.adminSubview').forEach(el=>el.classList.add('hidden'));
+}
+function showAdminSubview(id){
+  document.getElementById('adminDashboard').style.display='none';
+  document.querySelectorAll('.adminSubview').forEach(el=>el.classList.add('hidden'));
+  if(id==='addForm'){
+    document.getElementById('adminSubAddForm').classList.remove('hidden');
+  } else if(id==='moderation'){
+    document.getElementById('adminSubModeration').classList.remove('hidden');
+    loadModerationReviews();
+  }
+}
+async function loadModerationReviews(){
+  const list=document.getElementById('moderationList');
+  list.innerHTML='<p style="text-align:center;color:var(--text2);font-size:13px;">Загрузка...</p>';
+  try{
+    await _loadFirebase();
+    const snap=await db.collection('reviews').orderBy('createdAt','desc').limit(50).get();
+    if(snap.empty){list.innerHTML='<p style="text-align:center;color:var(--text2);font-size:13px;">Отзывов нет</p>';return;}
+    list.innerHTML=snap.docs.map(doc=>{
+      const r=doc.data();
+      const name=r.userPhone||r.userLogin||'Аноним';
+      const stars='★'.repeat(r.rating)+'☆'.repeat(5-r.rating);
+      const d=new Date(r.createdAt);
+      const ds=`${d.getDate()} ${['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'][d.getMonth()]}`;
+      return`<div class="rvItem" style="margin-bottom:10px;">
+        <div class="rvBody" style="flex:1;">
+          <div class="rvHeader"><span class="rvName">${name}</span><span class="rvDate">${ds}</span></div>
+          <div class="rvStars">${stars}</div>
+          <div class="rvText">${r.text}</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:6px;">Туалет: ${r.toiletId}</div>
+        </div>
+        <button onclick="deleteReview('${doc.id}',this)" style="background:#fee2e2;color:#b91c1c;border:none;border-radius:12px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;align-self:flex-start;">🗑</button>
+      </div>`;
+    }).join('');
+  }catch(e){list.innerHTML=`<p style="text-align:center;color:#ef4444;font-size:13px;">Ошибка: ${e.message}</p>`;}
+}
+async function deleteReview(id, btn){
+  try{
+    await _loadFirebase();
+    await db.collection('reviews').doc(id).delete();
+    btn.closest('.rvItem').remove();
+    showToast('✓ Отзыв удалён');
+  }catch(e){showToast('Ошибка: '+e.message);}
+}
+
 // ── ADD TOILET ──
 function pickLocationOnMap(){
   // Переключаемся на карту, ждём тап
