@@ -2858,7 +2858,7 @@ function wizShowPanel(step){
   wizCurrentStep = step;
   document.querySelectorAll('.wizPanel').forEach((p,i)=>p.classList.toggle('active', i===step-1));
   // Заголовок шага
-  const titles = {1:'📍 Укажите место', 2:'✏️ Добавьте описание', 3:'✅ Подтвердите'};
+  const titles = {1:'📍 Укажите место', 2:'✏️ Добавьте описание', 3:'Проверьте данные'};
   const titleEl = document.getElementById('wizStepTitle');
   if(titleEl) titleEl.textContent = titles[step] || '';
 }
