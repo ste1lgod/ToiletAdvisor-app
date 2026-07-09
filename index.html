@@ -2691,6 +2691,19 @@ function wizStartPickLocation(){
   // Показываем overlay
   const ov = document.getElementById('wizPickOverlay');
   if(ov) ov.classList.remove('hidden');
+  // Центрируем пин с учётом header и addressbar
+  requestAnimationFrame(()=>{
+    const header = document.getElementById('wizPickHeader');
+    const addrBar = document.getElementById('wizPickAddressBar');
+    const pin = document.getElementById('wizPickPin');
+    if(pin && header && addrBar){
+      const hH = header.getBoundingClientRect().height;
+      const aH = addrBar.getBoundingClientRect().height;
+      // Сдвиг пина = (headerHeight - addressBarHeight) / 2 — чтобы пин был в центре рабочей области
+      const offset = (hH - aH) / 2;
+      pin.style.marginTop = (-20 + offset) + 'px';
+    }
+  });
   // Сбрасываем поиск
   const si = document.getElementById('wizPickSearch');
   if(si){si.value='';si.blur();}
