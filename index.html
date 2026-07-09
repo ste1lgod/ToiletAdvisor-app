@@ -2610,6 +2610,11 @@ function wizReset(){
   wizCoords = null;
   wizCurrentStep = 1;
   wizPickMode = false;
+  // На всякий случай восстанавливаем nav
+  const nav = document.getElementById('bottomNav');
+  if(nav) nav.style.display='';
+  const ov = document.getElementById('wizPickOverlay');
+  if(ov) ov.classList.add('hidden');
   const confirmed = document.getElementById('wizCoordsConfirmed');
   if(confirmed){confirmed.style.display='none';confirmed.textContent='';}
   const next1 = document.getElementById('wizNext1');
