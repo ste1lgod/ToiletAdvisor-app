@@ -2694,6 +2694,8 @@ function wizReset(){
   if(confirmed){confirmed.style.display='none';confirmed.textContent='';}
   const next1 = document.getElementById('wizNext1');
   if(next1) next1.disabled = true;
+  const navRow1 = document.getElementById('wizNavRow1');
+  if(navRow1) navRow1.style.display = 'none';
   const t = document.getElementById('wizTitle');
   if(t) t.value='';
   const d = document.getElementById('wizDesc');
