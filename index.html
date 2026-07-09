@@ -2839,58 +2839,50 @@ function wizScheduleGeocode(){
   }, 700);
 }
 
-// Обратное геокодирование через ymaps JS API (единственный рабочий способ)
+// Обратное геокодирование — Nominatim (OpenStreetMap), бесплатно, без ключа
 async function wizGeocode(lat, lon){
   try{
-    if(typeof ymaps === 'undefined') throw new Error('no ymaps');
-    const result = await new Promise((resolve, reject)=>{
-      const req = ymaps.geocode([lat, lon], {results:1, kind:'house'});
-      req.then(res=>{
-        const obj = res.geoObjects.get(0);
-        if(obj){
-          // Берём только название объекта (улица + номер), без страны/города
-          const name = obj.properties.get('name');
-          const desc = obj.properties.get('description') || '';
-          // desc обычно "Ташкент, Узбекистан" — нам нужен только name
-          resolve(name || obj.getAddressLine());
-        } else {
-          reject(new Error('empty'));
-        }
-      }, reject);
-    });
-    return result;
+    const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=ru&zoom=18`;
+    const r = await fetch(url, {headers:{'Accept-Language':'ru'}});
+    if(!r.ok) throw new Error('http '+r.status);
+    const data = await r.json();
+    const a = data.address || {};
+    // Строим короткий адрес: улица + номер дома
+    const parts = [];
+    if(a.road) parts.push(a.road);
+    if(a.house_number) parts.push(a.house_number);
+    if(parts.length) return parts.join(', ');
+    // Fallback — название объекта или район
+    return data.name || a.neighbourhood || a.suburb || data.display_name?.split(',')[0] || `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
   }catch(e){
-    // fallback — просто координаты
     return `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
   }
 }
 
-// Поиск улицы через ymaps JS API
+// Поиск улицы — Nominatim
 async function wizDoSearch(query){
   if(!query || !wizPickMode) return;
   try{
-    if(typeof ymaps === 'undefined') throw new Error('no ymaps');
-    const result = await new Promise((resolve, reject)=>{
-      const req = ymaps.geocode('Ташкент, ' + query, {
-        results: 6,
-        boundedBy: [[41.15, 69.10],[41.45, 69.45]],
-        strictBounds: true
-      });
-      req.then(res => {
-        const items = [];
-        res.geoObjects.each(obj=>{
-          const name = obj.properties.get('name') || '';
-          const desc = obj.properties.get('description') || '';
-          const coords = obj.geometry.getCoordinates();
-          if(name) items.push({name, desc, coords});
-        });
-        resolve(items);
-      }, reject);
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent('Ташкент '+query)}&format=json&limit=6&accept-language=ru&countrycodes=uz&viewbox=69.10,41.45,69.45,41.15&bounded=1`;
+    const r = await fetch(url, {headers:{'Accept-Language':'ru'}});
+    if(!r.ok) throw new Error('http '+r.status);
+    const data = await r.json();
+    if(!data.length){wizHideSuggest();return;}
+    const items = data.map(item=>{
+      const parts = item.display_name.split(', ');
+      // Убираем "Узбекистан" с конца
+      const clean = parts.filter(p=>p!=='Узбекистан'&&p!=='100000'&&p!=='Toshkent'&&p!=='Ташкент'||parts.indexOf(p)===0);
+      return {
+        name: clean.slice(0,3).join(', '),
+        desc: '',
+        coords: [parseFloat(item.lat), parseFloat(item.lon)]
+      };
     });
-    if(result.length) wizShowSuggest(result);
-    else wizHideSuggest();
+    wizShowSuggest(items);
   }catch(e){
     wizHideSuggest();
+  }
+}
   }
 }
 
