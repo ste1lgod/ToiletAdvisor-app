@@ -1674,9 +1674,16 @@ async function openSheet(toilet){
   desc.textContent=toilet.description||'';
   desc.style.display=toilet.description?'block':'none';
 
-  // Сначала показываем шторку — моментально
+  // Сначала показываем шторку — моментально со skeleton
   document.getElementById('sRatingVal').textContent='—';
-  // Skeleton loader вместо текста
+  // Skeleton на все секции
+  document.getElementById('sTitle').innerHTML=`<div class="skEl shSkTitle"></div>`;
+  document.getElementById('sDistPill').innerHTML=`<span style="opacity:0">...</span>`;
+  document.getElementById('sOpenPill').innerHTML=`<span style="opacity:0">...</span>`;
+  document.getElementById('sFreePill').innerHTML=`<span style="opacity:0">...</span>`;
+  const descEl=document.getElementById('sDesc');
+  descEl.innerHTML=`<div class="skEl shSkDesc"></div>`;
+  descEl.style.display='block';
   document.getElementById('reviewsList').innerHTML=`
     <div class="rvSkeleton"><div class="rvSkAvatar"></div><div class="rvSkBody"><div class="rvSkLine w80"></div><div class="rvSkLine w60"></div><div class="rvSkLine w40"></div></div></div>
     <div class="rvSkeleton"><div class="rvSkAvatar"></div><div class="rvSkBody"><div class="rvSkLine w60"></div><div class="rvSkLine w80"></div><div class="rvSkLine w40"></div></div></div>
@@ -1685,6 +1692,28 @@ async function openSheet(toilet){
   resetReviewForm();
   document.getElementById('toiletSheet').classList.add('open');
   _openBackdrop();
+
+  // Заполняем реальные данные
+  document.getElementById('sTitle').textContent=toilet.title;
+  const ref=userCoords||TASHKENT;
+  const isFallback=!userCoords;
+  document.getElementById('sDistPill').textContent=formatDist(haversine(ref[0],ref[1],toilet.lat,toilet.lon),isFallback);
+  const op=document.getElementById('sOpenPill');
+  op.textContent=toilet.isOpen?t('open'):t('closed');
+  op.className='mPill '+(toilet.isOpen?'pGreen':'pRed');
+  const fp=document.getElementById('sFreePill');
+  fp.textContent=toilet.isFree?t('free'):t('paid');
+  fp.className='mPill '+(toilet.isFree?'pGreen2':'pBlue');
+  document.getElementById('taharatBlock').classList.toggle('hidden',!toilet.isTaharatkhana);
+  const pillsEl=document.getElementById('sPills');
+  pillsEl.querySelectorAll('.sBadge').forEach(el=>el.remove());
+  const bads=[];
+  if(toilet.hasSoap)bads.push('🧼 Мыло');
+  if(toilet.hasPaper)bads.push('🧻 Бумага');
+  if(toilet.isAccessible)bads.push('♿ Доступность');
+  bads.forEach(b=>{const s=document.createElement('span');s.className='sBadge';s.textContent=b;pillsEl.appendChild(s);});
+  descEl.textContent=toilet.description||'';
+  descEl.style.display=toilet.description?'block':'none';
 
   // Отзывы грузим в фоне после открытия
   try{
