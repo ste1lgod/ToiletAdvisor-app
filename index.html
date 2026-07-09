@@ -2860,7 +2860,10 @@ function wizShowPanel(step){
   // Заголовок шага
   const titles = {1:'📍 Укажите место', 2:'✏️ Добавьте описание', 3:'Проверьте данные'};
   const titleEl = document.getElementById('wizStepTitle');
-  if(titleEl) titleEl.textContent = titles[step] || '';
+  if(titleEl){
+    titleEl.textContent = titles[step] || '';
+    titleEl.classList.toggle('wizStepTitleConfirm', step===3);
+  }
 }
 
 function wizGoStep(step){
