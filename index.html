@@ -2805,77 +2805,57 @@ function wizScheduleGeocode(){
   }, 700);
 }
 
-// Обратное геокодирование — сначала ymaps, fallback на HTTP API
+// Обратное геокодирование — только HTTP API (ymaps.geocode нестабилен)
 async function wizGeocode(lat, lon){
-  // Способ 1: ymaps.geocode
   try{
-    if(typeof ymaps !== 'undefined' && ymaps.geocode){
-      const res = await ymaps.geocode([lat, lon], {results:1, kind:'house'});
-      const first = res.geoObjects.get(0);
-      if(first){
-        // Берём только улицу+дом, без страны/города
-        const name = first.properties.get('name') || first.getAddressLine();
-        if(name) return name;
-      }
-    }
-  }catch(e){ /* fallback */ }
-  // Способ 2: Яндекс Геокодер HTTP API
-  try{
-    const url = `https://geocode-maps.yandex.ru/1.x/?apikey=45bd36a1-ed61-4910-bba7-c4c36f55877b&format=json&geocode=${lon},${lat}&results=1&lang=ru_RU`;
+    const url = `https://geocode-maps.yandex.ru/1.x/?apikey=45bd36a1-ed61-4910-bba7-c4c36f55877b&format=json&geocode=${lon},${lat}&results=1&lang=ru_RU&kind=house`;
     const r = await fetch(url);
+    if(!r.ok) throw new Error('http '+r.status);
     const data = await r.json();
     const members = data?.response?.GeoObjectCollection?.featureMember;
     if(members && members.length > 0){
-      const name = members[0]?.GeoObject?.metaDataProperty?.GeocoderMetaData?.text;
-      // Убираем "Узбекистан, Ташкент," из начала
-      if(name){
-        const parts = name.split(', ');
-        // Оставляем последние 2-3 части (улица + дом)
+      const text = members[0]?.GeoObject?.metaDataProperty?.GeocoderMetaData?.text || '';
+      if(text){
+        // Убираем страну и город из начала — оставляем улицу+дом
+        const parts = text.split(', ');
+        // Находим индекс "Ташкент" и берём что после него
+        const tashIdx = parts.findIndex(p => p.toLowerCase().includes('ташкент') || p.toLowerCase().includes('toshkent'));
+        if(tashIdx >= 0 && tashIdx < parts.length - 1){
+          return parts.slice(tashIdx + 1).join(', ');
+        }
+        // Иначе берём последние 2 части
         return parts.slice(-2).join(', ');
       }
     }
-  }catch(e){ /* fallback */ }
-  // Если всё упало — возвращаем координаты
+  }catch(e){ /* ignore */ }
   return `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
 }
 
-// Поиск улицы — тоже через HTTP API
+// Поиск улицы — только HTTP API
 async function wizDoSearch(query){
   if(!query || !wizPickMode) return;
   try{
-    // Способ 1: ymaps.geocode
-    if(typeof ymaps !== 'undefined' && ymaps.geocode){
-      const res = await ymaps.geocode('Ташкент ' + query, {
-        results: 5,
-        boundedBy: [[41.18, 69.13],[41.42, 69.42]]
-      });
-      const items = [];
-      res.geoObjects.each(obj=>{
-        const coords = obj.geometry.getCoordinates();
-        const name = obj.properties.get('name') || obj.getAddressLine();
-        const desc = obj.properties.get('description') || '';
-        items.push({name, desc, coords});
-      });
-      if(items.length){ wizShowSuggest(items); return; }
-    }
-  }catch(e){ /* fallback */ }
-  // Способ 2: HTTP API
-  try{
-    const url = `https://geocode-maps.yandex.ru/1.x/?apikey=45bd36a1-ed61-4910-bba7-c4c36f55877b&format=json&geocode=Ташкент+${encodeURIComponent(query)}&results=5&lang=ru_RU&bbox=69.13,41.18~69.42,41.42`;
+    const url = `https://geocode-maps.yandex.ru/1.x/?apikey=45bd36a1-ed61-4910-bba7-c4c36f55877b&format=json&geocode=Узбекистан+Ташкент+${encodeURIComponent(query)}&results=5&lang=ru_RU`;
     const r = await fetch(url);
+    if(!r.ok) throw new Error('http '+r.status);
     const data = await r.json();
     const members = data?.response?.GeoObjectCollection?.featureMember || [];
     const items = members.map(m=>{
       const g = m.GeoObject;
-      const pos = g.Point.pos.split(' ');
-      const name = g.metaDataProperty?.GeocoderMetaData?.text || '';
-      const parts = name.split(', ');
+      const pos = g.Point?.pos?.split(' ') || ['69.24','41.30'];
+      const fullText = g.metaDataProperty?.GeocoderMetaData?.text || '';
+      const parts = fullText.split(', ');
+      const tashIdx = parts.findIndex(p => p.toLowerCase().includes('ташкент') || p.toLowerCase().includes('toshkent'));
+      const shortName = tashIdx >= 0 && tashIdx < parts.length - 1
+        ? parts.slice(tashIdx + 1).join(', ')
+        : parts.slice(-2).join(', ');
+      const desc = tashIdx >= 0 ? parts.slice(0, tashIdx + 1).join(', ') : '';
       return {
-        name: parts.slice(-2).join(', '),
-        desc: parts.slice(0,-2).join(', '),
+        name: shortName || fullText,
+        desc,
         coords: [parseFloat(pos[1]), parseFloat(pos[0])]
       };
-    });
+    }).filter(it => it.coords[0] && it.coords[1]);
     wizShowSuggest(items);
   }catch(e){
     wizHideSuggest();
