@@ -2274,9 +2274,8 @@ function pickLocationOnMap(){
   addCoords=null;
   switchTab('map');
   showToast('📍 Нажмите на карту чтобы выбрать место');
-  document.getElementById('addOverlay').classList.remove('hidden');
-  document.getElementById('addOverlay').style.opacity='0';
-  document.getElementById('addOverlay').style.pointerEvents='none';
+  // Используем флаг вместо overlay чтобы не перекрывать UI
+  window._waitingForMapClick = true;
 }
 function submitAddToilet(){
   pickLocationOnMap();
