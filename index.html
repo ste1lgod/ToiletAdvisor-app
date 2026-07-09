@@ -306,37 +306,31 @@ body.dark #bottomNav{
   stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
 }
 
-/* Центральная кнопка (Admin) */
+/* Центральная кнопка (Admin) — стиль как navBtn */
 .navCenter{
   flex:1;
-  display:flex;flex-direction:column;align-items:center;gap:3px;
-  cursor:pointer;
-  padding:0;
-  min-width:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  cursor:pointer;padding:0;min-width:0;
+  color:var(--text2);
+  transition:color .18s;
 }
+.navCenter.active{color:#7c3aed;}
 .navCenterCircle{
-  width:46px;height:46px;border-radius:50%;
-  background:#7c3aed;
+  width:24px;height:24px;
   display:flex;align-items:center;justify-content:center;
-  box-shadow:0 4px 14px rgba(124,58,237,0.40);
-  margin-top:2px;
-  transition:transform .15s, box-shadow .15s;
-}
-.navCenterCircle:active{
-  transform:scale(.92);
-  box-shadow:0 2px 8px rgba(124,58,237,0.25);
+  background:none;
 }
 .navCenterCircle svg{
-  width:20px;height:20px;
-  stroke:#fff;fill:none;
-  stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+  width:24px;height:24px;
+  stroke:currentColor;fill:none;
+  stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
 }
 .navCenterLabel{
-  font-size:10px;font-weight:700;
-  color:#7c3aed;
+  font-size:10px;font-weight:600;
   font-family:var(--font);
   letter-spacing:-.1px;
   text-align:center;
+  color:inherit;
 }
 </style>
 
