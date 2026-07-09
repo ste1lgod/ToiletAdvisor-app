@@ -845,42 +845,74 @@ body.dark #wizCoordsConfirmed{background:#0a2e1c;color:#4ade80;border-color:#059
 
 /* Step 2 — form */
 #wizStep2{gap:10px;}
-.wizInput{
-  width:100%;padding:14px 16px;
-  border:1.5px solid var(--border);
-  border-radius:16px;
-  background:var(--bg);
-  font-size:14px;color:var(--text);
-  outline:none;font-family:var(--font);
-  transition:border-color .2s;
-}
-body.dark .wizInput{background:#1a2133;border-color:#252d40;}
-.wizInput:focus{border-color:var(--green);}
 
-/* Tag toggles — крупные визуальные кнопки */
-.tagGrid{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+/* Блок-карточка — группирует поля */
+.wizBlock{
+  background:var(--glass-bg);
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
+  border:1px solid var(--panel-border);
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:var(--sh);
+  margin-bottom:10px;
+}
+body.dark .wizBlock{background:rgba(22,27,40,0.85);border-color:#252d40;}
+.wizBlockTags{padding:14px 14px 10px;}
+.wizBlockDivider{height:1px;background:var(--border);margin:0 16px;}
+.wizTagsLabel{
+  font-size:11px;font-weight:700;
+  color:var(--text2);text-transform:uppercase;
+  letter-spacing:.6px;margin-bottom:10px;
+}
+.wizTagsDivider{height:1px;background:var(--border);margin:10px 0;}
+
+.wizInput{
+  width:100%;padding:15px 16px;
+  border:none;
+  background:transparent;
+  font-size:15px;color:var(--text);
+  outline:none;font-family:var(--font);
+  display:block;
+}
+.wizInputLast{border-radius:0 0 20px 20px;}
+.wizInput::placeholder{color:var(--text2);}
+
+/* Tag toggles — iOS pill стиль */
+.tagGrid{display:flex;flex-wrap:wrap;gap:7px;}
 .tagToggle{
   display:flex;align-items:center;gap:6px;
-  padding:10px 14px;
-  border:1.5px solid var(--border);
-  border-radius:14px;
-  background:var(--bg);
+  padding:9px 13px;
+  border:1px solid var(--border);
+  border-radius:30px;
+  background:var(--glass-bg);
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
   font-size:13px;font-weight:600;color:var(--text2);
   cursor:pointer;
   font-family:var(--font);
-  transition:all .15s;
+  transition:all .18s;
   user-select:none;
+  box-shadow:0 1px 4px rgba(0,0,0,0.06);
 }
-body.dark .tagToggle{background:#1a2133;border-color:#252d40;}
+body.dark .tagToggle{background:rgba(26,33,51,0.7);border-color:#252d40;}
 .tagToggle.on{
-  background:var(--green-l);
+  background:rgba(0,168,89,0.15);
   border-color:var(--green);
   color:var(--green);
+  box-shadow:0 0 0 1px rgba(0,168,89,0.2);
 }
-body.dark .tagToggle.on{background:#0a2e1c;color:#4ade80;border-color:#059669;}
-.tagToggle .tagIco{font-size:15px;}
+body.dark .tagToggle.on{background:rgba(0,168,89,0.12);color:#4ade80;border-color:#059669;}
+.tagSpecial.on{
+  background:rgba(202,138,4,0.13);
+  border-color:#ca8a04;
+  color:#ca8a04;
+  box-shadow:0 0 0 1px rgba(202,138,4,0.2);
+}
+body.dark .tagSpecial.on{background:rgba(202,138,4,0.12);color:#fcd34d;border-color:#b45309;}
+.tagToggle .tagIco{font-size:14px;}
 .tagToggle .tagChk{
-  width:16px;height:16px;border-radius:4px;
+  width:15px;height:15px;border-radius:50%;
   background:var(--border);
   display:flex;align-items:center;justify-content:center;
   flex-shrink:0;
@@ -888,39 +920,50 @@ body.dark .tagToggle.on{background:#0a2e1c;color:#4ade80;border-color:#059669;}
 }
 .tagToggle.on .tagChk{background:var(--green);}
 body.dark .tagToggle.on .tagChk{background:#059669;}
+.tagSpecial.on .tagChk{background:#ca8a04;}
+body.dark .tagSpecial.on .tagChk{background:#b45309;}
 .tagToggle .tagChk::after{
-  content:'✓';font-size:10px;font-weight:800;color:#fff;
+  content:'✓';font-size:9px;font-weight:800;color:#fff;
   opacity:0;transition:opacity .15s;
 }
 .tagToggle.on .tagChk::after{opacity:1;}
 
-/* Nav buttons */
+/* Nav buttons — компактные, не на всю ширину */
 .wizNavRow{
-  display:flex;gap:10px;margin-top:16px;
+  display:flex;gap:10px;
+  justify-content:center;
+  margin-top:20px;
+  padding-bottom:4px;
 }
 .wizBtnPrev{
-  flex:0 0 auto;
-  padding:14px 20px;
-  background:var(--bg);
-  border:1.5px solid var(--border);
-  border-radius:16px;
-  font-size:14px;font-weight:700;color:var(--text2);
+  display:flex;align-items:center;gap:5px;
+  padding:11px 18px;
+  background:var(--glass-bg);
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
+  border:1px solid var(--border);
+  border-radius:30px;
+  font-size:13px;font-weight:600;color:var(--text2);
   cursor:pointer;font-family:var(--font);
-  transition:opacity .15s;
-}
-body.dark .wizBtnPrev{background:#1a2133;border-color:#252d40;}
-.wizBtnNext{
-  flex:1;
-  padding:14px;
-  background:var(--green);color:#fff;
-  border:none;border-radius:16px;
-  font-size:15px;font-weight:700;font-family:var(--font);
-  cursor:pointer;
-  box-shadow:0 4px 16px rgba(0,168,89,0.3);
   transition:opacity .15s,transform .12s;
+  white-space:nowrap;
+  box-shadow:0 1px 6px rgba(0,0,0,0.07);
 }
-.wizBtnNext:active{opacity:.85;transform:scale(.98);}
-.wizBtnNext:disabled{opacity:.45;pointer-events:none;}
+body.dark .wizBtnPrev{background:rgba(26,33,51,0.7);border-color:#252d40;}
+.wizBtnPrev:active{opacity:.75;transform:scale(.96);}
+.wizBtnNext{
+  display:flex;align-items:center;gap:5px;
+  padding:11px 24px;
+  background:var(--green);color:#fff;
+  border:none;border-radius:30px;
+  font-size:13px;font-weight:700;font-family:var(--font);
+  cursor:pointer;
+  box-shadow:0 3px 14px rgba(0,168,89,0.35);
+  transition:opacity .15s,transform .12s;
+  white-space:nowrap;
+}
+.wizBtnNext:active{opacity:.85;transform:scale(.96);}
+.wizBtnNext:disabled{opacity:.4;pointer-events:none;}
 
 /* Step 3 — confirm */
 #wizStep3{gap:12px;}
