@@ -2078,6 +2078,18 @@ window.addEventListener('resize',()=>{
 setLang(currentLang);
 applyTheme();
 updateLoginBtn();
+
+// ── KEYBOARD LIFT (iOS) ──
+// Поднимаем оверлей когда открывается клавиатура
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize',()=>{
+    const vv=window.visualViewport;
+    const keyboardH=window.innerHeight-vv.height;
+    document.querySelectorAll('.overlay:not(.hidden)').forEach(el=>{
+      el.style.paddingBottom=keyboardH>50?keyboardH+'px':'0';
+    });
+  });
+}
 switchTab('map');
 </script>
 </body>
