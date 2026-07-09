@@ -2698,17 +2698,10 @@ function wizReset(){
 function wizShowPanel(step){
   wizCurrentStep = step;
   document.querySelectorAll('.wizPanel').forEach((p,i)=>p.classList.toggle('active', i===step-1));
-  [1,2,3].forEach(i=>{
-    const ind = document.getElementById('wizStepInd'+i);
-    if(!ind) return;
-    ind.classList.remove('active','done');
-    if(i===step) ind.classList.add('active');
-    else if(i<step) ind.classList.add('done');
-    if(i<3){
-      const line = document.getElementById('wizLine'+i);
-      if(line) line.classList.toggle('done', i<step);
-    }
-  });
+  // Заголовок шага
+  const titles = {1:'📍 Укажите место', 2:'✏️ Добавьте описание', 3:'✅ Подтвердите'};
+  const titleEl = document.getElementById('wizStepTitle');
+  if(titleEl) titleEl.textContent = titles[step] || '';
 }
 
 function wizGoStep(step){
