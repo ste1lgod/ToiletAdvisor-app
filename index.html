@@ -3027,11 +3027,21 @@ function wizShowSuggest(items){
         ${it.desc ? `<div class="sugSub">${it.desc}</div>` : ''}
       </div>
     </div>`).join('');
-  // Позиционируем под нижним краем #wizPickHeader (включая hint)
-  const header = document.getElementById('wizPickHeader');
-  if(header){
-    const rect = header.getBoundingClientRect();
-    box.style.top = (rect.bottom + 6) + 'px';
+
+  // Скрываем hint пока список открыт
+  const hint = document.getElementById('wizPickHint');
+  if(hint) hint.style.visibility = 'hidden';
+
+  // Позиционируем: берём нижний край строки поиска (#wizPickTopRow)
+  // и добавляем отступ, без учёта hint
+  const topRow = document.getElementById('wizPickTopRow');
+  if(topRow){
+    const rect = topRow.getBoundingClientRect();
+    box.style.top = (rect.bottom + 8) + 'px';
+  } else {
+    // fallback — под safe area + header
+    const safeTop = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sat') || '0');
+    box.style.top = (safeTop + 80) + 'px';
   }
   box.classList.remove('hidden');
 }
