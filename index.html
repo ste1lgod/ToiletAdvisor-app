@@ -1981,6 +1981,9 @@ function doLogout(){
 function switchTab(tab){
   closeSheet();
   document.querySelectorAll('.navBtn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  // Подсвечиваем кнопку Admin фиолетовым
+  const nc=document.querySelector('.navCenter');
+  if(nc)nc.classList.toggle('active',tab==='add');
 
   const isMap=tab==='map';
 
