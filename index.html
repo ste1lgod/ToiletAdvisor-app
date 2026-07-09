@@ -1693,11 +1693,11 @@ async function submitReview(){
   const ds=`${d.getDate()} ${['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'][d.getMonth()]} ${d.getFullYear()}`;
   const newCard=`<div class="rvItem" id="${optimistic.id}"><div class="rvAvatar" style="background:${col}">${ini}</div><div class="rvBody"><div class="rvHeader"><span class="rvName">${name}</span><span class="rvDate">${ds}</span></div><div class="rvStars">${stars}</div><div class="rvText">${text}</div></div></div>`;
   const listEl=document.getElementById('reviewsList');
-  // Если был "нет отзывов" — заменяем, иначе prepend
+  // Добавляем новый отзыв в конец (старые сверху, новые снизу)
   if(existingCount===0){
     listEl.innerHTML=newCard;
   } else {
-    listEl.insertAdjacentHTML('afterbegin',newCard);
+    listEl.insertAdjacentHTML('beforeend',newCard);
   }
 
   // Обновляем рейтинг
