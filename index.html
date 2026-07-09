@@ -1002,24 +1002,56 @@ body.dark #toast{
 
 <!-- ADD TOILET SCREEN (admin) -->
 <div id="addScreen" class="tScreen hidden">
-  <div id="addScreenTitle">➕ Добавить туалет</div>
-  <div id="addMapHint">📍 Нажмите на карту, чтобы выбрать место</div>
-  <div id="addForm">
-    <input type="text" id="addTitle" placeholder="Название туалета">
-    <input type="text" id="addDesc" placeholder="Описание (необязательно)">
-    <input type="text" id="addPhoto" placeholder="Ссылка на фото (необязательно)">
-    <div class="chkGrid">
-      <label><input type="checkbox" id="addIsFree" checked> 🆓 Бесплатно</label>
-      <label><input type="checkbox" id="addIsOpen" checked> 🟢 Открыто</label>
-      <label><input type="checkbox" id="addHasSoap"> 🧼 Мыло</label>
-      <label><input type="checkbox" id="addHasPaper"> 🧻 Бумага</label>
-      <label><input type="checkbox" id="addIsAccessible"> ♿ Доступно</label>
-      <label><input type="checkbox" id="addIsTaharatkhana"> 🕌 Тахаратхана</label>
+
+  <!-- Дашборд: главное меню панели -->
+  <div id="adminDashboard">
+    <div id="adminDashTitle">⚙️ Панель администратора</div>
+    <div id="adminDashCards">
+      <button class="adminDashBtn" onclick="showAdminSubview('addForm')">
+        <div class="adminDashIcon">📍</div>
+        <div class="adminDashLabel">Добавить точку</div>
+        <div class="adminDashSub">Добавить новый туалет на карту</div>
+        <div class="adminDashArrow">›</div>
+      </button>
+      <button class="adminDashBtn" onclick="showAdminSubview('moderation')">
+        <div class="adminDashIcon">�️</div>
+        <div class="adminDashLabel">Модерация отзывов</div>
+        <div class="adminDashSub">Просмотр и удаление отзывов пользователей</div>
+        <div class="adminDashArrow">›</div>
+      </button>
     </div>
-    <button id="addPickMapBtn" onclick="pickLocationOnMap()">📍 Выбрать место на карте</button>
-    <div id="addCoordsDisplay" style="display:none;padding:10px 14px;background:var(--green-l);border-radius:var(--rs);font-size:13px;color:var(--green);font-weight:600;text-align:center;"></div>
-    <button id="addSubmitBtn" onclick="submitAddToiletDirect()">✅ Добавить</button>
   </div>
+
+  <!-- Сабвью: форма добавления туалета -->
+  <div id="adminSubAddForm" class="adminSubview hidden">
+    <button class="adminBackBtn" onclick="showAdminDashboard()">‹ Назад</button>
+    <div id="addScreenTitle">➕ Добавить точку</div>
+    <div id="addMapHint">📍 Сначала выберите место на карте</div>
+    <div id="addForm">
+      <input type="text" id="addTitle" placeholder="Название туалета">
+      <input type="text" id="addDesc" placeholder="Описание (необязательно)">
+      <input type="text" id="addPhoto" placeholder="Ссылка на фото (необязательно)">
+      <div class="chkGrid">
+        <label><input type="checkbox" id="addIsFree" checked> 🆓 Бесплатно</label>
+        <label><input type="checkbox" id="addIsOpen" checked> 🟢 Открыто</label>
+        <label><input type="checkbox" id="addHasSoap"> 🧼 Мыло</label>
+        <label><input type="checkbox" id="addHasPaper"> 🧻 Бумага</label>
+        <label><input type="checkbox" id="addIsAccessible"> ♿ Доступно</label>
+        <label><input type="checkbox" id="addIsTaharatkhana"> 🕌 Тахаратхана</label>
+      </div>
+      <button id="addPickMapBtn" onclick="pickLocationOnMap()">📍 Выбрать место на карте</button>
+      <div id="addCoordsDisplay" style="display:none;padding:10px 14px;background:var(--green-l);border-radius:var(--rs);font-size:13px;color:var(--green);font-weight:600;text-align:center;"></div>
+      <button id="addSubmitBtn" onclick="submitAddToiletDirect()">✅ Добавить</button>
+    </div>
+  </div>
+
+  <!-- Сабвью: модерация отзывов -->
+  <div id="adminSubModeration" class="adminSubview hidden">
+    <button class="adminBackBtn" onclick="showAdminDashboard()">‹ Назад</button>
+    <div id="addScreenTitle" style="margin-bottom:16px;">🗂️ Модерация отзывов</div>
+    <div id="moderationList"><p style="text-align:center;color:var(--text2);font-size:13px;">Загрузка...</p></div>
+  </div>
+
 </div>
 
 <!-- AUTH MODAL -->
