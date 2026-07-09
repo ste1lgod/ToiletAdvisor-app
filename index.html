@@ -1007,6 +1007,22 @@ body.dark .wizBtnPrev{border-color:rgba(255,255,255,0.10);}
 .wizBtnNext:disabled{opacity:.35;pointer-events:none;}
 
 /* Step 3 — confirm */
+/* Заголовок с адресом — крупно, над карточкой */
+#wizConfirmHeader{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:4px 4px 20px;
+}
+#wizConfirmIcon{
+  font-size:28px;flex-shrink:0;
+  margin-top:2px;
+}
+#wizConfirmAddr{
+  font-size:17px;font-weight:700;color:var(--text);
+  line-height:1.35;letter-spacing:-.3px;
+  flex:1;
+}
+body.dark #wizConfirmAddr{color:var(--text);}
+
 .wizConfirmCard{
   display:flex;flex-direction:column;gap:0;
   border-radius:22px;
