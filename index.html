@@ -1792,7 +1792,14 @@ function openAuthModal(){document.getElementById('authOverlay').classList.remove
 function openAdminLogin(){closeOverlay('authOverlay');document.getElementById('adminOverlay').classList.remove('hidden');}
 function closeOverlay(id){document.getElementById(id).classList.add('hidden');}
 function overlayBgClick(e,id){if(e.target.id===id)closeOverlay(id);}
-function toggleEye(id){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password';}
+function toggleEye(id){
+  const i=document.getElementById(id);
+  const isText=i.type==='password';
+  i.type=isText?'text':'password';
+  // Находим кнопку и переключаем класс open
+  const btn=i.closest('.passRow').querySelector('.eyeBtn');
+  if(btn)btn.classList.toggle('open',isText);
+}
 function setAuthTab(tab){
   authTab=tab;
   document.getElementById('tabLogin').classList.toggle('active',tab==='login');
