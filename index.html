@@ -1156,20 +1156,33 @@ body.dark #wizPickTopRow{border-color:rgba(255,255,255,0.10);}
 }
 body.dark #wizPickHint{background:#0a2e1c;border-color:#059669;}
 
-/* Выпадающий список — position:fixed, top задаётся через JS */
+/* Выпадающий список — вне всех stacking context, всегда поверх */
 #wizPickSuggest{
   position:fixed;
   left:12px;right:12px;
   /* top задаётся через JS при открытии */
-  z-index:35;
+  z-index:9999;
   background:var(--card);
   border-radius:18px;
   border:1px solid var(--border);
   overflow:hidden;
-  box-shadow:0 12px 40px rgba(0,0,0,0.20),0 3px 10px rgba(0,0,0,0.10);
+  box-shadow:0 16px 48px rgba(0,0,0,0.22),0 4px 12px rgba(0,0,0,0.12);
   max-height:240px;
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
+  /* Видимый скроллбар */
+  scrollbar-width:thin;
+  scrollbar-color:var(--border) transparent;
+}
+#wizPickSuggest::-webkit-scrollbar{
+  width:4px;
+}
+#wizPickSuggest::-webkit-scrollbar-track{
+  background:transparent;
+}
+#wizPickSuggest::-webkit-scrollbar-thumb{
+  background:var(--border);
+  border-radius:4px;
 }
 body.dark #wizPickSuggest{
   background:var(--card);
