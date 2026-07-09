@@ -1209,23 +1209,97 @@ body.dark #toast{
   <!-- Сабвью: форма добавления туалета -->
   <div id="adminSubAddForm" class="adminSubview hidden">
     <button class="adminBackBtn" onclick="showAdminDashboard()">‹ Назад</button>
-    <div id="addScreenTitle">➕ Добавить точку</div>
-    <div id="addMapHint">📍 Сначала выберите место на карте</div>
-    <div id="addForm">
-      <input type="text" id="addTitle" placeholder="Название туалета">
-      <input type="text" id="addDesc" placeholder="Описание (необязательно)">
-      <input type="text" id="addPhoto" placeholder="Ссылка на фото (необязательно)">
-      <div class="chkGrid">
-        <label><input type="checkbox" id="addIsFree" checked> 🆓 Бесплатно</label>
-        <label><input type="checkbox" id="addIsOpen" checked> 🟢 Открыто</label>
-        <label><input type="checkbox" id="addHasSoap"> 🧼 Мыло</label>
-        <label><input type="checkbox" id="addHasPaper"> 🧻 Бумага</label>
-        <label><input type="checkbox" id="addIsAccessible"> ♿ Доступно</label>
-        <label><input type="checkbox" id="addIsTaharatkhana"> 🕌 Тахаратхана</label>
+
+    <div id="addWizard">
+      <!-- Stepper -->
+      <div class="wizStepper">
+        <div class="wizStep active" id="wizStepInd1">
+          <div class="wizStepCircle">1</div>
+          <div class="wizStepLabel">Место</div>
+        </div>
+        <div class="wizStepLine" id="wizLine1"></div>
+        <div class="wizStep" id="wizStepInd2">
+          <div class="wizStepCircle">2</div>
+          <div class="wizStepLabel">Детали</div>
+        </div>
+        <div class="wizStepLine" id="wizLine2"></div>
+        <div class="wizStep" id="wizStepInd3">
+          <div class="wizStepCircle">3</div>
+          <div class="wizStepLabel">Сохранить</div>
+        </div>
       </div>
-      <button id="addPickMapBtn" onclick="pickLocationOnMap()">📍 Выбрать место на карте</button>
-      <div id="addCoordsDisplay" style="display:none;padding:10px 14px;background:var(--green-l);border-radius:var(--rs);font-size:13px;color:var(--green);font-weight:600;text-align:center;"></div>
-      <button id="addSubmitBtn" onclick="submitAddToiletDirect()">✅ Добавить</button>
+
+      <!-- Шаг 1: выбор места -->
+      <div class="wizPanel active" id="wizPanel1">
+        <div id="wizStep1">
+          <div id="wizMapHint">📍 Выберите место на карте</div>
+          <div id="wizMapSub">Нажмите кнопку ниже, затем тапните на карту в нужном месте — туда будет добавлен туалет</div>
+          <div id="wizCoordsConfirmed"></div>
+          <button id="wizPickBtn" onclick="wizStartPickLocation()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            Указать место на карте
+          </button>
+          <div class="wizNavRow">
+            <button class="wizBtnNext" id="wizNext1" onclick="wizGoStep(2)" disabled>Далее →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Шаг 2: заполнение -->
+      <div class="wizPanel" id="wizPanel2">
+        <input class="wizInput" type="text" id="wizTitle" placeholder="Название туалета *" maxlength="80">
+        <input class="wizInput" type="text" id="wizDesc" placeholder="Описание (необязательно)" maxlength="200">
+        <div class="tagGrid" id="wizTagGrid">
+          <div class="tagToggle on" data-tag="isFree" onclick="wizToggleTag(this)">
+            <span class="tagIco">🆓</span><span>Бесплатно</span><span class="tagChk"></span>
+          </div>
+          <div class="tagToggle on" data-tag="isOpen" onclick="wizToggleTag(this)">
+            <span class="tagIco">🟢</span><span>Открыто</span><span class="tagChk"></span>
+          </div>
+          <div class="tagToggle" data-tag="hasSoap" onclick="wizToggleTag(this)">
+            <span class="tagIco">🧼</span><span>Мыло</span><span class="tagChk"></span>
+          </div>
+          <div class="tagToggle" data-tag="hasPaper" onclick="wizToggleTag(this)">
+            <span class="tagIco">🧻</span><span>Бумага</span><span class="tagChk"></span>
+          </div>
+          <div class="tagToggle" data-tag="isAccessible" onclick="wizToggleTag(this)">
+            <span class="tagIco">♿</span><span>Доступно</span><span class="tagChk"></span>
+          </div>
+          <div class="tagToggle" data-tag="isTaharatkhana" onclick="wizToggleTag(this)">
+            <span class="tagIco">🕌</span><span>Тахаратхана</span><span class="tagChk"></span>
+          </div>
+        </div>
+        <div class="wizNavRow">
+          <button class="wizBtnPrev" onclick="wizGoStep(1)">← Назад</button>
+          <button class="wizBtnNext" onclick="wizGoStep(3)">Далее →</button>
+        </div>
+      </div>
+
+      <!-- Шаг 3: подтверждение -->
+      <div class="wizPanel" id="wizPanel3">
+        <div class="wizConfirmCard">
+          <div class="wizConfirmRow">
+            <span class="wizConfirmLabel">Место</span>
+            <span class="wizConfirmVal" id="wizConfCoords">—</span>
+          </div>
+          <div class="wizConfirmRow">
+            <span class="wizConfirmLabel">Название</span>
+            <span class="wizConfirmVal" id="wizConfTitle">—</span>
+          </div>
+          <div class="wizConfirmRow" id="wizConfDescRow">
+            <span class="wizConfirmLabel">Описание</span>
+            <span class="wizConfirmVal" id="wizConfDesc">—</span>
+          </div>
+          <div class="wizConfirmRow">
+            <span class="wizConfirmLabel">Теги</span>
+            <div class="wizConfirmTags" id="wizConfTags"></div>
+          </div>
+        </div>
+        <div class="wizNavRow">
+          <button class="wizBtnPrev" onclick="wizGoStep(2)">← Назад</button>
+          <button class="wizBtnNext" id="wizSaveBtn" onclick="wizSaveToilet()">✅ Сохранить</button>
+        </div>
+      </div>
     </div>
   </div>
 
