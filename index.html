@@ -1152,18 +1152,17 @@ body.dark #wizPickTopRow{border-color:rgba(255,255,255,0.10);}
 }
 body.dark #wizPickHint{background:#0a2e1c;border-color:#059669;}
 
-/* Выпадающий список — прилипает к нижнему краю строки поиска */
+/* Выпадающий список — position:fixed, top задаётся через JS */
 #wizPickSuggest{
-  position:absolute;
-  left:0;right:0;
-  top:100%; /* сразу под #wizPickHeader */
+  position:fixed;
+  left:12px;right:12px;
+  /* top задаётся через JS при открытии */
   z-index:35;
   background:var(--card);
-  border-radius:0 0 20px 20px;
+  border-radius:18px;
   border:1px solid var(--border);
-  border-top:none;
   overflow:hidden;
-  box-shadow:0 12px 40px rgba(0,0,0,0.18),0 3px 10px rgba(0,0,0,0.08);
+  box-shadow:0 12px 40px rgba(0,0,0,0.20),0 3px 10px rgba(0,0,0,0.10);
   max-height:240px;
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
