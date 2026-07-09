@@ -3050,18 +3050,14 @@ async function wizDoSearch(query){
 
 function wizCancelPickLocation(){
   wizPickMode = false;
-  // Восстанавливаем nav
   const nav = document.getElementById('bottomNav');
   if(nav) nav.style.display='';
-  const ov = document.getElementById('wizPickOverlay');
-  if(ov) ov.classList.add('hidden');
-  wizHideSuggest();
+  _wizHideOverlay();
   if(myMap){
     myMap.events.remove('boundschange', _wizOnMapMove);
     myMap.events.remove('actionbegin', _wizOnMapDragStart);
     myMap.events.remove('actionend', _wizOnMapDragEnd);
   }
-  // Возвращаемся в admin
   switchTab('add');
 }
 
