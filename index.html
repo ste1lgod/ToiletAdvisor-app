@@ -585,12 +585,14 @@ body.dark .rvSkLine{background:#2d3142;}
 
 <style>
 /* ===== OVERLAYS & MODALS ===== */
+/* Modal keyboard lift */
 .overlay{
   position:fixed;inset:0;z-index:50;
   background:rgba(0,0,0,.48);
   display:flex;align-items:flex-end;
   backdrop-filter:blur(5px);
   animation:fadeIn .2s ease;
+  transition:padding-bottom .25s ease;
 }
 .overlay.hidden{display:none!important;}
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
