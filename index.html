@@ -1430,28 +1430,17 @@ function initMap(){
     });
     myMap.events.add('click',e=>{
       if(document.getElementById('toiletSheet').classList.contains('open')){closeSheet();return;}
-      if(!document.getElementById('addOverlay').classList.contains('hidden')){
+      // Ждём выбор места для нового туалета (флаговый режим)
+      if(window._waitingForMapClick){
         addCoords=e.get('coords');
-        document.getElementById('addHintM').textContent=`📍 Выбрано: ${addCoords[0].toFixed(4)}, ${addCoords[1].toFixed(4)}`;
-        document.getElementById('addHintM').style.color='var(--green)';
-        // Скрываем невидимый overlay и возвращаемся на addScreen
-        const ao=document.getElementById('addOverlay');
-        if(ao.style.pointerEvents==='none'){
-          ao.classList.add('hidden');
-          ao.style.opacity='';
-          ao.style.pointerEvents='';
-          // Обновляем подсказку координат
-          const cd=document.getElementById('addCoordsDisplay');
-          if(cd){
-            cd.textContent=`📍 Выбрано: ${addCoords[0].toFixed(4)}, ${addCoords[1].toFixed(4)}`;
-            cd.style.display='block';
-          }
-          // Активируем кнопку "Далее" на шаге 1 и переходим на шаг 2
-          const step1Next=document.getElementById('addStep1Next');
-          if(step1Next)step1Next.disabled=false;
-          switchTab('add');
-          setTimeout(()=>addGoStep(2),100);
-        }
+        window._waitingForMapClick=false;
+        const cd=document.getElementById('addCoordsDisplay');
+        if(cd){cd.textContent=`📍 Выбрано: ${addCoords[0].toFixed(4)}, ${addCoords[1].toFixed(4)}`;cd.style.display='block';}
+        const step1Next=document.getElementById('addStep1Next');
+        if(step1Next)step1Next.disabled=false;
+        switchTab('add');
+        setTimeout(()=>addGoStep(2),100);
+        return;
       }
     });
     loadToilets();
