@@ -2876,18 +2876,28 @@ function wizGoStep(step){
 }
 
 function wizFillConfirm(){
-  document.getElementById('wizConfCoords').textContent=`${wizCoords[0].toFixed(5)}, ${wizCoords[1].toFixed(5)}`;
-  document.getElementById('wizConfTitle').textContent=document.getElementById('wizTitle').value.trim();
-  const desc=document.getElementById('wizDesc').value.trim();
-  document.getElementById('wizConfDesc').textContent=desc;
-  document.getElementById('wizConfDescRow').style.display=desc?'':'none';
-  const tagsEl=document.getElementById('wizConfTags');
-  tagsEl.innerHTML='';
-  const tagLabels={isFree:'🆓 Бесплатно',isOpen:'🟢 Открыто',hasSoap:'🧼 Мыло',hasPaper:'🧻 Бумага',isAccessible:'♿ Доступно',isTaharatkhana:'🕌 Тахаратхана'};
+function wizFillConfirm(){
+  const coords = wizCoords ? `${wizCoords[0].toFixed(5)}, ${wizCoords[1].toFixed(5)}` : '—';
+  // Адресная строка заголовка — берём текст из адресной плашки если есть
+  const addrMain = document.getElementById('wizPickAddressMain');
+  const addrText = (addrMain && addrMain.textContent && addrMain.textContent !== 'Определяю адрес...' && addrMain.textContent !== '...')
+    ? addrMain.textContent : coords;
+  const addrEl = document.getElementById('wizConfirmAddr');
+  if(addrEl) addrEl.textContent = addrText;
+  // Координаты в строке карточки
+  const coordsEl = document.getElementById('wizConfCoords');
+  if(coordsEl) coordsEl.textContent = coords;
+  document.getElementById('wizConfTitle').textContent = document.getElementById('wizTitle').value.trim();
+  const desc = document.getElementById('wizDesc').value.trim();
+  document.getElementById('wizConfDesc').textContent = desc;
+  document.getElementById('wizConfDescRow').style.display = desc ? '' : 'none';
+  const tagsEl = document.getElementById('wizConfTags');
+  tagsEl.innerHTML = '';
+  const tagLabels = {isFree:'🆓 Бесплатно', isOpen:'🟢 Открыто', hasSoap:'🧼 Мыло', hasPaper:'🧻 Бумага', isAccessible:'♿ Доступно', isTaharatkhana:'🕌 Тахаратхана'};
   document.querySelectorAll('.tagToggle.on').forEach(el=>{
-    const span=document.createElement('span');
-    span.className='sBadge';
-    span.textContent=tagLabels[el.dataset.tag]||el.dataset.tag;
+    const span = document.createElement('span');
+    span.className = 'wizConfirmTag';
+    span.textContent = tagLabels[el.dataset.tag] || el.dataset.tag;
     tagsEl.appendChild(span);
   });
 }
