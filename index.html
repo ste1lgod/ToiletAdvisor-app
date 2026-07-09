@@ -2942,8 +2942,7 @@ function wizStartPickLocation(){
   // Переключаемся на карту
   switchTab('map');
   // Показываем overlay
-  const ov = document.getElementById('wizPickOverlay');
-  if(ov) ov.classList.remove('hidden');
+  _wizShowOverlay();
   // Центрируем пин с учётом header и addressbar
   requestAnimationFrame(()=>{
     const header = document.getElementById('wizPickHeader');
