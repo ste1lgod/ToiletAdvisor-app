@@ -1805,6 +1805,7 @@ function initMap(){
     loadToilets();
     startGeo();
     setTimeout(adjustControlsPosition,200);
+    wizInitSearch();
     // Дополнительная зачистка через DOM на случай если API игнорирует опции
     setTimeout(hideYandexUI,600);
     setTimeout(hideYandexUI,1500);
