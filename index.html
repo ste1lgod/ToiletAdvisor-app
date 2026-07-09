@@ -433,12 +433,13 @@ body.dark .tItem{background:rgba(255,255,255,.07);box-shadow:none;}
 /* Описание */
 #sDesc{
   font-size:15px;color:var(--text2);line-height:1.7;
-  padding:14px 16px;
-  background:var(--bg);
-  border-radius:var(--rs);
-  margin-top:12px;
-  margin-bottom:36px;
+  padding:16px 18px;
+  background:var(--card);
+  border-radius:20px;
+  margin-top:12px;margin-bottom:36px;
+  box-shadow:0 2px 12px rgba(0,0,0,0.06);
 }
+body.dark #sDesc{background:#1a1d28;box-shadow:none;}
 
 /* Reviews section */
 #reviewsTitle{
@@ -449,13 +450,14 @@ body.dark .tItem{background:rgba(255,255,255,.07);box-shadow:none;}
   letter-spacing:-.2px;
 }
 .rvNoReviews{
-  text-align:center;
-  color:var(--text2);
-  font-size:13px;
-  font-family:var(--font);
-  padding:12px 0 4px;
-  line-height:1.5;
+  text-align:center;color:var(--text2);
+  font-size:13px;font-family:var(--font);
+  padding:20px 16px;line-height:1.5;
+  background:var(--card);
+  border-radius:16px;
+  box-shadow:0 1px 6px rgba(0,0,0,0.05);
 }
+body.dark .rvNoReviews{background:#1a1d28;box-shadow:none;}
 .rvItem{
   display:flex;gap:14px;
   padding:16px;
