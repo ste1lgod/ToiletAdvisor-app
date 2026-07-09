@@ -538,27 +538,27 @@ body.dark #reviewText{background:#161a24;border-color:#2d3142;}
 #formBtns{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
 #submitReviewBtn{
   display:flex;align-items:center;justify-content:center;gap:6px;
-  padding:14px;background:var(--green);color:#fff;
-  border:none;border-radius:var(--rs);
-  font-size:14px;font-weight:700;font-family:var(--font);cursor:pointer;
-  box-shadow:0 4px 14px rgba(0,168,89,0.30);
-  transition:opacity .15s;
+  padding:15px;background:var(--green);color:#fff;
+  border:none;border-radius:18px;
+  font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;
+  box-shadow:0 4px 18px rgba(0,168,89,0.35);
+  transition:opacity .15s,transform .12s;
 }
-#submitReviewBtn:active{opacity:.82;}
+#submitReviewBtn:active{opacity:.85;transform:scale(.98);}
 #routeBtn{
   display:flex;align-items:center;justify-content:center;gap:6px;
-  padding:13px;
-  background:transparent;
+  padding:14px;
+  background:var(--card);
   color:#2563eb;
-  border:2px solid #2563eb;
-  border-radius:var(--rs);
-  font-size:14px;font-weight:700;
+  border:none;
+  border-radius:18px;
+  font-size:15px;font-weight:700;
   font-family:var(--font);cursor:pointer;
-  transition:background .15s,color .15s;
+  box-shadow:0 2px 12px rgba(37,99,235,0.13);
+  transition:opacity .15s,transform .12s;
 }
-#routeBtn:hover{background:#eff6ff;}
-body.dark #routeBtn{color:#60a5fa;border-color:#60a5fa;}
-body.dark #routeBtn:hover{background:rgba(96,165,250,0.1);}
+#routeBtn:active{opacity:.85;transform:scale(.98);}
+body.dark #routeBtn{background:#1a1d28;color:#60a5fa;box-shadow:0 2px 12px rgba(96,165,250,0.12);}
 
 /* ── SKELETON LOADER ── */
 @keyframes skeletonPulse{
