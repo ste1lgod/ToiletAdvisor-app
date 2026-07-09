@@ -1091,14 +1091,11 @@ body.dark .wizPickSuggestItem:active{background:#0a2e1c;}
   transform:translate(-50%,-50%);
   display:flex;flex-direction:column;align-items:center;
   pointer-events:none;
-  /* Сдвигаем вверх на половину высоты пина чтобы острие совпадало с центром */
-  margin-top:-20px;
   z-index:23;
   transition:transform .15s;
 }
 #wizPickPin.dragging{
-  transform:translate(-50%,-50%) scale(1.15);
-  margin-top:-26px;
+  transform:translate(-50%,-60%) scale(1.12);
 }
 #wizPickPinIcon{
   filter:drop-shadow(0 4px 8px rgba(0,0,0,0.25));
