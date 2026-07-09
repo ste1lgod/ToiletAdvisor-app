@@ -1970,7 +1970,11 @@ function switchTab(tab){
 
 // ── ADD TOILET ──
 function submitAddToilet(){
+  // Переключаем на карту чтобы пользователь выбрал место
+  switchTab('map');
   addCoords=null;
+  showToast('📍 Нажмите на карту чтобы выбрать место');
+  // Открываем модал добавления
   document.getElementById('addOverlay').classList.remove('hidden');
 }
 async function submitAddToiletModal(){
