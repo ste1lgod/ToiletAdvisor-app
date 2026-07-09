@@ -3003,6 +3003,12 @@ function wizShowSuggest(items){
         ${it.desc ? `<div class="sugSub">${it.desc}</div>` : ''}
       </div>
     </div>`).join('');
+  // Позиционируем под строкой поиска
+  const topRow = document.getElementById('wizPickTopRow');
+  if(topRow){
+    const rect = topRow.getBoundingClientRect();
+    box.style.top = (rect.bottom + 8) + 'px';
+  }
   box.classList.remove('hidden');
 }
 
