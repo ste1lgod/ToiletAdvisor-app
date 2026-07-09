@@ -2444,6 +2444,19 @@ function doLogout(){
 // ── TABS ──
 function switchTab(tab){
   closeSheet();
+  // Если уходим с карты в pick режиме — отменяем
+  if(tab !== 'map' && wizPickMode){
+    wizPickMode = false;
+    const ov = document.getElementById('wizPickOverlay');
+    if(ov) ov.classList.add('hidden');
+    const nav = document.getElementById('bottomNav');
+    if(nav) nav.style.display='';
+    if(myMap){
+      myMap.events.remove('boundschange', _wizOnMapMove);
+      myMap.events.remove('actionbegin', _wizOnMapDragStart);
+      myMap.events.remove('actionend', _wizOnMapDragEnd);
+    }
+  }
   document.querySelectorAll('.navBtn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
   // Подсвечиваем кнопку Admin фиолетовым
   const nc=document.querySelector('.navCenter');
