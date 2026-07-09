@@ -2076,17 +2076,8 @@ applyTheme();
 updateLoginBtn();
 
 // ── KEYBOARD LIFT (iOS) ──
-// Чуть поднимаем оверлей когда открывается клавиатура
-if(window.visualViewport){
-  window.visualViewport.addEventListener('resize',()=>{
-    const vv=window.visualViewport;
-    const keyboardH=window.innerHeight-vv.height-vv.offsetTop;
-    document.querySelectorAll('.overlay:not(.hidden)').forEach(el=>{
-      // Поднимаем только на разницу — не больше высоты клавиатуры
-      el.style.transform=keyboardH>50?`translateY(-${Math.min(keyboardH*0.3,120)}px)`:'';
-    });
-  });
-}
+// Отключено — вызывало слишком сильный подъём модала
+
 switchTab('map');
 </script>
 </body>
