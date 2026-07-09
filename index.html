@@ -2814,17 +2814,12 @@ function wizConfirmLocation(){
     confirmed.style.display = 'block';
     confirmed.textContent = `✓ ${addrText || (center[0].toFixed(4)+', '+center[1].toFixed(4))}`;
   }
-  const btn = document.getElementById('wizNext1');
-  if(btn) btn.disabled = false;
-  // Переходим на шаг 2 — заполнение деталей карточки
+  const next1 = document.getElementById('wizNext1');
+  if(next1) next1.disabled = false;
+  // Переходим сразу на шаг 2 — заполнение деталей карточки
+  _skipAdminDashboard = true;
   switchTab('add');
-  // Убеждаемся что открыта форма добавления, а не дашборд
-  const dashboard = document.getElementById('adminDashboard');
-  if(dashboard) dashboard.style.display = 'none';
-  const subForm = document.getElementById('adminSubAddForm');
-  if(subForm) subForm.classList.remove('hidden');
-  // Сразу переходим на шаг 2 wizard
-  setTimeout(()=> wizGoStep(2), 50);
+  setTimeout(()=> wizGoStep(2), 80);
 }
 
 // Карта больше не слушает клики в этом режиме — центр карты = выбранное место
