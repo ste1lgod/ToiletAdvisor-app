@@ -994,7 +994,9 @@ body.dark #toast{
       <label><input type="checkbox" id="addIsAccessible"> ♿ Доступно</label>
       <label><input type="checkbox" id="addIsTaharatkhana"> 🕌 Тахаратхана</label>
     </div>
-    <button id="addSubmitBtn" onclick="submitAddToilet()">✅ Добавить</button>
+    <button id="addPickMapBtn" onclick="pickLocationOnMap()">📍 Выбрать место на карте</button>
+    <div id="addCoordsDisplay" style="display:none;padding:10px 14px;background:var(--green-l);border-radius:var(--rs);font-size:13px;color:var(--green);font-weight:600;text-align:center;"></div>
+    <button id="addSubmitBtn" onclick="submitAddToiletDirect()">✅ Добавить</button>
   </div>
 </div>
 
