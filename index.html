@@ -1161,29 +1161,31 @@ body.dark #wizPickHint{background:#0a2e1c;border-color:#059669;}
   position:fixed;
   left:12px;right:12px;
   /* top задаётся через JS при открытии */
-  z-index:9999;
+  z-index:9999 !important;
   background:var(--card);
   border-radius:18px;
   border:1px solid var(--border);
   overflow:hidden;
-  box-shadow:0 16px 48px rgba(0,0,0,0.22),0 4px 12px rgba(0,0,0,0.12);
+  box-shadow:0 16px 48px rgba(0,0,0,0.25),0 4px 12px rgba(0,0,0,0.15);
   max-height:240px;
   overflow-y:scroll !important;
   -webkit-overflow-scrolling:touch;
   /* Видимый скроллбар — переопределяем глобальный сброс */
   scrollbar-width:thin !important;
   scrollbar-color:#d1d5db transparent !important;
+  /* transform для исправления stacking context */
+  transform:translateZ(0);
 }
 #wizPickSuggest::-webkit-scrollbar{
   display:block !important;
-  width:5px !important;
+  width:6px !important;
 }
 #wizPickSuggest::-webkit-scrollbar-track{
   background:transparent;
 }
 #wizPickSuggest::-webkit-scrollbar-thumb{
   background:#d1d5db;
-  border-radius:4px;
+  border-radius:3px;
 }
 body.dark #wizPickSuggest::-webkit-scrollbar-thumb{
   background:#4b5568;
