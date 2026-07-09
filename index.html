@@ -2716,6 +2716,8 @@ function wizReset(){
   if(next1) next1.disabled = true;
   const navRow1 = document.getElementById('wizNavRow1');
   if(navRow1) navRow1.style.display = 'none';
+  const menuBtnRow = document.getElementById('wizMenuBtnRow');
+  if(menuBtnRow) menuBtnRow.style.display = 'flex';
   const t = document.getElementById('wizTitle');
   if(t) t.value='';
   const d = document.getElementById('wizDesc');
