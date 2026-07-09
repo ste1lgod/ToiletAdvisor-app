@@ -3049,6 +3049,9 @@ function wizShowSuggest(items){
 function wizHideSuggest(){
   const box = document.getElementById('wizPickSuggest');
   if(box) box.classList.add('hidden');
+  // Возвращаем hint
+  const hint = document.getElementById('wizPickHint');
+  if(hint) hint.style.visibility = 'visible';
 }
 
 function wizSelectSuggest(lat, lon){
