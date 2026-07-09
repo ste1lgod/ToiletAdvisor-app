@@ -1782,11 +1782,8 @@ function initMap(){
     });
     myMap.events.add('click',e=>{
       if(document.getElementById('toiletSheet').classList.contains('open')){closeSheet();return;}
-      // Режим выбора места для wizard
-      if(wizPickMode){
-        wizOnMapClick(e.get('coords'));
-        return;
-      }
+      // Режим выбора места для wizard — клики не обрабатываем (выбирается центр карты)
+      if(wizPickMode) return;
       if(!document.getElementById('addOverlay').classList.contains('hidden')){
         addCoords=e.get('coords');
         document.getElementById('addHintM').textContent=`📍 Выбрано: ${addCoords[0].toFixed(4)}, ${addCoords[1].toFixed(4)}`;
