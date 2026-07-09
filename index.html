@@ -2286,6 +2286,8 @@ async function submitAddToiletDirect(){
   const title=document.getElementById('addTitle').value.trim();
   if(!title){showToast('Введите название');return;}
   if(!addCoords){showToast('Сначала выберите место на карте');return;}
+  const btn=document.getElementById('addSubmitBtn');
+  if(btn){btn.textContent='⏳ Сохранение...';btn.disabled=true;}
   const body={lat:addCoords[0],lon:addCoords[1],title,
     description:document.getElementById('addDesc').value.trim()||'',
     photo:document.getElementById('addPhoto').value.trim()||'',
@@ -2303,8 +2305,18 @@ async function submitAddToiletDirect(){
     document.getElementById('addTitle').value='';
     document.getElementById('addDesc').value='';
     document.getElementById('addPhoto').value='';
-    document.getElementById('addCoordsDisplay').style.display='none';
+    const cd=document.getElementById('addCoordsDisplay');
+    if(cd)cd.style.display='none';
     addCoords=null;
+    await loadToilets();
+    showToast('✅ Туалет добавлен!');
+    showAdminDashboard();
+  }catch(e){
+    showToast('Ошибка: '+e.message);
+    if(btn){btn.textContent='✅ Добавить туалет';btn.disabled=false;}
+    console.error(e);
+  }
+}
     await loadToilets();
     showToast('✅ Туалет добавлен!');
     switchTab('map');
