@@ -2323,6 +2323,7 @@ function showAdminSubview(id){
   document.querySelectorAll('.adminSubview').forEach(el=>el.classList.add('hidden'));
   if(id==='addForm'){
     document.getElementById('adminSubAddForm').classList.remove('hidden');
+    wizReset();
   } else if(id==='moderation'){
     document.getElementById('adminSubModeration').classList.remove('hidden');
     loadModerationReviews();
