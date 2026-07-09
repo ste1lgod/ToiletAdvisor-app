@@ -3067,8 +3067,10 @@ function wizShowSuggest(items){
 }
 
 function wizHideSuggest(){
-  const box = document.getElementById('wizPickSuggest');
-  if(box) box.classList.add('hidden');
+  const inner = document.getElementById('wizPickSuggestInner');
+  const divider = document.getElementById('wizPickDivider');
+  if(inner){ inner.innerHTML = ''; inner.style.display = 'none'; }
+  if(divider) divider.classList.remove('vis');
   // Возвращаем hint
   const hint = document.getElementById('wizPickHint');
   if(hint) hint.style.visibility = 'visible';
