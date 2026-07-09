@@ -2814,8 +2814,15 @@ function wizConfirmLocation(){
   }
   const btn = document.getElementById('wizNext1');
   if(btn) btn.disabled = false;
-  // Возвращаемся в admin шаг 1
+  // Переходим на шаг 2 — заполнение деталей карточки
   switchTab('add');
+  // Убеждаемся что открыта форма добавления, а не дашборд
+  const dashboard = document.getElementById('adminDashboard');
+  if(dashboard) dashboard.style.display = 'none';
+  const subForm = document.getElementById('adminSubAddForm');
+  if(subForm) subForm.classList.remove('hidden');
+  // Сразу переходим на шаг 2 wizard
+  setTimeout(()=> wizGoStep(2), 50);
 }
 
 // Карта больше не слушает клики в этом режиме — центр карты = выбранное место
