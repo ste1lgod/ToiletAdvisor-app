@@ -2645,6 +2645,7 @@ function switchTab(tab){
 function showAdminDashboard(){
   document.getElementById('adminDashboard').style.display='';
   document.querySelectorAll('.adminSubview').forEach(el=>el.classList.add('hidden'));
+  wizReset();
 }
 function showAdminSubview(id){
   document.getElementById('adminDashboard').style.display='none';
