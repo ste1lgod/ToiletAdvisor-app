@@ -1187,6 +1187,18 @@ function updateLoginBtn(){
 function maskPhone(p){return!p?'':p.length<=6?p:p.slice(0,6)+'***';}
 function onLoginBtnClick(){currentUser?switchTab('profile'):openAuthModal();}
 
+// Обновление статичных текстов профиля под текущий язык
+function _updateProfileTexts(){
+  const logoutBtn=document.getElementById('pLogoutBtn');
+  if(logoutBtn)logoutBtn.textContent=t('profileLogout');
+  const loginBtn=document.getElementById('pLoginPromptBtn');
+  if(loginBtn)loginBtn.textContent=t('profileLogin');
+  // Лейблы в инфокарточке
+  const labels=document.querySelectorAll('.pInfoLabel');
+  if(labels[0])labels[0].textContent=t('profileAccount');
+  if(labels[1])labels[1].textContent=t('profileRole');
+}
+
 // ── DISTANCE ──
 function haversine(lat1,lon1,lat2,lon2){
   const R=6371000,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;
