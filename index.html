@@ -2914,27 +2914,6 @@ function wizInitSearch(){
   });
 }
 
-async function wizDoSearch(query){
-  if(!query || !wizPickMode) return;
-  try{
-    // Ищем в Ташкенте через ymaps.geocode
-    const res = await ymaps.geocode('Ташкент, ' + query, {
-      results: 5,
-      boundedBy: [[41.18, 69.13],[41.42, 69.42]]
-    });
-    const items = [];
-    res.geoObjects.each(obj=>{
-      items.push({
-        name: obj.getAddressLine(),
-        coords: obj.geometry.getCoordinates()
-      });
-    });
-    wizShowSuggest(items);
-  }catch(e){
-    wizHideSuggest();
-  }
-}
-
 function wizShowSuggest(items){
   const box = document.getElementById('wizPickSuggest');
   if(!box) return;
