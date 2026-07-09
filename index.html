@@ -2932,6 +2932,8 @@ function wizConfirmLocation(){
   if(next1) next1.disabled = false;
   const navRow1 = document.getElementById('wizNavRow1');
   if(navRow1) navRow1.style.display = '';
+  const menuBtnRow = document.getElementById('wizMenuBtnRow');
+  if(menuBtnRow) menuBtnRow.style.display = 'none';
   // Переходим сразу на шаг 2 — заполнение деталей карточки
   _skipAdminDashboard = true;
   switchTab('add');
