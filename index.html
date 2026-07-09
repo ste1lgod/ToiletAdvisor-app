@@ -786,8 +786,51 @@ body.dark .adminDashBtn{background:var(--card);}
   align-self:flex-start;
 }
 
-#addScreenTitle{font-size:20px;font-weight:800;color:var(--text);text-align:center;padding:0 0 10px;font-family:var(--font);letter-spacing:-.3px;}
-#addMapHint{font-size:13px;color:var(--green);text-align:center;margin:0 0 16px;padding:12px;background:var(--green-l);border-radius:16px;font-weight:600;}
+/* Add screen steps */
+#addStepsBar{
+  display:flex;align-items:center;
+  margin-bottom:24px;margin-top:4px;
+}
+.addStep{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  flex-shrink:0;
+}
+.addStep span{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--border);color:var(--text2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;font-family:var(--font);
+  transition:background .2s,color .2s;
+}
+.addStep.active span{background:var(--green);color:#fff;}
+.addStep.done span{background:#059669;color:#fff;}
+.addStepLabel{font-size:10px;font-weight:600;color:var(--text2);font-family:var(--font);}
+.addStep.active .addStepLabel{color:var(--green);}
+.addStepLine{flex:1;height:2px;background:var(--border);margin:0 6px;margin-bottom:14px;transition:background .2s;}
+.addStepLine.done{background:var(--green);}
+
+.addStepView{display:flex;flex-direction:column;gap:10px;width:100%;}
+.addStepView.hidden{display:none!important;}
+.addStepTitle{font-size:18px;font-weight:800;color:var(--text);font-family:var(--font);letter-spacing:-.2px;margin-bottom:4px;}
+.addStepDesc{font-size:13px;color:var(--text2);line-height:1.5;}
+.addNextBtn{
+  padding:15px;background:var(--green);color:#fff;
+  border:none;border-radius:18px;
+  font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);
+  box-shadow:0 4px 16px rgba(0,168,89,0.35);
+  margin-top:4px;
+}
+.addNextBtn:disabled{background:var(--border);color:var(--text2);box-shadow:none;cursor:not-allowed;}
+.addBackStepBtn{
+  padding:13px;background:var(--card);color:var(--text2);
+  border:none;border-radius:16px;
+  font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);
+}
+.addPreviewCard{
+  background:var(--card);border-radius:20px;padding:16px;
+  font-size:14px;color:var(--text);line-height:1.7;
+  box-shadow:0 2px 12px rgba(0,0,0,0.07);
+}
 #addForm{display:flex;flex-direction:column;gap:10px;}
 #addForm input[type=text]{
   width:100%;padding:14px 16px;
