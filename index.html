@@ -2665,26 +2665,192 @@ function wizFillConfirm(){
 function wizToggleTag(el){el.classList.toggle('on');}
 
 function wizStartPickLocation(){
-  wizPickMode=true;
+  wizPickMode = true;
+  // Переключаемся на карту
   switchTab('map');
-  showToast('📍 Тапните на карту чтобы выбрать место');
-  const hint=document.getElementById('wizMapPickHint');
-  if(hint) hint.classList.remove('hidden');
+  // Показываем overlay
+  const ov = document.getElementById('wizPickOverlay');
+  if(ov) ov.classList.remove('hidden');
+  // Сбрасываем поиск
+  const si = document.getElementById('wizPickSearch');
+  if(si){si.value='';si.blur();}
+  wizHideSuggest();
+  // Сразу геокодируем центр карты
+  wizScheduleGeocode();
+  // Слушаем движение карты для обновления адреса
+  if(myMap){
+    myMap.events.add('boundschange', _wizOnMapMove);
+    myMap.events.add('actionbegin', _wizOnMapDragStart);
+    myMap.events.add('actionend', _wizOnMapDragEnd);
+  }
 }
 
-function wizOnMapClick(coords){
-  wizCoords=coords;
-  wizPickMode=false;
-  const hint=document.getElementById('wizMapPickHint');
-  if(hint) hint.classList.add('hidden');
-  const confirmed=document.getElementById('wizCoordsConfirmed');
-  if(confirmed){
-    confirmed.style.display='block';
-    confirmed.textContent=`✓ Место выбрано: ${coords[0].toFixed(4)}, ${coords[1].toFixed(4)}`;
+function _wizOnMapDragStart(){
+  const pin = document.getElementById('wizPickPin');
+  if(pin) pin.classList.add('dragging');
+  const addr = document.getElementById('wizPickAddressMain');
+  if(addr) addr.textContent = 'Перемещаю...';
+}
+
+function _wizOnMapDragEnd(){
+  const pin = document.getElementById('wizPickPin');
+  if(pin) pin.classList.remove('dragging');
+  wizScheduleGeocode();
+}
+
+function _wizOnMapMove(){
+  clearTimeout(_wizGeocodeTimer);
+  const addr = document.getElementById('wizPickAddressMain');
+  if(addr && addr.textContent !== 'Перемещаю...') addr.textContent = '...';
+}
+
+function wizScheduleGeocode(){
+  clearTimeout(_wizGeocodeTimer);
+  _wizGeocodeTimer = setTimeout(async ()=>{
+    if(!myMap || !wizPickMode) return;
+    const center = myMap.getCenter();
+    const lat = center[0], lon = center[1];
+    // Обновляем координаты
+    const coordsEl = document.getElementById('wizPickAddressCoords');
+    if(coordsEl) coordsEl.textContent = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+    // Обратное геокодирование через Яндекс
+    try{
+      const res = await ymaps.geocode([lat, lon], {results:1});
+      const first = res.geoObjects.get(0);
+      const addr = first ? first.getAddressLine() : `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+      const addrEl = document.getElementById('wizPickAddressMain');
+      if(addrEl) addrEl.textContent = addr;
+      // Запоминаем текущие координаты центра
+      _wizLastGeocodeCoords = [lat, lon];
+    }catch(e){
+      const addrEl = document.getElementById('wizPickAddressMain');
+      if(addrEl) addrEl.textContent = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+      _wizLastGeocodeCoords = [lat, lon];
+    }
+  }, 600);
+}
+
+function wizCancelPickLocation(){
+  wizPickMode = false;
+  const ov = document.getElementById('wizPickOverlay');
+  if(ov) ov.classList.add('hidden');
+  wizHideSuggest();
+  if(myMap){
+    myMap.events.remove('boundschange', _wizOnMapMove);
+    myMap.events.remove('actionbegin', _wizOnMapDragStart);
+    myMap.events.remove('actionend', _wizOnMapDragEnd);
   }
-  const btn=document.getElementById('wizNext1');
-  if(btn) btn.disabled=false;
-  setTimeout(()=>switchTab('add'),200);
+  // Возвращаемся в admin
+  switchTab('add');
+}
+
+function wizConfirmLocation(){
+  if(!myMap) return;
+  const center = myMap.getCenter();
+  wizPickMode = false;
+  const ov = document.getElementById('wizPickOverlay');
+  if(ov) ov.classList.add('hidden');
+  wizHideSuggest();
+  if(myMap){
+    myMap.events.remove('boundschange', _wizOnMapMove);
+    myMap.events.remove('actionbegin', _wizOnMapDragStart);
+    myMap.events.remove('actionend', _wizOnMapDragEnd);
+  }
+  // Сохраняем координаты
+  wizCoords = [center[0], center[1]];
+  // Обновляем подтверждение на шаге 1
+  const addrEl = document.getElementById('wizPickAddressMain');
+  const addrText = addrEl ? addrEl.textContent : '';
+  const confirmed = document.getElementById('wizCoordsConfirmed');
+  if(confirmed){
+    confirmed.style.display = 'block';
+    confirmed.textContent = `✓ ${addrText || (center[0].toFixed(4)+', '+center[1].toFixed(4))}`;
+  }
+  const btn = document.getElementById('wizNext1');
+  if(btn) btn.disabled = false;
+  // Возвращаемся в admin шаг 1
+  switchTab('add');
+}
+
+// Карта больше не слушает клики в этом режиме — центр карты = выбранное место
+function wizOnMapClick(coords){
+  // Оставляем пустым — в новом режиме клики не нужны, выбирается центр карты
+}
+
+// ── ПОИСК УЛИЦЫ В WIZ PICK ──
+let _wizSearchTimer = null;
+
+function wizInitSearch(){
+  const input = document.getElementById('wizPickSearch');
+  const clearBtn = document.getElementById('wizPickSearchClear');
+  if(!input) return;
+  input.addEventListener('input', ()=>{
+    const val = input.value.trim();
+    clearBtn && clearBtn.classList.toggle('hidden', !val);
+    clearTimeout(_wizSearchTimer);
+    if(!val){wizHideSuggest();return;}
+    _wizSearchTimer = setTimeout(()=>wizDoSearch(val), 350);
+  });
+  input.addEventListener('focus', ()=>{
+    if(input.value.trim()) wizDoSearch(input.value.trim());
+  });
+}
+
+async function wizDoSearch(query){
+  if(!query || !wizPickMode) return;
+  try{
+    // Ищем в Ташкенте через ymaps.geocode
+    const res = await ymaps.geocode('Ташкент, ' + query, {
+      results: 5,
+      boundedBy: [[41.18, 69.13],[41.42, 69.42]]
+    });
+    const items = [];
+    res.geoObjects.each(obj=>{
+      items.push({
+        name: obj.getAddressLine(),
+        coords: obj.geometry.getCoordinates()
+      });
+    });
+    wizShowSuggest(items);
+  }catch(e){
+    wizHideSuggest();
+  }
+}
+
+function wizShowSuggest(items){
+  const box = document.getElementById('wizPickSuggest');
+  if(!box) return;
+  if(!items.length){wizHideSuggest();return;}
+  box.innerHTML = items.map((it,i)=>`
+    <div class="wizPickSuggestItem" onclick="wizSelectSuggest(${it.coords[0]},${it.coords[1]})">
+      <span class="sugIco">📍</span>
+      <div class="sugText">
+        <div>${it.name}</div>
+      </div>
+    </div>`).join('');
+  box.classList.remove('hidden');
+}
+
+function wizHideSuggest(){
+  const box = document.getElementById('wizPickSuggest');
+  if(box) box.classList.add('hidden');
+}
+
+function wizSelectSuggest(lat, lon){
+  if(!myMap) return;
+  myMap.setCenter([lat, lon], 17, {duration:500});
+  wizHideSuggest();
+  const input = document.getElementById('wizPickSearch');
+  if(input) input.blur();
+  setTimeout(wizScheduleGeocode, 600);
+}
+
+function wizClearSearch(){
+  const input = document.getElementById('wizPickSearch');
+  const clearBtn = document.getElementById('wizPickSearchClear');
+  if(input){input.value='';input.focus();}
+  if(clearBtn) clearBtn.classList.add('hidden');
+  wizHideSuggest();
 }
 
 async function wizSaveToilet(){
