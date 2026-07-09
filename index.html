@@ -605,10 +605,11 @@ body.dark .rvSkLine{background:#2d3142;}
   max-height:90vh;overflow-y:auto;
   animation:slideUp .28s cubic-bezier(.32,1,.46,1);
   touch-action:none;
-  /* Фиксируем позицию — не даём уезжать при клавиатуре */
   position:relative;
   transform:none!important;
+  border-top:1px solid var(--border);
 }
+body.dark .mBox{background:#161b28;border-color:#252d40;}
 @keyframes slideUp{from{transform:translateY(56px);opacity:0;}to{transform:translateY(0);opacity:1;}}
 
 .mDragZone{padding:12px 0 4px;cursor:grab;user-select:none;}
