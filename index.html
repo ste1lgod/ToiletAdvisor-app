@@ -2660,8 +2660,7 @@ function switchTab(tab){
   // Если уходим с карты в pick режиме — отменяем
   if(tab !== 'map' && wizPickMode){
     wizPickMode = false;
-    const ov = document.getElementById('wizPickOverlay');
-    if(ov) ov.classList.add('hidden');
+    _wizHideOverlay();
     const nav = document.getElementById('bottomNav');
     if(nav) nav.style.display='';
     if(myMap){
