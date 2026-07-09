@@ -990,6 +990,167 @@ body.dark #toast{
   background:rgba(240,245,255,0.18);
   border-color:rgba(255,255,255,0.18);
 }
+
+/* ===== WIZ PICK OVERLAY ===== */
+#wizPickOverlay{
+  position:fixed;inset:0;z-index:22;
+  pointer-events:none;
+}
+#wizPickOverlay:not(.hidden){
+  pointer-events:auto;
+}
+
+/* Верхняя панель */
+#wizPickHeader{
+  position:absolute;top:0;left:0;right:0;
+  padding:calc(env(safe-area-inset-top,0px) + 8px) 12px 0;
+  z-index:23;
+  display:flex;flex-direction:column;gap:0;
+}
+#wizPickTopRow{
+  display:flex;align-items:center;gap:8px;
+  background:var(--glass-bg);
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
+  border:1px solid rgba(255,255,255,0.6);
+  border-radius:20px;
+  padding:8px 12px;
+  box-shadow:var(--sh-float);
+}
+body.dark #wizPickTopRow{border-color:rgba(255,255,255,0.10);}
+#wizPickCancelBtn{
+  width:34px;height:34px;flex-shrink:0;
+  background:none;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text2);border-radius:10px;
+  transition:color .15s;
+}
+#wizPickCancelBtn:active{color:var(--green);}
+#wizPickSearchWrap{
+  flex:1;display:flex;align-items:center;gap:6px;
+  color:var(--text2);
+}
+#wizPickSearch{
+  flex:1;border:none;background:transparent;
+  font-size:14px;color:var(--text);
+  outline:none;font-family:var(--font);
+  padding:4px 0;
+}
+#wizPickSearch::placeholder{color:var(--text2);}
+#wizPickSearchClear{
+  background:none;border:none;cursor:pointer;
+  color:var(--text2);display:flex;align-items:center;padding:4px;
+}
+
+/* Подпись-подсказка */
+#wizPickHint{
+  margin:8px 4px 0;
+  font-size:12px;font-weight:600;color:var(--green);
+  background:var(--green-l);
+  padding:8px 14px;
+  border-radius:14px;
+  border:1px solid rgba(0,168,89,0.25);
+  text-align:center;
+}
+body.dark #wizPickHint{background:#0a2e1c;border-color:#059669;}
+
+/* Выпадающие подсказки адреса */
+#wizPickSuggest{
+  margin-top:6px;
+  background:var(--card);
+  border-radius:16px;
+  border:1px solid var(--border);
+  overflow:hidden;
+  box-shadow:var(--sh2);
+  max-height:220px;
+  overflow-y:auto;
+}
+body.dark #wizPickSuggest{background:#161b28;}
+.wizPickSuggestItem{
+  padding:12px 16px;
+  font-size:13px;font-weight:500;
+  color:var(--text);
+  cursor:pointer;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:flex-start;gap:8px;
+  transition:background .1s;
+}
+.wizPickSuggestItem:last-child{border-bottom:none;}
+.wizPickSuggestItem:active{background:var(--green-l);}
+body.dark .wizPickSuggestItem:active{background:#0a2e1c;}
+.wizPickSuggestItem .sugIco{font-size:14px;flex-shrink:0;margin-top:1px;}
+.wizPickSuggestItem .sugText{flex:1;line-height:1.3;}
+.wizPickSuggestItem .sugSub{font-size:11px;color:var(--text2);margin-top:2px;}
+
+/* Центральный пин */
+#wizPickPin{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  display:flex;flex-direction:column;align-items:center;
+  pointer-events:none;
+  /* Сдвигаем вверх на половину высоты пина чтобы острие совпадало с центром */
+  margin-top:-20px;
+  z-index:23;
+  transition:transform .15s;
+}
+#wizPickPin.dragging{
+  transform:translate(-50%,-50%) scale(1.15);
+  margin-top:-26px;
+}
+#wizPickPinIcon{
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,0.25));
+}
+#wizPickPinShadow{
+  width:12px;height:4px;
+  background:rgba(0,0,0,0.2);
+  border-radius:50%;
+  margin-top:2px;
+  filter:blur(2px);
+}
+
+/* Нижняя адресная плашка */
+#wizPickAddressBar{
+  position:absolute;
+  bottom:calc(var(--nav-offset) + 16px);
+  left:12px;right:12px;
+  z-index:23;
+  background:var(--glass-bg);
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
+  border:1px solid rgba(255,255,255,0.6);
+  border-radius:20px;
+  box-shadow:var(--sh-float);
+  display:flex;align-items:center;
+  padding:12px 14px;
+  gap:12px;
+}
+body.dark #wizPickAddressBar{border-color:rgba(255,255,255,0.10);}
+#wizPickAddressContent{
+  flex:1;display:flex;align-items:center;gap:10px;min-width:0;
+}
+#wizPickAddressIcon{font-size:20px;flex-shrink:0;}
+#wizPickAddressText{flex:1;min-width:0;}
+#wizPickAddressMain{
+  font-size:13px;font-weight:700;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+#wizPickAddressCoords{
+  font-size:11px;color:var(--text2);margin-top:2px;
+}
+#wizPickConfirmBtn{
+  flex-shrink:0;
+  display:flex;align-items:center;gap:5px;
+  padding:10px 16px;
+  background:var(--green);color:#fff;
+  border:none;border-radius:14px;
+  font-size:13px;font-weight:700;font-family:var(--font);
+  cursor:pointer;
+  box-shadow:0 3px 12px rgba(0,168,89,0.35);
+  transition:opacity .15s,transform .12s;
+  white-space:nowrap;
+}
+#wizPickConfirmBtn:active{opacity:.85;transform:scale(.96);}
 </style>
 
 </head>
