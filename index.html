@@ -586,14 +586,12 @@ body.dark .rvSkLine{background:#252d40;}
 
 <style>
 /* ===== OVERLAYS & MODALS ===== */
-/* Modal keyboard lift */
 .overlay{
   position:fixed;inset:0;z-index:50;
   background:rgba(0,0,0,.48);
   display:flex;align-items:flex-end;
   backdrop-filter:blur(5px);
   animation:fadeIn .2s ease;
-  transition:padding-bottom .25s ease;
 }
 .overlay.hidden{display:none!important;}
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
@@ -603,7 +601,6 @@ body.dark .rvSkLine{background:#252d40;}
   padding:0 22px 32px;width:100%;
   max-height:90vh;overflow-y:auto;
   animation:slideUp .28s cubic-bezier(.32,1,.46,1);
-  touch-action:none;
   position:relative;
   transform:none!important;
   border-top:1px solid var(--border);
