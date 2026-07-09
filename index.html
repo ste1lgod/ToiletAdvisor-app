@@ -1993,13 +1993,48 @@ function switchTab(tab){
 }
 
 // ── ADD TOILET ──
-function submitAddToilet(){
-  // Переключаем на карту чтобы пользователь выбрал место
-  switchTab('map');
+function pickLocationOnMap(){
+  // Переключаемся на карту, ждём тап
   addCoords=null;
+  document.getElementById('addCoordsDisplay').style.display='none';
+  switchTab('map');
   showToast('📍 Нажмите на карту чтобы выбрать место');
-  // Открываем модал добавления
+  // Открываем невидимый overlay чтобы map click handler работал
   document.getElementById('addOverlay').classList.remove('hidden');
+  document.getElementById('addOverlay').style.opacity='0';
+  document.getElementById('addOverlay').style.pointerEvents='none';
+}
+function submitAddToilet(){
+  pickLocationOnMap();
+}
+async function submitAddToiletDirect(){
+  if(!currentUser||currentUser.role!=='admin'){showToast('Требуются права администратора');return;}
+  const title=document.getElementById('addTitle').value.trim();
+  if(!title){showToast('Введите название');return;}
+  if(!addCoords){showToast('Сначала выберите место на карте');return;}
+  const body={lat:addCoords[0],lon:addCoords[1],title,
+    description:document.getElementById('addDesc').value.trim()||'',
+    photo:document.getElementById('addPhoto').value.trim()||'',
+    isOpen:document.getElementById('addIsOpen').checked,
+    isFree:document.getElementById('addIsFree').checked,
+    hasSoap:document.getElementById('addHasSoap').checked,
+    hasPaper:document.getElementById('addHasPaper').checked,
+    isAccessible:document.getElementById('addIsAccessible').checked,
+    isTaharatkhana:document.getElementById('addIsTaharatkhana').checked,
+    addedBy:currentUser.id,createdAt:new Date().toISOString()};
+  try{
+    await _loadFirebase();
+    await db.collection('toilets').add(body);
+    // Сбрасываем форму
+    document.getElementById('addTitle').value='';
+    document.getElementById('addDesc').value='';
+    document.getElementById('addPhoto').value='';
+    document.getElementById('addCoordsDisplay').style.display='none';
+    addCoords=null;
+    await loadToilets();
+    showToast('✅ Туалет добавлен!');
+    switchTab('map');
+  }catch(e){showToast('Ошибка: '+e.message);console.error(e);}
 }
 async function submitAddToiletModal(){
   if(!currentUser||currentUser.role!=='admin'){showToast('Требуются права администратора');return;}
