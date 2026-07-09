@@ -1970,6 +1970,7 @@ function renderMarkers(){
       const _toilet=toilet;
       return (e)=>{
         if(isPanning)return;
+        if(wizPickMode)return; // в режиме выбора места маркеры не открываем
         e.stopPropagation();
         // Если шторка уже открыта с другим туалетом — закрываем и открываем новый
         if(isSheetOpen){
