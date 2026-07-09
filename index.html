@@ -1107,7 +1107,7 @@ body.dark #toast{
   border-radius:16px;
   padding:0 12px;
   box-shadow:var(--sh-float);
-  min-height:48px;
+  height:50px;
 }
 body.dark #wizPickTopRow{border-color:rgba(255,255,255,0.10);}
 #wizPickCancelBtn{
@@ -1117,18 +1117,19 @@ body.dark #wizPickTopRow{border-color:rgba(255,255,255,0.10);}
   color:var(--text2);border-radius:10px;
   transition:color .15s;
 }
-#wizPickCancelBtn svg{width:20px;height:20px;}
 #wizPickCancelBtn:active{color:var(--green);}
 #wizPickSearchWrap{
   flex:1;display:flex;align-items:center;gap:8px;
-  color:var(--text2);
+  color:var(--text2);height:100%;
 }
-#wizPickSearchWrap>svg{width:18px;height:18px;flex-shrink:0;}
 #wizPickSearch{
   flex:1;border:none;background:transparent;
-  font-size:16px;color:var(--text);
+  font-size:17px;font-weight:500;
+  color:var(--text);
   outline:none;font-family:var(--font);
-  padding:0;line-height:48px;
+  padding:0;margin:0;height:100%;
+  -webkit-appearance:none;
+  appearance:none;
 }
 #wizPickSearch::placeholder{color:var(--text2);}
 #wizPickSearchClear{
