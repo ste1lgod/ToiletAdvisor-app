@@ -2678,6 +2678,9 @@ function wizToggleTag(el){el.classList.toggle('on');}
 
 function wizStartPickLocation(){
   wizPickMode = true;
+  // Скрываем bottom nav
+  const nav = document.getElementById('bottomNav');
+  if(nav) nav.style.display='none';
   // Переключаемся на карту
   switchTab('map');
   // Показываем overlay
