@@ -2750,7 +2750,8 @@ function switchTab(tab){
     if(currentUser&&currentUser.role==='admin'){
       document.getElementById('addScreen').classList.remove('hidden');
       addCoords=null;
-      if(!_skipAdminDashboard) showAdminDashboard();
+      // Не сбрасываем если мастер добавления уже активен (пользователь вернулся с другой вкладки)
+      if(!_skipAdminDashboard && !_wizInProgress) showAdminDashboard();
       _skipAdminDashboard = false;
     } else {
       document.getElementById('adminDeniedScreen').classList.remove('hidden');
