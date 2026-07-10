@@ -3126,11 +3126,15 @@ document.getElementById('authNotice').addEventListener('click',openAuthModal);
   ['wizTitle','wizDesc'].forEach(id=>{
     const el=document.getElementById(id);
     if(!el)return;
-    el.addEventListener('input',function(){
-      this.style.height='auto';
-      const maxH=parseInt(this.style.maxHeight)||200;
-      this.style.height=Math.min(this.scrollHeight, maxH)+'px';
-    });
+    function resizeWiz(){
+      el.style.height='1px';
+      const maxH=parseInt(el.style.maxHeight)||200;
+      el.style.height=Math.min(el.scrollHeight, maxH)+'px';
+      // Показываем скролл только если достигнут максимум
+      el.style.overflowY=el.scrollHeight>maxH?'auto':'hidden';
+    }
+    el.addEventListener('input',resizeWiz);
+    el.addEventListener('change',resizeWiz);
   });
 })();
 </script>
