@@ -439,20 +439,28 @@ body.dark .sBadge{background:rgba(255,255,255,0.1);color:#e2e8f0;border:1px soli
 /* taharatBlock */
 #taharatBlock{
   background:linear-gradient(135deg,#ecfdf5,#d1fae5);
-  border-radius:20px;padding:16px;
+  border-radius:28px;padding:18px;
   margin-top:4px;margin-bottom:22px;
   display:block;width:100%;
   box-shadow:0 2px 16px rgba(5,150,105,0.12);
+  border:1.5px solid rgba(5,150,105,0.2);
 }
-body.dark #taharatBlock{background:linear-gradient(135deg,rgba(5,150,105,0.2),rgba(6,78,59,0.3));border:1px solid rgba(5,150,105,0.3);box-shadow:none;}
+body.dark #taharatBlock{background:linear-gradient(135deg,rgba(5,150,105,0.2),rgba(6,78,59,0.3));border:1.5px solid rgba(5,150,105,0.35);box-shadow:none;}
 body.dark #taharatTitle{color:#6ee7b7;}
 body.dark #taharatSub{color:#4ade80;}
 body.dark #taharatNote{color:#6ee7b7;}
 #taharatTitle{font-size:16px;font-weight:800;color:#065f46;letter-spacing:-.1px;}
 #taharatSub{font-size:14px;color:#059669;margin-top:4px;}
 #taharatGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 12px;}
-.tItem{background:rgba(255,255,255,.80);border-radius:14px;padding:12px 14px;font-size:15px;font-weight:600;color:#065f46;box-shadow:0 1px 4px rgba(0,0,0,0.06);}
-body.dark .tItem{background:rgba(255,255,255,0.10);color:#d1fae5;box-shadow:none;}
+.tItem{
+  background:rgba(255,255,255,.80);
+  border-radius:20px;
+  padding:12px 14px;
+  font-size:15px;font-weight:600;color:#065f46;
+  box-shadow:0 1px 4px rgba(0,0,0,0.06);
+  border:1.5px solid rgba(5,150,105,0.25);
+}
+body.dark .tItem{background:rgba(255,255,255,0.10);color:#d1fae5;box-shadow:none;border-color:rgba(5,150,105,0.35);}
 #taharatNote{font-size:15px;color:#059669;line-height:1.6;margin-top:4px;}
 
 /* Описание */
