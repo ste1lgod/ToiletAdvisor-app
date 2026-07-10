@@ -3942,13 +3942,56 @@ function showToast(msg){
 
   const timer = setTimeout(()=>_removeToast(el), TOAST_DURATION);
   el._timer = timer;
-  // Клик по крестику или по самому тосту — закрыть
+
+  // Закрыть только крестиком
   el.querySelector('.toastItem-close').addEventListener('click', e=>{
     e.stopPropagation();
     clearTimeout(el._timer);
     _removeToast(el);
   });
-  el.addEventListener('click', ()=>{ clearTimeout(el._timer); _removeToast(el); });
+
+  // Свайп влево для закрытия вручную
+  let _tx = 0, _startX = 0, _startY = 0, _swiping = false, _swipeLocked = false;
+  el.addEventListener('touchstart', e=>{
+    _startX = e.touches[0].clientX;
+    _startY = e.touches[0].clientY;
+    _swiping = false;
+    _swipeLocked = false;
+    _tx = 0;
+    el.style.transition = 'none';
+  }, { passive: true });
+  el.addEventListener('touchmove', e=>{
+    const dx = e.touches[0].clientX - _startX;
+    const dy = e.touches[0].clientY - _startY;
+    // Определяем направление один раз
+    if(!_swiping && !_swipeLocked){
+      if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 6){
+        _swiping = true;
+      } else if(Math.abs(dy) > 8){
+        _swipeLocked = true; // вертикальный скролл — не перехватываем
+      }
+    }
+    if(_swiping && dx < 0){
+      _tx = dx;
+      const progress = Math.min(1, Math.abs(dx) / 120);
+      el.style.transform = `translateX(${dx}px) scale(${1 - progress * 0.06})`;
+      el.style.opacity = String(1 - progress * 0.5);
+    }
+  }, { passive: true });
+  el.addEventListener('touchend', e=>{
+    if(!_swiping){ el.style.transition = ''; el.style.transform = ''; el.style.opacity = ''; return; }
+    if(_tx < -80){
+      // Достаточный свайп — закрываем
+      clearTimeout(el._timer);
+      _removeToast(el);
+    } else {
+      // Недостаточный — возвращаем на место
+      el.style.transition = 'transform .3s cubic-bezier(.32,1,.46,1), opacity .3s ease';
+      el.style.transform = '';
+      el.style.opacity = '';
+      setTimeout(()=>{ el.style.transition = ''; }, 300);
+    }
+  });
 }
 
 function _removeToast(el){
