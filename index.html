@@ -3087,7 +3087,7 @@ async function doAdminLogin(){
     localStorage.setItem('ta_user',JSON.stringify(currentUser));
     closeOverlay('adminOverlay');
     updateLoginBtn();
-    showToast('Вы вошли как администратор');
+    showToast(t('toastAdminLoginOk'));
     logAction({ type:'admin', category:'admin', action:t('logAdminLogin'), detail:`${t('logAdmin')}: ${login}` });
     setTimeout(()=>switchTab('add'),200);
   }catch(e){
