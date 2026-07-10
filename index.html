@@ -2557,17 +2557,15 @@ function overlayBgClick(e,id){if(e.target.id===id)closeOverlay(id);}
 function toggleEye(id){
   const i=document.getElementById(id);
   const btn=i.closest('.passRow').querySelector('.eyeBtn');
-  // Запоминаем позицию курсора
-  const selStart=i.selectionStart;
-  const selEnd=i.selectionEnd;
-  const show=i.type==='password';
-  // Меняем тип — не теряем фокус
-  i.type=show?'text':'password';
-  // Восстанавливаем фокус и позицию курсора
-  requestAnimationFrame(()=>{
-    i.focus();
-    try{i.setSelectionRange(selStart,selEnd);}catch(e){}
-  });
+  const show=i.dataset.visible!=='true';
+  i.dataset.visible=show?'true':'false';
+  // Меняем только визуальное отображение через класс — тип НЕ меняем,
+  // чтобы iOS не сворачивал клавиатуру
+  if(show){
+    i.classList.add('passVisible');
+  } else {
+    i.classList.remove('passVisible');
+  }
   if(!btn)return;
   btn.classList.toggle('open',show);
   btn.innerHTML=show
