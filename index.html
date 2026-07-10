@@ -3337,8 +3337,8 @@ async function deleteReview(id, btn){
     logAction({
       type:'delete',
       category:'review',
-      action:'Удалил отзыв',
-      detail:`Отзыв от ${reviewData.userPhone||'?'}: "${(reviewData.text||'').slice(0,60)}" (туалет: ${reviewData.toiletId||'?'})`,
+      action:t('logDeletedReview'),
+      detail:`${t('logUser')}: ${reviewData.userPhone||'?'}: "${(reviewData.text||'').slice(0,60)}" (${t('logToilet')}: ${reviewData.toiletId||'?'})`,
     });
   }catch(e){showToast('Ошибка: '+e.message);}
 }
