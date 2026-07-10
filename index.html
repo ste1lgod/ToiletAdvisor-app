@@ -3065,7 +3065,7 @@ async function doAdminLogin(){
   if(_adminLoginInProgress)return;
   const login=document.getElementById('adminLogin').value.trim();
   const pass=document.getElementById('adminPass').value.trim();
-  if(!login||!pass){showToast('Заполните все поля');return;}
+  if(!login||!pass){showToast(t('toastFillAll'));return;}
   _adminLoginInProgress=true;
   const btn=document.querySelector('#adminBox .mainBtn');
   if(btn){btn.textContent='⏳ Вход...';btn.disabled=true;}
@@ -3079,7 +3079,7 @@ async function doAdminLogin(){
     const queryPromise=db.collection('users').where('login','==',login).where('role','==','admin').limit(1).get();
     const timeoutPromise=new Promise((_,rej)=>setTimeout(()=>rej(new Error('Превышено время ожидания. Проверьте интернет и попробуйте снова.')),8000));
     const snap=await Promise.race([queryPromise,timeoutPromise]);
-    if(snap.empty){showToast('Администратор не найден');return;}
+    if(snap.empty){showToast(t('toastAdminNotFound'));return;}
     const userDoc=snap.docs[0];
     const userData=userDoc.data();
     if(userData.passwordHash!==passHash){showToast('Неверный пароль');return;}
