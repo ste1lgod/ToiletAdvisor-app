@@ -2905,8 +2905,8 @@ async function submitReview(){
     logAction({
       type:'review',
       category:'review',
-      action:'Оставил отзыв',
-      detail:`Туалет: ${selectedToilet.title||selectedToilet.id} · Оценка: ${'★'.repeat(optimistic.rating)} · "${text.slice(0,80)}"`,
+      action:t('logLeftReview'),
+      detail:`${t('logToilet')}: ${selectedToilet.title||selectedToilet.id} · ${t('logRating')}: ${'★'.repeat(optimistic.rating)} · "${text.slice(0,80)}"`,
     });
   }catch(e){
     console.error('Ошибка сохранения отзыва:',e);
@@ -3046,7 +3046,7 @@ async function doAuth(){
       localStorage.setItem('ta_user',JSON.stringify(currentUser));
       closeOverlay('authOverlay');updateLoginBtn();resetReviewForm();
       showToast('Вы вошли в систему');
-      logAction({ type:'auth', category:'auth', action:'Вход в систему', detail:`Пользователь ${phone}` });
+      logAction({ type:'auth', category:'auth', action:t('logLogin'), detail:`${t('logUser')} ${phone}` });
     } else {
       // Регистрация
       const exists=await db.collection('users').where('phone','==',phone).limit(1).get();
