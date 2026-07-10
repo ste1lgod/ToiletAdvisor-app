@@ -2794,8 +2794,20 @@ function renderReviews(reviews){
     const ini=name.replace(/\+/g,'').slice(0,2).toUpperCase();
     const stars='★'.repeat(r.rating)+'☆'.repeat(5-r.rating);
     const d=new Date(r.createdAt);
-    const ds=`${d.getDate()} ${['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'][d.getMonth()]} ${d.getFullYear()}`;
-    return`<div class="rvItem"><div class="rvAvatar" style="background:${col}">${ini}</div><div class="rvBody"><div class="rvHeader"><span class="rvName">${name}</span><span class="rvDate">${ds}</span></div><div class="rvStars">${stars}</div><div class="rvText">${r.text}</div></div></div>`;
+    const MONTHS=['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+    const hh=String(d.getHours()).padStart(2,'0');
+    const mm=String(d.getMinutes()).padStart(2,'0');
+    const ds=`${hh}:${mm} · ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+    return`<div class="rvItem" style="flex-direction:column;gap:0;padding:0;overflow:hidden;">
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 16px 12px;">
+        <div class="rvAvatar" style="background:${col}">${ini}</div>
+        <div class="rvBody">
+          <div class="rvHeader"><span class="rvName">${name}</span><span class="rvDate">${ds}</span></div>
+          <div class="rvStars">${stars}</div>
+        </div>
+      </div>
+      <div style="margin:0 14px 16px;padding:12px 14px;background:var(--bg);border-radius:14px;border:1.5px solid var(--border);font-size:15px;color:var(--text);line-height:1.65;word-break:break-word;opacity:0.88;">${r.text}</div>
+    </div>`;
   }).join('');
 }
 // ── STAR INPUT ──
