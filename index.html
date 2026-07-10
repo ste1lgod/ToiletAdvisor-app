@@ -1149,7 +1149,8 @@ body.dark #toast{
   position:fixed;top:0;left:0;right:0;
   padding:calc(env(safe-area-inset-top,0px) + 8px) 12px 0;
   z-index:23;
-  display:flex;flex-direction:column;gap:0;
+  display:none; /* скрыт по умолчанию, управляется через _wizShowOverlay/_wizHideOverlay */
+  flex-direction:column;gap:0;
 }
 
 /* Единая карточка: поиск сверху, список снизу — одна белая карточка */
