@@ -2838,7 +2838,7 @@ async function submitReview(){
   if(!selectedToilet)return;
   const ta=document.getElementById('reviewText');
   const text=ta.value.replace(/\r\n/g,'\n').replace(/\r/g,'\n').trim();
-  if(!text||!reviewRating){showToast('Введите текст и поставьте оценку');return;}
+  if(!text||!reviewRating){showToast(t('toastEnterReview'));return;}
 
   // Оптимистичный ре-рендер — не ждём Firestore
   const optimistic={
