@@ -1135,8 +1135,16 @@ body.dark #toast{
 #wizPickOverlay{
   position:fixed;inset:0;z-index:22;
   pointer-events:none;
+  display:none; /* скрыт по умолчанию */
 }
-/* wizPickHeader и wizPickAddressBar управляются через JS (_wizShowOverlay/_wizHideOverlay) */
+#wizPickOverlay.active{
+  display:block;
+}
+/* Все дочерние кликабельные элементы */
+#wizPickOverlay.active #wizPickHeader,
+#wizPickOverlay.active #wizPickAddressBar{
+  pointer-events:auto;
+}
 
 /* ── Верхняя панель — единая карточка поиск+список ── */
 #wizPickHeader{
