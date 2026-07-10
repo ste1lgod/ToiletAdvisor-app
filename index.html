@@ -3767,7 +3767,15 @@ async function submitAddToiletModal(){
   try{
     await _loadFirebase();
     await db.collection('toilets').add(body);
-    closeOverlay('addOverlay');addCoords=null;await loadToilets();showToast('✅ Туалет добавлен!');switchTab('map');
+    closeOverlay('addOverlay');addCoords=null;await loadToilets();
+    showToast('Туалет добавлен!');
+    logAction({
+      type:'toilet',
+      category:'toilet',
+      action:'Добавил туалет',
+      detail:`"${body.title}" · [${body.lat.toFixed(5)}, ${body.lon.toFixed(5)}]`,
+    });
+    switchTab('map');
   }catch(e){showToast('Ошибка: '+e.message);console.error(e);}
 }
 
