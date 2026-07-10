@@ -3528,44 +3528,56 @@ document.querySelectorAll('.catChip').forEach(chip=>{
   });
 });
 
-// ── TOAST ──
 // ── TOAST TEST PANEL ──
+// SVG-иконки по категориям — никаких emoji, гарантированно работают везде
+const _TTI_SVG = {
+  success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  warn:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+  error:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+  info:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+};
+const _TTI_LABELS = { success:'Готово', warn:'Внимание', error:'Ошибка', info:'Инфо' };
+
 const TOAST_TEST_ITEMS = [
   // Успехи
-  { ico:'🎉', text:'Туалет добавлен!',                                               cat:'success' },
-  { ico:'💬', text:'Ваш отзыв добавлен!',                                            cat:'success' },
-  { ico:'👋', text:'Вы вошли в систему',                                             cat:'success' },
-  { ico:'🎊', text:'Регистрация успешна',                                            cat:'success' },
-  { ico:'⚙️', text:'Вы вошли как администратор',                                     cat:'success' },
-  { ico:'📶', text:'Подключение восстановлено',                                      cat:'success' },
-  { ico:'🗑️', text:'Отзыв удалён',                                                   cat:'success' },
+  { text:'Туалет добавлен!',                                                          cat:'success' },
+  { text:'Ваш отзыв добавлен!',                                                       cat:'success' },
+  { text:'Вы вошли в систему',                                                        cat:'success' },
+  { text:'Регистрация успешна',                                                       cat:'success' },
+  { text:'Вы вошли как администратор',                                                cat:'success' },
+  { text:'Подключение восстановлено',                                                 cat:'success' },
+  { text:'Отзыв удалён',                                                              cat:'success' },
   // Предупреждения
-  { ico:'✍️', text:'Введите текст и поставьте оценку',                               cat:'warn'    },
-  { ico:'📝', text:'Заполните все поля',                                             cat:'warn'    },
-  { ico:'🏷️', text:'Введите название туалета',                                       cat:'warn'    },
-  { ico:'🗺️', text:'Сначала укажите место на карте',                                 cat:'warn'    },
-  { ico:'📍', text:'Не выбрано место',                                               cat:'warn'    },
+  { text:'Введите текст и поставьте оценку',                                          cat:'warn'    },
+  { text:'Заполните все поля',                                                        cat:'warn'    },
+  { text:'Введите название туалета',                                                  cat:'warn'    },
+  { text:'Сначала укажите место на карте',                                            cat:'warn'    },
+  { text:'Не выбрано место',                                                          cat:'warn'    },
   // Ошибки
-  { ico:'�', text:'Пользователь не найден',                                         cat:'error'   },
-  { ico:'�', text:'Неверный пароль',                                                cat:'error'   },
-  { ico:'�', text:'Этот номер уже зарегистрирован',                                 cat:'error'   },
-  { ico:'�️', text:'Администратор не найден',                                        cat:'error'   },
-  { ico:'�', text:'Требуются права администратора',                                 cat:'error'   },
+  { text:'Пользователь не найден',                                                    cat:'error'   },
+  { text:'Неверный пароль',                                                           cat:'error'   },
+  { text:'Этот номер уже зарегистрирован',                                            cat:'error'   },
+  { text:'Администратор не найден',                                                   cat:'error'   },
+  { text:'Требуются права администратора',                                            cat:'error'   },
   // Инфо
-  { ico:'🌐', text:'Нет точек на карте',                                             cat:'info'    },
-  { ico:'�', text:'Геолокация недоступна',                                          cat:'info'    },
-  { ico:'☁️', text:'Отзыв сохранён локально — синхронизируется при восстановлении связи', cat:'info' },
-  { ico:'�', text:'Вы вышли из аккаунта',                                           cat:'info'    },
+  { text:'Нет точек на карте',                                                        cat:'info'    },
+  { text:'Геолокация недоступна',                                                     cat:'info'    },
+  { text:'Отзыв сохранён локально — синхронизируется при восстановлении связи',       cat:'info'    },
+  { text:'Вы вышли из аккаунта',                                                      cat:'info'    },
 ];
+
 function toggleToastTest(){
   const panel = document.getElementById('toastTestPanel');
   if(panel.classList.contains('hidden')){
     const list = document.getElementById('toastTestList');
-    list.innerHTML = TOAST_TEST_ITEMS.map((item,i)=>`
-      <div class="toastTestItem" onclick="showToast('${item.ico} ${item.text.replace(/'/g,"\\'")}')">
-        <span class="tti-ico">${item.ico}</span>
-        <span class="tti-text">${item.text}</span>
-        <span class="tti-cat ${item.cat}">${item.cat}</span>
+    const catMap = {success:'s', warn:'w', error:'e', info:'i'};
+    list.innerHTML = TOAST_TEST_ITEMS.map(item=>`
+      <div class="toastTestItem" onclick="showToast('${item.text.replace(/'/g,"\\'")}')">
+        <div class="tti-ico ${catMap[item.cat]}">${_TTI_SVG[item.cat]}</div>
+        <div class="tti-body">
+          <div class="tti-text">${item.text}</div>
+        </div>
+        <span class="tti-cat ${item.cat}">${_TTI_LABELS[item.cat]}</span>
       </div>`).join('');
     panel.classList.remove('hidden');
   } else {
