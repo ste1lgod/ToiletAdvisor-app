@@ -2767,7 +2767,6 @@ async function getReviews(id){
 function renderReviews(reviews){
   const c=document.getElementById('reviewsList');
   if(!reviews.length){c.innerHTML=`<p class="rvNoReviews">${t('noReviews')}</p>`;return;}
-  // Сортируем: старые сверху (первый комментарий — вверху)
   const sorted=[...reviews].sort((a,b)=>new Date(a.createdAt)-new Date(b.createdAt));
   c.innerHTML=sorted.map(r=>{
     const name=r.userPhone||r.userLogin||'Аноним';
