@@ -2986,7 +2986,6 @@ function toggleEye(id){
   if(isIOS){
     // iOS: меняем только CSS, не type — клавиатура остаётся
     i.classList.toggle('passVisible', show);
-    setTimeout(()=>i.focus(), 0);
   } else {
     // Десктоп/Android: меняем type — там клавиатура не исчезает
     i.type = show ? 'text' : 'password';
