@@ -2849,7 +2849,7 @@ async function submitReview(){
   const stars='★'.repeat(optimistic.rating)+'☆'.repeat(5-optimistic.rating);
   const d=new Date(optimistic.createdAt);
   const ds=`${d.getDate()} ${['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'][d.getMonth()]} ${d.getFullYear()}`;
-  const newCard=`<div class="rvItem" id="${optimistic.id}"><div class="rvAvatar" style="background:${col}">${ini}</div><div class="rvBody"><div class="rvHeader"><span class="rvName">${name}</span><span class="rvDate">${ds}</span></div><div class="rvStars">${stars}</div><div class="rvText">${text}</div></div></div>`;
+  const newCard=`<div class="rvItem" id="${optimistic.id}" style="flex-direction:column;gap:0;padding:0;overflow:hidden;"><div style="display:flex;align-items:flex-start;gap:14px;padding:16px 16px 12px;"><div class="rvAvatar" style="background:${col}">${ini}</div><div class="rvBody"><div class="rvHeader"><span class="rvName">${name}</span><span class="rvDate">${ds}</span></div><div class="rvStars">${stars}</div></div></div><div style="margin:0 16px 16px;font-size:15px;color:var(--text);line-height:1.65;word-break:break-word;opacity:0.88;">${text}</div></div>`;
   const listEl=document.getElementById('reviewsList');
   // Добавляем новый отзыв в конец (старые сверху, новые снизу)
   if(existingCount===0){
