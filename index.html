@@ -2979,14 +2979,15 @@ function toggleEye(id){
   const show=i.dataset.visible!=='true';
   i.dataset.visible=show?'true':'false';
 
-  const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
-  if(isIOS){
-    // iOS: меняем только CSS, не type — клавиатура остаётся
-    i.classList.toggle('passVisible', show);
-  } else {
-    // Десктоп/Android: меняем type — там клавиатура не исчезает
-    i.type = show ? 'text' : 'password';
-  }
+  // Трюк для iOS: фокус на временный input → меняем type → возвращаем фокус
+  // Клавиатура не закрывается потому что фокус не уходит в никуда
+  const tmp=document.createElement('input');
+  tmp.style.cssText='position:fixed;opacity:0;top:0;left:0;width:1px;height:1px;font-size:16px;';
+  document.body.appendChild(tmp);
+  tmp.focus();
+  i.type=show?'text':'password';
+  i.focus();
+  tmp.remove();
 
   if(!btn)return;
   btn.classList.toggle('open',show);
