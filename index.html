@@ -3058,7 +3058,7 @@ async function doAuth(){
       localStorage.setItem('ta_user',JSON.stringify(currentUser));
       closeOverlay('authOverlay');updateLoginBtn();resetReviewForm();
       showToast('Регистрация успешна');
-      logAction({ type:'auth', category:'auth', action:'Регистрация нового пользователя', detail:`Телефон: ${phone}` });
+      logAction({ type:'auth', category:'auth', action:t('logRegister'), detail:`${t('logUser')}: ${phone}` });
     }
   }catch(e){showToast('Ошибка: '+e.message);console.error(e);}
 }
