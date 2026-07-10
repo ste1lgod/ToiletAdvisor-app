@@ -1141,20 +1141,20 @@ body.dark .wizBtnPrev{
 
 /* Основная карточка уведомления */
 .toastItem{
-  display:flex;align-items:center;gap:14px;
-  padding:14px 16px 14px 14px;
+  display:flex;align-items:center;gap:12px;
+  padding:14px 14px 14px 20px;
   /* Glassmorphism: тёмное полупрозрачное стекло */
-  background:rgba(26,27,38,0.82);
+  background:rgba(26,27,38,0.88);
   backdrop-filter:saturate(180%) blur(40px);
   -webkit-backdrop-filter:saturate(180%) blur(40px);
-  border:1px solid rgba(255,255,255,0.10);
+  border:1px solid rgba(255,255,255,0.11);
   border-radius:20px;
   font-family:var(--font);
   /* Глубокая тень — как у уведомлений iOS */
   box-shadow:
-    0 20px 60px rgba(0,0,0,0.36),
-    0 4px 16px rgba(0,0,0,0.22),
-    inset 0 1px 0 rgba(255,255,255,0.07);
+    0 20px 60px rgba(0,0,0,0.40),
+    0 4px 16px rgba(0,0,0,0.24),
+    inset 0 1px 0 rgba(255,255,255,0.08);
   pointer-events:auto;
   overflow:hidden;
   position:relative;
@@ -1163,7 +1163,6 @@ body.dark .wizBtnPrev{
   transition:
     opacity .38s cubic-bezier(.32,1,.46,1),
     transform .38s cubic-bezier(.32,1,.46,1);
-  /* Цветная полоса слева */
 }
 /* Цветная левая полоса — через pseudo-элемент */
 .toastItem::before{
