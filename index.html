@@ -541,11 +541,15 @@ body.dark #authNotice{background:#0a2e1c;border-color:#166534;color:#4ade80;}
   background:var(--bg);
   color:var(--text);
   font-size:14px;
-  resize:none;min-height:88px;
+  resize:none;
+  min-height:88px;
+  max-height:320px;
+  field-sizing:content;
   font-family:var(--font);
   outline:none;
   transition:border-color .2s;
   line-height:1.5;
+  overflow-y:auto;
 }
 body.dark #reviewText{background:#1a2133;border-color:#252d40;}
 #reviewText:focus{border-color:var(--green);}
