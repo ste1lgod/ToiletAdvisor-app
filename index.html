@@ -3019,7 +3019,8 @@ async function doAdminLogin(){
     localStorage.setItem('ta_user',JSON.stringify(currentUser));
     closeOverlay('adminOverlay');
     updateLoginBtn();
-    showToast('✓ Вы вошли как администратор');
+    showToast('Вы вошли как администратор');
+    logAction({ type:'admin', category:'admin', action:'Вход администратора', detail:`Логин: ${login}` });
     setTimeout(()=>switchTab('add'),200);
   }catch(e){
     showToast('Ошибка: '+e.message);
