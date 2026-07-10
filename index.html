@@ -3082,7 +3082,7 @@ async function doAdminLogin(){
     if(snap.empty){showToast(t('toastAdminNotFound'));return;}
     const userDoc=snap.docs[0];
     const userData=userDoc.data();
-    if(userData.passwordHash!==passHash){showToast('Неверный пароль');return;}
+    if(userData.passwordHash!==passHash){showToast(t('toastWrongPass'));return;}
     currentUser={id:userDoc.id,login:userData.login,role:'admin'};
     localStorage.setItem('ta_user',JSON.stringify(currentUser));
     closeOverlay('adminOverlay');
