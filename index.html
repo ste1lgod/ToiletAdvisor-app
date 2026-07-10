@@ -4032,9 +4032,18 @@ function showToast(msg){
 }
 
 function _removeToast(el){
-  el.classList.remove('show');
-  el.classList.add('hide');
-  setTimeout(()=>{ if(el.parentNode) el.parentNode.removeChild(el); }, 1000);
+  // Сбрасываем любые inline-стили от свайпа чтобы CSS-анимация .hide работала чисто
+  el.style.transition = '';
+  el.style.transform = '';
+  el.style.opacity = '';
+  // Небольшая задержка чтобы браузер применил сброс до добавления класса
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      el.classList.remove('show');
+      el.classList.add('hide');
+      setTimeout(()=>{ if(el.parentNode) el.parentNode.removeChild(el); }, 1000);
+    });
+  });
 }
 
 // ── OFFLINE BANNER ──
