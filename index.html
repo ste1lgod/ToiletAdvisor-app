@@ -2948,28 +2948,55 @@ function wizGoStep(step){
 
 function wizFillConfirm(){
   const coords = wizCoords ? `${wizCoords[0].toFixed(5)}, ${wizCoords[1].toFixed(5)}` : '—';
-  // Адресная строка заголовка — берём текст из адресной плашки если есть
+
+  // Название
+  const title = document.getElementById('wizTitle').value.trim();
+  const titleEl = document.getElementById('wizPreviewTitle');
+  if(titleEl) titleEl.textContent = title || '—';
+
+  // Адрес — берём из адресной плашки, координаты как фоллбэк
   const addrMain = document.getElementById('wizPickAddressMain');
-  const addrText = (addrMain && addrMain.textContent && addrMain.textContent !== 'Определяю адрес...' && addrMain.textContent !== '...')
+  const addrText = (addrMain && addrMain.textContent &&
+    addrMain.textContent !== 'Определяю адрес...' &&
+    addrMain.textContent !== '...' &&
+    addrMain.textContent !== 'Перемещаю...')
     ? addrMain.textContent : coords;
-  const addrEl = document.getElementById('wizConfirmAddr');
+  const addrEl = document.getElementById('wizPreviewAddrText');
   if(addrEl) addrEl.textContent = addrText;
-  // Координаты в строке карточки
-  const coordsEl = document.getElementById('wizConfCoords');
-  if(coordsEl) coordsEl.textContent = coords;
-  document.getElementById('wizConfTitle').textContent = document.getElementById('wizTitle').value.trim();
+
+  // Теги — пилы в стиле шторки
+  const pillsEl = document.getElementById('wizPreviewPills');
+  if(pillsEl){
+    pillsEl.innerHTML = '';
+    const tags = {};
+    document.querySelectorAll('.tagToggle').forEach(el=>{ tags[el.dataset.tag]=el.classList.contains('on'); });
+
+    // Статус открыт/закрыт
+    const openSpan = document.createElement('span');
+    openSpan.className = 'mPill ' + (tags.isOpen ? 'pGreen' : 'pRed');
+    openSpan.textContent = tags.isOpen ? '🟢 Открыто' : '🔴 Закрыто';
+    pillsEl.appendChild(openSpan);
+
+    // Цена
+    const freeSpan = document.createElement('span');
+    freeSpan.className = 'mPill ' + (tags.isFree ? 'pGreen2' : 'pBlue');
+    freeSpan.textContent = tags.isFree ? '🆓 Бесплатно' : '💳 Платно';
+    pillsEl.appendChild(freeSpan);
+
+    // Остальные теги
+    if(tags.hasSoap){ const s=document.createElement('span'); s.className='mPill pBlue'; s.textContent='🧼 Мыло'; pillsEl.appendChild(s); }
+    if(tags.hasPaper){ const s=document.createElement('span'); s.className='mPill pBlue'; s.textContent='🧻 Бумага'; pillsEl.appendChild(s); }
+    if(tags.isAccessible){ const s=document.createElement('span'); s.className='mPill pBlue'; s.textContent='♿ Доступно'; pillsEl.appendChild(s); }
+    if(tags.isTaharatkhana){ const s=document.createElement('span'); s.className='mPill'; s.style.background='#fef3c7'; s.style.color='#92400e'; s.textContent='🕌 Тахаратхана'; pillsEl.appendChild(s); }
+  }
+
+  // Описание
   const desc = document.getElementById('wizDesc').value.trim();
-  document.getElementById('wizConfDesc').textContent = desc;
-  document.getElementById('wizConfDescRow').style.display = desc ? '' : 'none';
-  const tagsEl = document.getElementById('wizConfTags');
-  tagsEl.innerHTML = '';
-  const tagLabels = {isFree:'🆓 Бесплатно', isOpen:'🟢 Открыто', hasSoap:'🧼 Мыло', hasPaper:'🧻 Бумага', isAccessible:'♿ Доступно', isTaharatkhana:'🕌 Тахаратхана'};
-  document.querySelectorAll('.tagToggle.on').forEach(el=>{
-    const span = document.createElement('span');
-    span.className = 'wizConfirmTag';
-    span.textContent = tagLabels[el.dataset.tag] || el.dataset.tag;
-    tagsEl.appendChild(span);
-  });
+  const descEl = document.getElementById('wizPreviewDesc');
+  if(descEl){
+    if(desc){ descEl.textContent = desc; descEl.classList.remove('hidden'); }
+    else { descEl.classList.add('hidden'); }
+  }
 }
 
 function wizToggleTag(el){el.classList.toggle('on');}
