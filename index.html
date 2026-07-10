@@ -3640,9 +3640,11 @@ function _detectToastType(m){
 }
 
 function showToast(msg){
-  const type  = _detectToastType(msg.toLowerCase());
+  // Убираем технические префиксы из текста (✓ ✅ ⏳ → они были для старого стиля)
+  const cleanMsg = msg.replace(/^[✓✅⏳➕]\s*/,'').trim();
+  const type  = _detectToastType(cleanMsg.toLowerCase());
   const label = TOAST_TYPES[type].label;
-  const icon  = _getToastIcon(msg, type);
+  const icon  = _getToastIcon(cleanMsg, type);
 
   const container = document.getElementById('toastContainer');
   const el = document.createElement('div');
@@ -3651,7 +3653,10 @@ function showToast(msg){
     <div class="toastItem-ico">${icon}</div>
     <div class="toastItem-body">
       <div class="toastItem-label">${label}</div>
-      <div class="toastItem-text">${msg}</div>
+      <div class="toastItem-text">${cleanMsg}</div>
+    </div>
+    <div class="toastItem-close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </div>`;
   container.appendChild(el);
 
@@ -3659,13 +3664,19 @@ function showToast(msg){
 
   const timer = setTimeout(()=>_removeToast(el), TOAST_DURATION);
   el._timer = timer;
+  // Клик по крестику или по самому тосту — закрыть
+  el.querySelector('.toastItem-close').addEventListener('click', e=>{
+    e.stopPropagation();
+    clearTimeout(el._timer);
+    _removeToast(el);
+  });
   el.addEventListener('click', ()=>{ clearTimeout(el._timer); _removeToast(el); });
 }
 
 function _removeToast(el){
   el.classList.remove('show');
   el.classList.add('hide');
-  setTimeout(()=>{ if(el.parentNode) el.parentNode.removeChild(el); }, 220);
+  setTimeout(()=>{ if(el.parentNode) el.parentNode.removeChild(el); }, 240);
 }
 
 // ── OFFLINE BANNER ──
