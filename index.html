@@ -3104,7 +3104,7 @@ function doLogout(){
   const role = currentUser?.role || 'user';
   logAction({ type:'auth', category:'auth', action:t('logLogout'), detail:`${role === 'admin' ? t('logAdmin') : t('logUser')}: ${who}` });
   currentUser=null;localStorage.removeItem('ta_user');
-  updateLoginBtn();switchTab('map');showToast('Вы вышли из аккаунта');
+  updateLoginBtn();switchTab('map');showToast(t('toastLogout'));
 }
 </script>
 
