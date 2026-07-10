@@ -1129,25 +1129,65 @@ body.dark .wizBtnPrev{
 }
 #offlineBanner svg{flex-shrink:0;opacity:.9;}
 
-/* ===== TOAST — glassmorphic pill ===== */
-#toast{
+/* ===== TOAST — стек сверху, iOS-стиль ===== */
+#toastContainer{
   position:fixed;
-  bottom:calc(var(--nav-offset) + 16px);
-  left:50%;transform:translateX(-50%) translateY(16px);
-  background:rgba(20,20,30,0.75);
-  backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
-  border:1px solid rgba(255,255,255,0.12);
-  color:#fff;padding:11px 22px;border-radius:30px;
-  font-size:13px;font-weight:600;white-space:nowrap;
-  opacity:0;transition:opacity .3s,transform .3s;
-  z-index:100;pointer-events:none;font-family:var(--font);
-  box-shadow:0 4px 24px rgba(0,0,0,0.25);
+  top:calc(env(safe-area-inset-top,0px) + 12px);
+  left:12px;right:12px;
+  z-index:9500;
+  display:flex;flex-direction:column;gap:8px;
+  pointer-events:none;
+  align-items:center;
 }
-#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-body.dark #toast{
-  background:rgba(240,245,255,0.18);
-  border-color:rgba(255,255,255,0.18);
+.toastItem{
+  display:flex;align-items:center;gap:10px;
+  padding:13px 18px;
+  background:rgba(30,30,40,0.82);
+  backdrop-filter:blur(28px);
+  -webkit-backdrop-filter:blur(28px);
+  border:1px solid rgba(255,255,255,0.14);
+  border-radius:16px;
+  font-size:14px;font-weight:600;
+  color:#fff;
+  font-family:var(--font);
+  box-shadow:0 8px 32px rgba(0,0,0,0.28),0 2px 8px rgba(0,0,0,0.18);
+  pointer-events:auto;
+  max-width:360px;
+  width:100%;
+  /* Анимация — падает сверху */
+  opacity:0;
+  transform:translateY(-16px) scale(0.96);
+  transition:opacity .28s cubic-bezier(.32,1,.46,1),
+             transform .28s cubic-bezier(.32,1,.46,1);
+}
+.toastItem.show{
+  opacity:1;
+  transform:translateY(0) scale(1);
+}
+.toastItem.hide{
+  opacity:0;
+  transform:translateY(-10px) scale(0.95);
+  transition:opacity .22s ease,transform .22s ease;
+}
+.toastItem-ico{
+  font-size:18px;
+  flex-shrink:0;
+  line-height:1;
+}
+.toastItem-text{
+  flex:1;
+  line-height:1.4;
+  word-break:break-word;
+  white-space:normal;
+}
+/* Цветная полоска слева по типу */
+.toastItem.t-success{ border-left:3px solid #22c55e; }
+.toastItem.t-error  { border-left:3px solid #ef4444; }
+.toastItem.t-warn   { border-left:3px solid #f59e0b; }
+.toastItem.t-info   { border-left:3px solid #60a5fa; }
+body.dark .toastItem{
+  background:rgba(15,18,30,0.88);
+  border-color:rgba(255,255,255,0.12);
 }
 
 /* ===== TOAST TEST PANEL ===== */
