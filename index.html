@@ -2684,23 +2684,27 @@ async function openSheet(toilet){
   fp.className='mPill '+(toilet.isFree?'pGreen2':'pBlue');
   document.getElementById('taharatBlock').classList.toggle('hidden',!toilet.isTaharatkhana);
   const bads=[];
-  if(toilet.hasSoap)bads.push('🧼 Мыло');
-  if(toilet.hasPaper)bads.push('🧻 Бумага');
-  if(toilet.isAccessible)bads.push('♿ Доступность');
-  // Добавляем доп. теги прямо в #sPills чтобы не было лишнего отступа между строками
+  // Для тахаратханы мыло уже показано в блоке тахаратханы — не дублируем
+  if(toilet.hasSoap && !toilet.isTaharatkhana)bads.push({emoji:'🧼',key:'soap'});
+  if(toilet.hasPaper)bads.push({emoji:'🧻',key:'paper'});
+  if(toilet.isAccessible)bads.push({emoji:'♿',key:'accessible'});
   document.getElementById('sBadges').innerHTML='';
   const pillsEl=document.getElementById('sPills');
-  // Убираем старые доп. теги из sPills (если были)
   pillsEl.querySelectorAll('.sBadge').forEach(el=>el.remove());
   bads.forEach(b=>{
     const s=document.createElement('span');
     s.className='sBadge';
-    s.textContent=b;
+    s.textContent=b.emoji+' '+t(b.key);
     pillsEl.appendChild(s);
   });
   const desc=document.getElementById('sDesc');
-  desc.textContent=toilet.description||'';
-  desc.style.display=toilet.description?'block':'none';
+  // Для тахаратханы описание уже есть в блоке тахаратханы — скрываем дублирующее
+  if(toilet.isTaharatkhana){
+    desc.style.display='none';
+  } else {
+    desc.textContent=toilet.description||'';
+    desc.style.display=toilet.description?'block':'none';
+  }
 
   // Сначала показываем шторку — моментально
   document.getElementById('sRatingVal').textContent='—';
