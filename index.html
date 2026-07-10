@@ -2831,16 +2831,14 @@ let wizCurrentStep = 1;
 let wizPickMode = false;
 let _wizGeocodeTimer = null;
 
-// Явное управление видимостью оверлея — надёжно работает с position:fixed дочерними элементами
+// Управление оверлеем через класс .active — display:none на родителе скрывает всё включая position:fixed детей
 function _wizShowOverlay(){
-  document.getElementById('wizPickOverlay').classList.remove('hidden');
-  const h = document.getElementById('wizPickHeader');
-  if(h){ h.style.display='flex'; h.style.pointerEvents='auto'; }
+  const ov = document.getElementById('wizPickOverlay');
+  if(ov){ ov.classList.remove('hidden'); ov.classList.add('active'); }
 }
 function _wizHideOverlay(){
-  document.getElementById('wizPickOverlay').classList.add('hidden');
-  const h = document.getElementById('wizPickHeader');
-  if(h){ h.style.display='none'; h.style.pointerEvents='none'; }
+  const ov = document.getElementById('wizPickOverlay');
+  if(ov){ ov.classList.add('hidden'); ov.classList.remove('active'); }
   wizHideSuggest();
 }
 let _wizLastGeocodeCoords = null;
