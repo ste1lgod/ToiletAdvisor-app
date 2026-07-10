@@ -2809,7 +2809,7 @@ async function submitReview(){
   if(!currentUser){openAuthModal();return;}
   if(!selectedToilet)return;
   const ta=document.getElementById('reviewText');
-  const text=ta.value.trim();
+  const text=ta.value.replace(/\r\n/g,'\n').replace(/\r/g,'\n').trim();
   if(!text||!reviewRating){showToast('Введите текст и поставьте оценку');return;}
 
   // Оптимистичный ре-рендер — не ждём Firestore
