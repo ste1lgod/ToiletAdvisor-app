@@ -1128,90 +1128,126 @@ body.dark .wizBtnPrev{
 }
 #offlineBanner svg{flex-shrink:0;opacity:.9;}
 
-/* ===== TOAST — стек сверху, iOS glassmorphism ===== */
+/* ===== TOAST — iOS glassmorphism, стек сверху ===== */
 #toastContainer{
   position:fixed;
-  top:calc(env(safe-area-inset-top,0px) + 14px);
-  left:12px;right:12px;
+  top:calc(env(safe-area-inset-top,0px) + 12px);
+  left:10px;right:10px;
   z-index:9500;
-  display:flex;flex-direction:column;gap:10px;
+  display:flex;flex-direction:column;gap:8px;
   pointer-events:none;
-  align-items:center;
+  align-items:stretch;
 }
+
+/* Основная карточка уведомления */
 .toastItem{
-  display:flex;align-items:flex-start;gap:12px;
-  padding:14px 16px;
-  background:rgba(28,28,36,0.78);
-  backdrop-filter:saturate(180%) blur(32px);
-  -webkit-backdrop-filter:saturate(180%) blur(32px);
-  border:1px solid rgba(255,255,255,0.13);
-  border-radius:18px;
-  font-size:14px;font-weight:500;
-  color:rgba(255,255,255,0.95);
+  display:flex;align-items:center;gap:14px;
+  padding:14px 16px 14px 14px;
+  /* Glassmorphism: тёмное полупрозрачное стекло */
+  background:rgba(26,27,38,0.82);
+  backdrop-filter:saturate(180%) blur(40px);
+  -webkit-backdrop-filter:saturate(180%) blur(40px);
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:20px;
   font-family:var(--font);
-  box-shadow:0 10px 40px rgba(0,0,0,0.32),0 2px 8px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.08);
+  /* Глубокая тень — как у уведомлений iOS */
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.36),
+    0 4px 16px rgba(0,0,0,0.22),
+    inset 0 1px 0 rgba(255,255,255,0.07);
   pointer-events:auto;
-  max-width:380px;
-  width:100%;
+  overflow:hidden;
+  position:relative;
   opacity:0;
-  transform:translateY(-20px) scale(0.94);
-  transition:opacity .3s cubic-bezier(.32,1,.46,1),
-             transform .3s cubic-bezier(.32,1,.46,1);
+  transform:translateY(-28px) scale(0.92);
+  transition:
+    opacity .38s cubic-bezier(.32,1,.46,1),
+    transform .38s cubic-bezier(.32,1,.46,1);
+  /* Цветная полоса слева */
 }
+/* Цветная левая полоса — через pseudo-элемент */
+.toastItem::before{
+  content:'';
+  position:absolute;
+  left:0;top:8px;bottom:8px;
+  width:3px;
+  border-radius:0 3px 3px 0;
+}
+.t-success::before{ background:linear-gradient(180deg,#4ade80,#22c55e); }
+.t-error::before  { background:linear-gradient(180deg,#f87171,#ef4444); }
+.t-warn::before   { background:linear-gradient(180deg,#fbbf24,#f59e0b); }
+.t-info::before   { background:linear-gradient(180deg,#93c5fd,#3b82f6); }
+
 .toastItem.show{
   opacity:1;
   transform:translateY(0) scale(1);
 }
 .toastItem.hide{
   opacity:0;
-  transform:translateY(-12px) scale(0.94);
-  transition:opacity .2s ease,transform .2s ease;
+  transform:translateY(-14px) scale(0.94);
+  transition:opacity .22s ease,transform .22s ease;
 }
-/* Иконка в цветном кружке */
+
+/* Иконка — цветной кружок */
 .toastItem-ico{
-  width:32px;height:32px;
+  width:36px;height:36px;min-width:36px;
   border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   flex-shrink:0;
-  margin-top:1px;
+  /* Тонкое внутреннее кольцо */
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.15);
 }
 .toastItem-ico svg{
-  width:16px;height:16px;
-  stroke-width:2.5;
+  width:18px;height:18px;
+  stroke-width:2.2;
+  fill:none;
+  stroke-linecap:round;
+  stroke-linejoin:round;
 }
-.t-success .toastItem-ico{ background:rgba(34,197,94,0.22);  color:#4ade80; }
-.t-error   .toastItem-ico{ background:rgba(239,68,68,0.22);  color:#f87171; }
-.t-warn    .toastItem-ico{ background:rgba(245,158,11,0.22); color:#fbbf24; }
-.t-info    .toastItem-ico{ background:rgba(96,165,250,0.22); color:#93c5fd; }
-/* Правая часть */
+.t-success .toastItem-ico{ background:rgba(34,197,94,0.25);  color:#4ade80; }
+.t-error   .toastItem-ico{ background:rgba(239,68,68,0.25);  color:#f87171; }
+.t-warn    .toastItem-ico{ background:rgba(245,158,11,0.25); color:#fbbf24; }
+.t-info    .toastItem-ico{ background:rgba(96,165,250,0.25); color:#93c5fd; }
+
+/* Текстовая часть */
 .toastItem-body{
   flex:1;min-width:0;
-  display:flex;flex-direction:column;gap:2px;
+  display:flex;flex-direction:column;gap:3px;
 }
 .toastItem-label{
   font-size:11px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.6px;
-  opacity:.55;
+  text-transform:uppercase;letter-spacing:.7px;
   line-height:1;
 }
-.t-success .toastItem-label{ color:#86efac; }
-.t-error   .toastItem-label{ color:#fca5a5; }
-.t-warn    .toastItem-label{ color:#fde68a; }
-.t-info    .toastItem-label{ color:#93c5fd; }
+.t-success .toastItem-label{ color:rgba(134,239,172,0.75); }
+.t-error   .toastItem-label{ color:rgba(252,165,165,0.75); }
+.t-warn    .toastItem-label{ color:rgba(253,230,138,0.75); }
+.t-info    .toastItem-label{ color:rgba(147,197,253,0.75); }
+
 .toastItem-text{
   font-size:14px;font-weight:500;
   line-height:1.45;
   word-break:break-word;
   white-space:normal;
-  color:rgba(255,255,255,0.92);
+  color:rgba(255,255,255,0.93);
+  letter-spacing:-.1px;
 }
-/* Тонкая цветная линия снизу */
-.t-success{ border-bottom:2px solid rgba(34,197,94,0.5);  }
-.t-error  { border-bottom:2px solid rgba(239,68,68,0.5);  }
-.t-warn   { border-bottom:2px solid rgba(245,158,11,0.5); }
-.t-info   { border-bottom:2px solid rgba(96,165,250,0.5); }
 
-/* ===== TOAST TEST PANEL ===== */
+/* Кнопка-крестик (закрыть) */
+.toastItem-close{
+  width:24px;height:24px;min-width:24px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.08);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  cursor:pointer;
+  color:rgba(255,255,255,0.4);
+  transition:background .15s,color .15s;
+}
+.toastItem-close:hover{ background:rgba(255,255,255,0.14); color:rgba(255,255,255,0.7); }
+.toastItem-close svg{ width:10px;height:10px;stroke-width:3; }
+
+/* ===== TOAST TEST BUTTON ===== */
 #toastTestBtn{
   position:fixed;
   bottom:calc(var(--nav-offset) + 80px);
@@ -1226,99 +1262,122 @@ body.dark .wizBtnPrev{
   box-shadow:var(--sh-float);
   display:flex;align-items:center;justify-content:center;
   cursor:pointer;
-  transition:transform .15s;
+  transition:transform .15s,opacity .15s;
   user-select:none;
 }
 body.dark #toastTestBtn{border-color:rgba(255,255,255,0.15);}
-#toastTestBtn:active{transform:scale(.88);}
+#toastTestBtn:active{transform:scale(.88);opacity:.8;}
 #toastTestBtn svg{width:20px;height:20px;stroke:var(--text);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 
+/* ===== TOAST TEST PANEL — iOS glassmorphism ===== */
 #toastTestPanel{
   position:fixed;
   bottom:calc(var(--nav-offset) + 136px);
   right:12px;
   z-index:9000;
-  width:300px;
-  background:rgba(255,255,255,0.72);
-  backdrop-filter:saturate(180%) blur(28px);
-  -webkit-backdrop-filter:saturate(180%) blur(28px);
-  border-radius:22px;
-  border:1px solid rgba(255,255,255,0.6);
-  box-shadow:0 20px 60px rgba(0,0,0,0.16),0 4px 16px rgba(0,0,0,0.08);
+  width:320px;
+  background:rgba(255,255,255,0.76);
+  backdrop-filter:saturate(200%) blur(36px);
+  -webkit-backdrop-filter:saturate(200%) blur(36px);
+  border-radius:24px;
+  border:1px solid rgba(255,255,255,0.7);
+  box-shadow:
+    0 24px 64px rgba(0,0,0,0.18),
+    0 4px 16px rgba(0,0,0,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.9);
   overflow:hidden;
 }
 body.dark #toastTestPanel{
-  background:rgba(20,22,34,0.82);
-  border-color:rgba(255,255,255,0.1);
-  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+  background:rgba(22,24,38,0.86);
+  border-color:rgba(255,255,255,0.10);
+  box-shadow:
+    0 24px 64px rgba(0,0,0,0.55),
+    0 4px 16px rgba(0,0,0,0.3);
 }
+
 #toastTestHeader{
   display:flex;align-items:center;justify-content:space-between;
   padding:14px 16px 12px;
   font-size:14px;font-weight:700;color:var(--text);
-  border-bottom:1px solid rgba(0,0,0,0.06);
+  border-bottom:1px solid rgba(0,0,0,0.07);
+  letter-spacing:-.2px;
 }
-body.dark #toastTestHeader{border-bottom-color:rgba(255,255,255,0.07);}
+body.dark #toastTestHeader{border-bottom-color:rgba(255,255,255,0.08);}
+
 #toastTestHeader span{letter-spacing:-.2px;}
+
 #toastTestHeader button{
-  background:rgba(0,0,0,0.06);border:none;cursor:pointer;
+  width:28px;height:28px;
+  background:rgba(0,0,0,0.07);
+  border:none;cursor:pointer;
   font-size:13px;color:var(--text2);
-  padding:4px 8px;border-radius:8px;
-  font-weight:600;font-family:var(--font);
+  border-radius:50%;
+  font-weight:700;font-family:var(--font);
+  display:flex;align-items:center;justify-content:center;
   transition:background .15s;
 }
-body.dark #toastTestHeader button{background:rgba(255,255,255,0.08);}
-#toastTestHeader button:active{background:rgba(0,0,0,0.12);}
+body.dark #toastTestHeader button{background:rgba(255,255,255,0.10);color:var(--text);}
+#toastTestHeader button:active{background:rgba(0,0,0,0.14);}
+
 #toastTestList{
-  padding:6px 0;
-  max-height:340px;
+  padding:4px 0 6px;
+  max-height:360px;
   overflow-y:auto;
 }
+
 .toastTestItem{
-  padding:11px 14px;
+  padding:10px 14px;
   cursor:pointer;
   display:flex;align-items:center;gap:10px;
   transition:background .1s;
-  border-bottom:1px solid rgba(0,0,0,0.04);
+  border-bottom:1px solid rgba(0,0,0,0.05);
   -webkit-tap-highlight-color:transparent;
 }
 body.dark .toastTestItem{border-bottom-color:rgba(255,255,255,0.05);}
 .toastTestItem:last-child{border-bottom:none;}
-.toastTestItem:active{background:rgba(0,0,0,0.05);}
+.toastTestItem:active{background:rgba(0,0,0,0.06);}
 body.dark .toastTestItem:active{background:rgba(255,255,255,0.06);}
-/* Иконка-кружок в тест-панели */
+
+/* Иконка-кружок в тест-панели — SVG */
 .tti-ico{
-  width:30px;height:30px;border-radius:50%;
+  width:32px;height:32px;min-width:32px;
+  border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   flex-shrink:0;
 }
-.tti-ico svg{width:14px;height:14px;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round;}
-.tti-ico.s{background:rgba(34,197,94,0.15); color:#16a34a;}
-.tti-ico.e{background:rgba(239,68,68,0.15);  color:#dc2626;}
-.tti-ico.w{background:rgba(245,158,11,0.15); color:#d97706;}
-.tti-ico.i{background:rgba(96,165,250,0.15); color:#2563eb;}
-body.dark .tti-ico.s{background:rgba(34,197,94,0.18); color:#4ade80;}
-body.dark .tti-ico.e{background:rgba(239,68,68,0.18);  color:#f87171;}
-body.dark .tti-ico.w{background:rgba(245,158,11,0.18); color:#fbbf24;}
-body.dark .tti-ico.i{background:rgba(96,165,250,0.18); color:#93c5fd;}
+.tti-ico svg{
+  width:14px;height:14px;
+  stroke-width:2.5;fill:none;
+  stroke-linecap:round;stroke-linejoin:round;
+}
+.tti-ico.s{ background:rgba(34,197,94,0.14);  color:#16a34a; }
+.tti-ico.e{ background:rgba(239,68,68,0.14);   color:#dc2626; }
+.tti-ico.w{ background:rgba(245,158,11,0.14);  color:#d97706; }
+.tti-ico.i{ background:rgba(96,165,250,0.14);  color:#2563eb; }
+body.dark .tti-ico.s{ background:rgba(34,197,94,0.18);  color:#4ade80; }
+body.dark .tti-ico.e{ background:rgba(239,68,68,0.18);  color:#f87171; }
+body.dark .tti-ico.w{ background:rgba(245,158,11,0.18); color:#fbbf24; }
+body.dark .tti-ico.i{ background:rgba(96,165,250,0.18); color:#93c5fd; }
+
 .tti-body{flex:1;min-width:0;}
 .tti-text{
   font-size:13px;font-weight:500;color:var(--text);
   line-height:1.35;word-break:break-word;white-space:normal;
 }
+
 .tti-cat{
   font-size:10px;font-weight:700;
-  padding:2px 8px;border-radius:10px;
+  padding:3px 9px;border-radius:20px;
   flex-shrink:0;letter-spacing:.2px;text-transform:uppercase;
 }
-.tti-cat.success{background:rgba(34,197,94,0.12);color:#166534;}
-.tti-cat.error  {background:rgba(239,68,68,0.12);color:#b91c1c;}
-.tti-cat.info   {background:rgba(96,165,250,0.12);color:#1d4ed8;}
-.tti-cat.warn   {background:rgba(245,158,11,0.12);color:#92400e;}
-body.dark .tti-cat.success{background:rgba(34,197,94,0.18);color:#4ade80;}
-body.dark .tti-cat.error  {background:rgba(239,68,68,0.18);color:#fca5a5;}
-body.dark .tti-cat.info   {background:rgba(96,165,250,0.18);color:#93c5fd;}
-body.dark .tti-cat.warn   {background:rgba(245,158,11,0.18);color:#fde68a;}
+.tti-cat.success{ background:rgba(34,197,94,0.12);  color:#166534; }
+.tti-cat.error  { background:rgba(239,68,68,0.12);  color:#b91c1c; }
+.tti-cat.info   { background:rgba(96,165,250,0.12); color:#1d4ed8; }
+.tti-cat.warn   { background:rgba(245,158,11,0.12); color:#92400e; }
+body.dark .tti-cat.success{ background:rgba(34,197,94,0.18);  color:#4ade80; }
+body.dark .tti-cat.error  { background:rgba(239,68,68,0.18);  color:#fca5a5; }
+body.dark .tti-cat.info   { background:rgba(96,165,250,0.18); color:#93c5fd; }
+body.dark .tti-cat.warn   { background:rgba(245,158,11,0.18); color:#fde68a; }
 #wizPickOverlay{
   position:fixed;inset:0;z-index:22;
   pointer-events:none;
