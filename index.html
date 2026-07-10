@@ -3033,11 +3033,7 @@ function setAuthTab(tab){
 async function doAuth(){
   const phone='+998'+document.getElementById('authPhone').value.trim().replace(/\D/g,'');
   const pass=document.getElementById('authPass').value.trim();
-  if(!phone||!pass){showToast('Заполните все поля');return;}
-  try{
-    await _loadFirebase();
-    const passHash=await hashPassword(pass);
-    if(authTab==='login'){
+  if(!phone||!pass){showToast(t('toastFillAll'));return;}
       // Найти пользователя по номеру
       const snap=await db.collection('users').where('phone','==',phone).limit(1).get();
       if(snap.empty){showToast('Пользователь не найден');return;}
