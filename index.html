@@ -3459,11 +3459,50 @@ function toggleToastTest(){
   }
 }
 
-let toastTimer;
+// ── TOAST STACK ──
+const _toastStack = [];
+const TOAST_DURATION = 4000; // мс на экране
+
 function showToast(msg){
-  const el=document.getElementById('toast');
-  el.textContent=msg;el.classList.add('show');
-  clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2800);
+  // Определяем тип по содержимому
+  let type = 'info', ico = 'ℹ️';
+  const m = msg.toLowerCase();
+  if(m.includes('✅') || m.includes('✓') || m.includes('добавлен') || m.includes('успеш') || m.includes('восстановл') || m.includes('удалён') || m.includes('вошли')){
+    type = 'success'; ico = '';
+  } else if(m.includes('ошибка') || m.includes('неверн') || m.includes('не найден') || m.includes('не зарегист') || m.includes('права')){
+    type = 'error'; ico = '';
+  } else if(m.includes('введите') || m.includes('заполните') || m.includes('укажите') || m.includes('выберите')){
+    type = 'warn'; ico = '';
+  } else if(m.includes('геолокац') || m.includes('нет точек') || m.includes('сохранён локально') || m.includes('вышли')){
+    type = 'info'; ico = '';
+  }
+
+  // Иконка уже может быть в тексте — не дублируем
+  const hasEmoji = /[\u{1F300}-\u{1FFFF}]|[\u2600-\u27BF]/u.test(msg.slice(0,3));
+  const icoHtml = hasEmoji ? '' : `<span class="toastItem-ico">${ico}</span>`;
+  const cleanMsg = hasEmoji ? msg : msg;
+
+  const container = document.getElementById('toastContainer');
+  const el = document.createElement('div');
+  el.className = `toastItem t-${type}`;
+  el.innerHTML = `${icoHtml}<span class="toastItem-text">${cleanMsg}</span>`;
+  container.appendChild(el);
+
+  // Появление
+  requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ el.classList.add('show'); }); });
+
+  // Автоскрытие
+  const timer = setTimeout(()=>_removeToast(el), TOAST_DURATION);
+  el._timer = timer;
+
+  // Тап — скрывает досрочно
+  el.addEventListener('click', ()=>{ clearTimeout(el._timer); _removeToast(el); });
+}
+
+function _removeToast(el){
+  el.classList.remove('show');
+  el.classList.add('hide');
+  setTimeout(()=>{ if(el.parentNode) el.parentNode.removeChild(el); }, 250);
 }
 
 // ── OFFLINE BANNER ──
