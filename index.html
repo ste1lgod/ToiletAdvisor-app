@@ -1686,29 +1686,25 @@ body.dark #wizPickAddressBar{border-color:rgba(255,255,255,0.10);}
 
       <!-- Шаг 3: подтверждение -->
       <div class="wizPanel" id="wizPanel3">
-        <!-- Заголовок с адресом места — крупный, поверх карточки -->
-        <div id="wizConfirmHeader">
-          <div id="wizConfirmIcon">📍</div>
-          <div id="wizConfirmAddr">—</div>
+
+        <!-- Превью-карточка — как шторка туалета -->
+        <div id="wizPreviewCard">
+          <!-- Название + бейдж "Новый" -->
+          <div id="wizPreviewTopRow">
+            <div id="wizPreviewTitle">—</div>
+            <div id="wizPreviewNewBadge">✨ Новый</div>
+          </div>
+          <!-- Адрес -->
+          <div id="wizPreviewAddr">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;opacity:.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+            <span id="wizPreviewAddrText">—</span>
+          </div>
+          <!-- Теги как mPill -->
+          <div id="wizPreviewPills"></div>
+          <!-- Описание (если есть) -->
+          <div id="wizPreviewDesc" class="hidden"></div>
         </div>
-        <div class="wizConfirmCard">
-          <div class="wizConfirmRow">
-            <span class="wizConfirmLabel">Название</span>
-            <span class="wizConfirmVal" id="wizConfTitle">—</span>
-          </div>
-          <div class="wizConfirmRow" id="wizConfDescRow">
-            <span class="wizConfirmLabel">Описание</span>
-            <span class="wizConfirmVal" id="wizConfDesc">—</span>
-          </div>
-          <div class="wizConfirmRow">
-            <span class="wizConfirmLabel">Координаты</span>
-            <span class="wizConfirmVal" id="wizConfCoords" style="font-size:12px;opacity:.7;font-variant-numeric:tabular-nums;">—</span>
-          </div>
-          <div class="wizConfirmRow" id="wizConfTagsRow">
-            <span class="wizConfirmLabel">Теги</span>
-            <div class="wizConfirmTags" id="wizConfTags"></div>
-          </div>
-        </div>
+
         <div class="wizNavRow">
           <button class="wizBtnPrev" onclick="wizGoStep(2)">← Назад</button>
           <button class="wizBtnNext" id="wizSaveBtn" onclick="wizSaveToilet()">
