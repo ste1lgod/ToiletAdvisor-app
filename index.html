@@ -3416,15 +3416,20 @@ function renderLogs(){
     const whoBadge = `<span class="logItem-who${isAdmin ? ' admin-badge' : ''}">${isAdmin ? '⚙️ ' : ''}${log.actorName || '?'}</span>`;
     const detail = log.detail ? `<div class="logItem-detail">${log.detail}</div>` : '';
     return `<div class="logItem ${icoClass}">
-      <div class="logItem-ico">${icoSvg}</div>
-      <div class="logItem-body">
-        <div class="logItem-action">${log.action || '—'}</div>
-        <div class="logItem-meta">
-          ${whoBadge}
-          <span class="logItem-time">${dateStr} · ${timeStr}</span>
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 14px 10px;">
+        <div class="logItem-ico ${icoClass}">${icoSvg}</div>
+        <div class="logItem-body">
+          <div class="logItem-action">${log.action || '—'}</div>
+          <div class="logItem-meta">
+            ${whoBadge}
+          </div>
         </div>
-        ${detail}
+        <div class="logItem-datetime">
+          <span class="logItem-date">${dateStr}</span>
+          <span class="logItem-time">${timeStr}</span>
+        </div>
       </div>
+      ${detail}
     </div>`;
   }).join('');
 }
