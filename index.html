@@ -3175,6 +3175,9 @@ function showAdminSubview(id){
   } else if(id==='moderation'){
     document.getElementById('adminSubModeration').classList.remove('hidden');
     loadModerationReviews();
+  } else if(id==='logs'){
+    document.getElementById('adminSubLogs').classList.remove('hidden');
+    loadActivityLogs();
   }
 }
 async function loadModerationReviews(){
