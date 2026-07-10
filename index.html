@@ -2764,6 +2764,15 @@ async function getReviews(id){
     return snap.docs.map(d=>({id:d.id,...d.data()}));
   }
 }
+function formatReviewText(text){
+  // Нормализуем переносы, разбиваем на абзацы по пустой строке
+  const normalized=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').trim();
+  const paragraphs=normalized.split(/\n\n+/);
+  return paragraphs
+    .map(p=>p.replace(/\n/g,'<br>'))
+    .map(p=>`<p style="margin:0 0 10px;padding:0;">${p}</p>`)
+    .join('');
+}
 function renderReviews(reviews){
   const c=document.getElementById('reviewsList');
   if(!reviews.length){c.innerHTML=`<p class="rvNoReviews">${t('noReviews')}</p>`;return;}
