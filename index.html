@@ -3869,10 +3869,10 @@ async function wizSaveToilet(){
 function pickLocationOnMap(){wizStartPickLocation();}
 async function submitAddToiletDirect(){wizSaveToilet();}
 async function submitAddToiletModal(){
-  if(!currentUser||currentUser.role!=='admin'){showToast('Требуются права администратора');return;}
+  if(!currentUser||currentUser.role!=='admin'){showToast(t('toastNeedAdmin'));return;}
   const title=document.getElementById('addTitleM').value.trim();
-  if(!title){showToast('Введите название');return;}
-  if(!addCoords){showToast('Выберите место на карте');return;}
+  if(!title){showToast(t('toastEnterTitle'));return;}
+  if(!addCoords){showToast(t('toastNoPlaceMap'));return;}
   const body={lat:addCoords[0],lon:addCoords[1],title,
     description:document.getElementById('addDescM').value.trim()||'',
     photo:document.getElementById('addPhotoM').value.trim()||'',
