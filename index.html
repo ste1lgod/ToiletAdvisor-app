@@ -4017,7 +4017,7 @@ function showToast(msg){
   }, { passive: true });
   el.addEventListener('touchend', e=>{
     if(!_swiping){ el.style.transition = ''; el.style.transform = ''; el.style.opacity = ''; return; }
-    if(_tx < -130){
+    if(_tx < -80){
       // Достаточный свайп — закрываем
       clearTimeout(el._timer);
       _removeToast(el);
