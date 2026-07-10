@@ -2921,7 +2921,8 @@ document.getElementById('authNotice').addEventListener('click',openAuthModal);
     if(!el)return;
     el.addEventListener('input',function(){
       this.style.height='auto';
-      this.style.height=Math.min(this.scrollHeight, parseInt(this.style.maxHeight))+'px';
+      const maxH=parseInt(this.style.maxHeight)||200;
+      this.style.height=Math.min(this.scrollHeight, maxH)+'px';
     });
   });
 })();
