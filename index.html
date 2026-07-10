@@ -3284,8 +3284,16 @@ async function loadActivityLogs(){
   if(btn) btn.style.opacity = '0.6';
   try{
     await _loadFirebase();
-    const snap = await db.collection('logs').orderBy('createdAt','desc').limit(200).get();
-    _allLogs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    let snap;
+    try{
+      snap = await db.collection('logs').orderBy('createdAt','desc').limit(200).get();
+    }catch(idxErr){
+      // Индекс ещё не готов — fallback без сортировки
+      snap = await db.collection('logs').limit(200).get();
+    }
+    _allLogs = snap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
     renderLogs();
   }catch(e){
     list.innerHTML = `<p style="text-align:center;color:#ef4444;font-size:13px;padding:20px 0;">Ошибка: ${e.message}</p>`;
