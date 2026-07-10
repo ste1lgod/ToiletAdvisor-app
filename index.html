@@ -3900,8 +3900,17 @@ document.getElementById('searchInput').addEventListener('input',()=>{
 });
 document.querySelectorAll('.catChip').forEach(chip=>{
   chip.addEventListener('click',function(){
-    document.querySelectorAll('.catChip').forEach(c=>c.classList.remove('active'));
-    this.classList.add('active');currentCat=this.dataset.cat;renderMarkers();
+    if(this.classList.contains('active') && this.dataset.cat !== 'all'){
+      // Снимаем выделение, возвращаем "Все"
+      document.querySelectorAll('.catChip').forEach(c=>c.classList.remove('active'));
+      document.querySelector('.catChip[data-cat="all"]').classList.add('active');
+      currentCat='all';
+    } else {
+      document.querySelectorAll('.catChip').forEach(c=>c.classList.remove('active'));
+      this.classList.add('active');
+      currentCat=this.dataset.cat;
+    }
+    renderMarkers();
   });
 });
 
