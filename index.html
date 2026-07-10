@@ -1808,6 +1808,16 @@ body.dark #wizPickAddressBar{border-color:rgba(255,255,255,0.10);}
 <!-- TOAST -->
 <div id="toast"></div>
 
+<!-- ===== TOAST TEST PANEL (только для разработки) ===== -->
+<div id="toastTestBtn" onclick="toggleToastTest()" title="Тест уведомлений">🔔</div>
+<div id="toastTestPanel" class="hidden">
+  <div id="toastTestHeader">
+    <span>Тест уведомлений</span>
+    <button onclick="toggleToastTest()">✕</button>
+  </div>
+  <div id="toastTestList"></div>
+</div>
+
 <!-- WIZ PICK SUGGEST — вне всех stacking context, всегда поверх -->
 <div id="wizPickSuggest" class="hidden"></div>
 
