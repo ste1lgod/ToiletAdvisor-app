@@ -2239,7 +2239,7 @@ const T={
       adminDenied:'This section is for Toilet Advisor administrators only.',adminDeniedTitle:'Access restricted',adminDeniedBtn:'Login as Admin',
       profile:'Profile',profileSub:'Login to see your data',profileAccount:'Account',profileRole:'Role',profileLogout:'🚪 Logout',profileLogin:'→ Login',profileAdmin:'Administrator',
       toiletAdded:'Toilet added!',logAddedToilet:'Added toilet',logLeftReview:'Left a review',logDeletedReview:'Deleted review',logLogin:'Logged in',logLogout:'Logged out',logRegister:'New user registered',logAdminLogin:'Admin login',logToilet:'Toilet',logRating:'Rating',logUser:'User',logAdmin:'Administrator',
-      toastGeoUnavail:'Geolocation unavailable',toastNoPoints:'No points on map',toastEnterReview:'Enter text and set a rating',toastReviewSaved:'Review saved locally, will sync when online',toastFillAll:'Please fill all fields',toastUserNotFound:'User not found',toastWrongPass:'Wrong password',toastAlreadyReg:'This number is already registered',toastRegOk:'Registration successful',toastLoginOk:'You are logged in',toastAdminLoginOk:'Logged in as administrator',toastAdminNotFound:'Administrator not found',toastLogout:'You have logged out',toastReviewDeleted:'Review deleted',toastNeedAdmin:'Admin rights required',toastNoPlace:'No place selected',toastEnterTitle:'Enter a name',toastFirstPlace:'First select a place on the map',toastNoPlaceMap:'Select a place on the map',toastTimeout:'Request timed out. Check your internet connection.'}
+      toastGeoUnavail:'Geolocation unavailable',toastNoPoints:'No points on map',toastEnterReview:'Enter text and set a rating',toastReviewSaved:'Review saved locally, will sync when online',toastFillAll:'Please fill all fields',toastUserNotFound:'User not found',toastWrongPass:'Wrong password',toastAlreadyReg:'This number is already registered',toastRegOk:'Registration successful',toastLoginOk:'You are logged in',toastAdminLoginOk:'Logged in as administrator',toastAdminNotFound:'Administrator not found',toastLogout:'You have logged out',toastReviewDeleted:'Review deleted',toastNeedAdmin:'Admin rights required',toastNoPlace:'No place selected',toastEnterTitle:'Enter a name',toastFirstPlace:'First select a place on the map',toastNoPlaceMap:'Select a place on the map',toastTimeout:'Request timed out. Check your internet connection.',toastOnline:'Connection restored'}
 };
 function t(k){return(T[currentLang]||T.ru)[k]||(T.ru[k]||k);}
 let currentLang=localStorage.getItem('ta_lang')||'ru';
@@ -4148,7 +4148,7 @@ function hideOfflineBanner(){
 }
 window.addEventListener('online',()=>{
   hideOfflineBanner();
-  showToast('✓ Подключение восстановлено');
+  showToast(t('toastOnline'));
   loadToilets();
 });
 window.addEventListener('offline',()=>showOfflineBanner());
