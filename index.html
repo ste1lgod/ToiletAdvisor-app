@@ -2912,7 +2912,7 @@ async function submitReview(){
     });
   }catch(e){
     console.error('Ошибка сохранения отзыва:',e);
-    showToast('Отзыв сохранён локально, синхронизация при следующем открытии');
+    showToast(t('toastReviewSaved'));
   }
 }
 // ── ROUTE ──
