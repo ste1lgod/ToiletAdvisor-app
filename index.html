@@ -3077,7 +3077,7 @@ async function doAdminLogin(){
     const passHash=await hashPassword(pass);
     // Firestore запрос с таймаутом 8 сек
     const queryPromise=db.collection('users').where('login','==',login).where('role','==','admin').limit(1).get();
-    const timeoutPromise=new Promise((_,rej)=>setTimeout(()=>rej(new Error('Превышено время ожидания. Проверьте интернет и попробуйте снова.')),8000));
+    const timeoutPromise=new Promise((_,rej)=>setTimeout(()=>rej(new Error(t('toastTimeout'))),8000));
     const snap=await Promise.race([queryPromise,timeoutPromise]);
     if(snap.empty){showToast(t('toastAdminNotFound'));return;}
     const userDoc=snap.docs[0];
@@ -3887,7 +3887,7 @@ async function submitAddToiletModal(){
     await _loadFirebase();
     await db.collection('toilets').add(body);
     closeOverlay('addOverlay');addCoords=null;await loadToilets();
-    showToast('Туалет добавлен!');
+    showToast(t('toiletAdded'));
     logAction({
       type:'toilet',
       category:'toilet',
