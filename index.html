@@ -3825,10 +3825,10 @@ function wizClearSearch(){
 }
 
 async function wizSaveToilet(){
-  if(!currentUser||currentUser.role!=='admin'){showToast('Требуются права администратора');return;}
-  if(!wizCoords){showToast('Не выбрано место');return;}
+  if(!currentUser||currentUser.role!=='admin'){showToast(t('toastNeedAdmin'));return;}
+  if(!wizCoords){showToast(t('toastNoPlace'));return;}
   const title=document.getElementById('wizTitle').value.trim();
-  if(!title){showToast('Введите название');return;}
+  if(!title){showToast(t('toastEnterTitle'));return;}
   const btn=document.getElementById('wizSaveBtn');
   if(btn){btn.textContent='⏳ Сохраняю...';btn.disabled=true;}
   const tags={};
