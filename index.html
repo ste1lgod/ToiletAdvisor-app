@@ -1339,27 +1339,7 @@ body.dark .wizBtnPrev{
 .toastItem-close:hover{ background:rgba(255,255,255,0.15); color:rgba(255,255,255,0.8); }
 .toastItem-close svg{ width:10px;height:10px;stroke-width:3; }
 
-/* ===== TOAST TEST BUTTON ===== */
-#toastTestBtn{
-  position:fixed;
-  bottom:calc(var(--nav-offset) + 80px);
-  right:16px;
-  z-index:9000;
-  width:44px;height:44px;
-  border-radius:14px;
-  background:var(--glass-bg);
-  backdrop-filter:var(--glass-blur);
-  -webkit-backdrop-filter:var(--glass-blur);
-  border:1px solid rgba(255,255,255,0.5);
-  box-shadow:var(--sh-float);
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;
-  transition:transform .15s,opacity .15s;
-  user-select:none;
-}
-body.dark #toastTestBtn{border-color:rgba(255,255,255,0.15);}
-#toastTestBtn:active{transform:scale(.88);opacity:.8;}
-#toastTestBtn svg{width:20px;height:20px;stroke:var(--text);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+#toastTestBtn{display:none!important;}
 
 /* ===== TOAST TEST PANEL — iOS glassmorphism ===== */
 #toastTestPanel{
