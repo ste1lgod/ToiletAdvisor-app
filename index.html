@@ -3104,7 +3104,7 @@ function doLogout(){
   // Логируем до сброса currentUser
   const who = currentUser ? (currentUser.phone || currentUser.login || '?') : '?';
   const role = currentUser?.role || 'user';
-  logAction({ type:'auth', category:'auth', action:'Выход из аккаунта', detail:`${role === 'admin' ? 'Администратор' : 'Пользователь'}: ${who}` });
+  logAction({ type:'auth', category:'auth', action:t('logLogout'), detail:`${role === 'admin' ? t('logAdmin') : t('logUser')}: ${who}` });
   currentUser=null;localStorage.removeItem('ta_user');
   updateLoginBtn();switchTab('map');showToast('Вы вышли из аккаунта');
 }
