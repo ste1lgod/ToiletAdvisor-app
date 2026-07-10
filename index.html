@@ -3284,32 +3284,27 @@ async function loadModerationReviews(){
           +(toilet.description?` <span style="color:var(--text2);">— ${toilet.description.slice(0,50)}</span>`:'')
         : `<span style="color:var(--text2);">${r.toiletId||'—'}</span>`;
       return`<div class="rvItem" style="margin-bottom:12px;flex-direction:column;gap:0;padding:0;overflow:hidden;">
-        <!-- Шапка: аватар | имя+звёзды | дата сверху + кнопка удаления снизу -->
         <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 16px 12px;">
-          <!-- Аватар -->
           <div class="rvAvatar" style="background:${col};">${ini}</div>
-          <!-- Имя и звёзды — сдвинуты чуть ниже -->
-          <div style="flex:1;min-width:0;padding-top:8px;display:flex;flex-direction:column;align-items:flex-start;">
-            <div style="font-size:17px;font-weight:800;color:var(--text);margin-bottom:6px;">${name}</div>
-            <div style="color:var(--star);font-size:17px;">${stars}</div>
+          <div class="rvBody" style="display:flex;flex-direction:column;flex:1;min-width:0;">
+            <div class="rvName">${name}</div>
+            <div class="rvStars">${stars}</div>
           </div>
-          <!-- Дата сверху, кнопка удаления снизу -->
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0;padding-top:6px;">
-            <span style="font-size:12px;color:var(--text2);white-space:nowrap;">${datetime}</span>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0;padding-top:4px;">
+            <span class="rvDate">${datetime}</span>
             <button onclick="deleteReview('${r.id}',this)"
               style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:#fee2e2;color:#b91c1c;border:none;border-radius:10px;cursor:pointer;transition:opacity .15s;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
             </button>
           </div>
         </div>
-        <!-- Текст отзыва — голый текст -->
-        <div style="margin:0 16px 20px;font-size:15px;color:var(--text);line-height:1.65;word-break:break-word;">${formatReviewText(r.text)}</div>
-        <!-- Адрес туалета — закруглённый блок с отступами -->
+        <div style="height:1px;background:var(--border);margin:0 16px;opacity:0.7;"></div>
+        <div style="margin:0 16px 20px;padding-top:12px;font-size:14px;color:var(--text);line-height:1.55;word-break:break-word;opacity:0.78;">${formatReviewText(r.text)}</div>
         <div style="display:flex;align-items:flex-start;gap:8px;margin:0 14px 14px;padding:10px 12px;background:var(--green-l);border-radius:14px;border:1.5px solid rgba(0,168,89,0.2);">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px;color:var(--green);"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
           <span style="font-size:13px;line-height:1.45;">${toiletLabel}</span>
         </div>
-      </div>`;
+      </div>`;      </div>`;
     }).join('');
   }catch(e){list.innerHTML=`<p style="text-align:center;color:#ef4444;font-size:13px;">Ошибка: ${e.message}</p>`;}
 }
