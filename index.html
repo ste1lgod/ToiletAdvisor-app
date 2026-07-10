@@ -3031,6 +3031,10 @@ async function doAdminLogin(){
   }
 }
 function doLogout(){
+  // Логируем до сброса currentUser
+  const who = currentUser ? (currentUser.phone || currentUser.login || '?') : '?';
+  const role = currentUser?.role || 'user';
+  logAction({ type:'auth', category:'auth', action:'Выход из аккаунта', detail:`${role === 'admin' ? 'Администратор' : 'Пользователь'}: ${who}` });
   currentUser=null;localStorage.removeItem('ta_user');
   updateLoginBtn();switchTab('map');showToast('Вы вышли из аккаунта');
 }
