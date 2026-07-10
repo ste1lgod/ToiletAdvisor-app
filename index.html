@@ -2836,7 +2836,10 @@ function _wizShowOverlay(){
   document.getElementById('wizPickOverlay').classList.remove('hidden');
   FIXED_IDS.forEach(id=>{
     const el = document.getElementById(id);
-    if(el){ el.style.display=''; el.style.visibility='visible'; el.style.pointerEvents='auto'; }
+    if(!el) return;
+    el.style.display = id === 'wizPickHeader' ? 'flex' : 'flex';
+    el.style.visibility = 'visible';
+    el.style.pointerEvents = 'auto';
   });
 }
 function _wizHideOverlay(){
