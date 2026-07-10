@@ -2832,23 +2832,14 @@ let _wizGeocodeTimer = null;
 
 // Явное управление видимостью оверлея — надёжно работает с position:fixed дочерними элементами
 function _wizShowOverlay(){
-  const FIXED_IDS = ['wizPickHeader','wizPickAddressBar'];
   document.getElementById('wizPickOverlay').classList.remove('hidden');
-  FIXED_IDS.forEach(id=>{
-    const el = document.getElementById(id);
-    if(!el) return;
-    el.style.display = id === 'wizPickHeader' ? 'flex' : 'flex';
-    el.style.visibility = 'visible';
-    el.style.pointerEvents = 'auto';
-  });
+  const h = document.getElementById('wizPickHeader');
+  if(h){ h.style.display='flex'; h.style.pointerEvents='auto'; }
 }
 function _wizHideOverlay(){
-  const FIXED_IDS = ['wizPickHeader','wizPickAddressBar'];
   document.getElementById('wizPickOverlay').classList.add('hidden');
-  FIXED_IDS.forEach(id=>{
-    const el = document.getElementById(id);
-    if(el){ el.style.display='none'; el.style.visibility='hidden'; el.style.pointerEvents='none'; }
-  });
+  const h = document.getElementById('wizPickHeader');
+  if(h){ h.style.display='none'; h.style.pointerEvents='none'; }
   wizHideSuggest();
 }
 let _wizLastGeocodeCoords = null;
