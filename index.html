@@ -3258,17 +3258,17 @@ async function loadModerationReviews(){
           +(toilet.description?` <span style="color:var(--text2);">— ${toilet.description.slice(0,50)}</span>`:'')
         : `<span style="color:var(--text2);">${r.toiletId||'—'}</span>`;
       return`<div class="rvItem" style="margin-bottom:12px;flex-direction:column;gap:0;padding:0;overflow:hidden;">
-        <!-- Шапка: аватар | имя+звёзды | дата+кнопка удаления -->
-        <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 16px 14px;">
+        <!-- Шапка: аватар | имя+звёзды | дата сверху + кнопка удаления снизу -->
+        <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 16px 12px;">
           <!-- Аватар -->
           <div class="rvAvatar" style="background:${col};">${ini}</div>
-          <!-- Имя и звёзды -->
-          <div style="flex:1;min-width:0;padding-top:3px;">
+          <!-- Имя и звёзды — сдвинуты чуть ниже -->
+          <div style="flex:1;min-width:0;padding-top:8px;">
             <div style="font-size:17px;font-weight:800;color:var(--text);letter-spacing:-.2px;margin-bottom:6px;">${name}</div>
             <div style="color:var(--star);font-size:17px;letter-spacing:1.5px;">${stars}</div>
           </div>
-          <!-- Дата + кнопка удаления -->
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;">
+          <!-- Дата сверху, кнопка удаления снизу -->
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0;padding-top:6px;">
             <span style="font-size:12px;color:var(--text2);white-space:nowrap;">${datetime}</span>
             <button onclick="deleteReview('${r.id}',this)"
               style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:#fee2e2;color:#b91c1c;border:none;border-radius:10px;cursor:pointer;transition:opacity .15s;">
@@ -3276,9 +3276,8 @@ async function loadModerationReviews(){
             </button>
           </div>
         </div>
-        <!-- Текст отзыва — выделенный блок с контрастным фоном -->
-        <div style="margin:0 14px 10px;padding:12px 14px;background:rgba(0,0,0,0.04);border-radius:14px;border:1.5px solid rgba(0,0,0,0.08);font-size:15px;color:var(--text);line-height:1.65;word-break:break-word;"></div>
-        <div style="margin:0 14px 10px;padding:12px 14px;background:rgba(0,0,0,0.04);border-radius:14px;border:1.5px solid rgba(0,0,0,0.08);font-size:15px;color:var(--text);line-height:1.65;word-break:break-word;">${r.text}</div>
+        <!-- Текст отзыва — контрастный блок, увеличенный отступ снизу -->
+        <div style="margin:0 14px 20px;padding:12px 14px;background:var(--bg);border-radius:14px;border:1.5px solid var(--border);font-size:15px;color:var(--text);line-height:1.65;word-break:break-word;">${r.text}</div>
         <!-- Адрес туалета — закруглённый блок с отступами -->
         <div style="display:flex;align-items:flex-start;gap:8px;margin:0 14px 14px;padding:10px 12px;background:var(--green-l);border-radius:14px;border:1.5px solid rgba(0,168,89,0.2);">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px;color:var(--green);"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
