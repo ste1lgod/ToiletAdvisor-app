@@ -3374,6 +3374,51 @@ document.querySelectorAll('.catChip').forEach(chip=>{
 });
 
 // ── TOAST ──
+// ── TOAST TEST PANEL ──
+const TOAST_TEST_ITEMS = [
+  // Успехи
+  { ico:'✅', text:'Туалет добавлен!',              cat:'success' },
+  { ico:'✓',  text:'Ваш отзыв добавлен!',           cat:'success' },
+  { ico:'✓',  text:'Вы вошли в систему',             cat:'success' },
+  { ico:'✓',  text:'Регистрация успешна',            cat:'success' },
+  { ico:'✓',  text:'Вы вошли как администратор',     cat:'success' },
+  { ico:'✓',  text:'Подключение восстановлено',      cat:'success' },
+  { ico:'✓',  text:'Отзыв удалён',                   cat:'success' },
+  // Ошибки / предупреждения
+  { ico:'⚠️', text:'Введите текст и поставьте оценку', cat:'warn' },
+  { ico:'⚠️', text:'Заполните все поля',             cat:'warn'    },
+  { ico:'⚠️', text:'Введите название туалета',       cat:'warn'    },
+  { ico:'⚠️', text:'Сначала укажите место на карте', cat:'warn'    },
+  { ico:'⚠️', text:'Не выбрано место',               cat:'warn'    },
+  // Ошибки авторизации
+  { ico:'🔒', text:'Пользователь не найден',         cat:'error'   },
+  { ico:'🔒', text:'Неверный пароль',                cat:'error'   },
+  { ico:'🔒', text:'Этот номер уже зарегистрирован', cat:'error'   },
+  { ico:'🔒', text:'Администратор не найден',        cat:'error'   },
+  { ico:'🔒', text:'Требуются права администратора', cat:'error'   },
+  // Инфо
+  { ico:'📍', text:'Нет точек на карте',             cat:'info'    },
+  { ico:'📍', text:'Геолокация недоступна',          cat:'info'    },
+  { ico:'💾', text:'Отзыв сохранён локально, синхронизация при следующем открытии', cat:'info' },
+  { ico:'🚪', text:'Вы вышли из аккаунта',           cat:'info'    },
+];
+function toggleToastTest(){
+  const panel = document.getElementById('toastTestPanel');
+  if(panel.classList.contains('hidden')){
+    // Заполняем список
+    const list = document.getElementById('toastTestList');
+    list.innerHTML = TOAST_TEST_ITEMS.map((item,i)=>`
+      <div class="toastTestItem" onclick="showToast('${item.ico} ${item.text.replace(/'/g,"\\'")}')">
+        <span class="tti-ico">${item.ico}</span>
+        <span class="tti-text">${item.text}</span>
+        <span class="tti-cat ${item.cat}">${item.cat}</span>
+      </div>`).join('');
+    panel.classList.remove('hidden');
+  } else {
+    panel.classList.add('hidden');
+  }
+}
+
 let toastTimer;
 function showToast(msg){
   const el=document.getElementById('toast');
