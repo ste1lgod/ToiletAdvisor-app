@@ -2896,6 +2896,16 @@ document.getElementById('authNotice').addEventListener('click',openAuthModal);
     ta.style.height=Math.min(ta.scrollHeight, 320)+'px';
   }
   ta.addEventListener('input',resize);
+
+  // Авторасширение полей wizard
+  ['wizTitle','wizDesc'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.addEventListener('input',function(){
+      this.style.height='auto';
+      this.style.height=Math.min(this.scrollHeight, parseInt(this.style.maxHeight))+'px';
+    });
+  });
 })();
 </script>
 
