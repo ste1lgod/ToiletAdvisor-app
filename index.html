@@ -3090,7 +3090,7 @@ async function doAdminLogin(){
     closeOverlay('adminOverlay');
     updateLoginBtn();
     showToast('Вы вошли как администратор');
-    logAction({ type:'admin', category:'admin', action:'Вход администратора', detail:`Логин: ${login}` });
+    logAction({ type:'admin', category:'admin', action:t('logAdminLogin'), detail:`${t('logAdmin')}: ${login}` });
     setTimeout(()=>switchTab('add'),200);
   }catch(e){
     showToast('Ошибка: '+e.message);
