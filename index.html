@@ -2792,7 +2792,7 @@ function renderReviews(reviews){
     const name=r.userPhone||r.userLogin||'Аноним';
     const col=COLORS[name.charCodeAt(0)%COLORS.length];
     const ini=name.replace(/\+/g,'').slice(0,2).toUpperCase();
-    const stars='★'.repeat(r.rating)+'☆'.repeat(5-r.rating);
+    const stars=('★'.repeat(r.rating)+'☆'.repeat(5-r.rating)).split('').join(' ');
     const d=new Date(r.createdAt);
     const MONTHS=['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
     const hh=String(d.getHours()).padStart(2,'0');
