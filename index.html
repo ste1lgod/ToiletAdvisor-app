@@ -3455,9 +3455,9 @@ function wizReset(){
   const menuBtnRow = document.getElementById('wizMenuBtnRow');
   if(menuBtnRow) menuBtnRow.style.display = 'flex';
   const t = document.getElementById('wizTitle');
-  if(t) t.value='';
+  if(t){t.value='';t.style.height='';}
   const d = document.getElementById('wizDesc');
-  if(d) d.value='';
+  if(d){d.value='';d.style.height='';}
   document.querySelectorAll('.tagToggle').forEach(el=>{
     const def = el.dataset.tag==='isFree'||el.dataset.tag==='isOpen';
     el.classList.toggle('on', def);
