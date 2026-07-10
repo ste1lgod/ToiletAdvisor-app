@@ -2802,6 +2802,7 @@ function showAdminSubview(id){
   if(id==='addForm'){
     document.getElementById('adminSubAddForm').classList.remove('hidden');
     wizReset();
+    _wizInProgress = true; // мастер запущен
   } else if(id==='moderation'){
     document.getElementById('adminSubModeration').classList.remove('hidden');
     loadModerationReviews();
