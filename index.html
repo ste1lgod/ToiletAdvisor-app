@@ -3036,26 +3036,26 @@ async function doAuth(){
   if(!phone||!pass){showToast(t('toastFillAll'));return;}
       // Найти пользователя по номеру
       const snap=await db.collection('users').where('phone','==',phone).limit(1).get();
-      if(snap.empty){showToast('Пользователь не найден');return;}
+      if(snap.empty){showToast(t('toastUserNotFound'));return;}
       const userDoc=snap.docs[0];
       const userData=userDoc.data();
-      if(userData.passwordHash!==passHash){showToast('Неверный пароль');return;}
+      if(userData.passwordHash!==passHash){showToast(t('toastWrongPass'));return;}
       currentUser={id:userDoc.id,phone:userData.phone,role:userData.role||'user'};
       localStorage.setItem('ta_user',JSON.stringify(currentUser));
       closeOverlay('authOverlay');updateLoginBtn();resetReviewForm();
-      showToast('Вы вошли в систему');
+      showToast(t('toastLoginOk'));
       logAction({ type:'auth', category:'auth', action:t('logLogin'), detail:`${t('logUser')} ${phone}` });
     } else {
       // Регистрация
       const exists=await db.collection('users').where('phone','==',phone).limit(1).get();
-      if(!exists.empty){showToast('Этот номер уже зарегистрирован');return;}
+      if(!exists.empty){showToast(t('toastAlreadyReg'));return;}
       const newDoc=await db.collection('users').add({
         phone,passwordHash:passHash,role:'user',createdAt:new Date().toISOString()
       });
       currentUser={id:newDoc.id,phone,role:'user'};
       localStorage.setItem('ta_user',JSON.stringify(currentUser));
       closeOverlay('authOverlay');updateLoginBtn();resetReviewForm();
-      showToast('Регистрация успешна');
+      showToast(t('toastRegOk'));
       logAction({ type:'auth', category:'auth', action:t('logRegister'), detail:`${t('logUser')}: ${phone}` });
     }
   }catch(e){showToast('Ошибка: '+e.message);console.error(e);}
