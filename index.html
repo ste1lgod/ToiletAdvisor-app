@@ -2044,7 +2044,7 @@ body.dark #wizPickAddressBar{border-color:rgba(255,255,255,0.10);}
       <button class="mTab" id="tabReg" onclick="setAuthTab('register')">Регистрация</button>
     </div>
     <div class="phoneRow"><span class="phoneCode">+998</span><input type="tel" id="authPhone" placeholder="901234567" maxlength="12"></div>
-    <div class="passRow"><input type="password" id="authPass" placeholder="Пароль"><button class="eyeBtn" onclick="toggleEye('authPass')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+    <div class="passRow"><input type="password" id="authPass" placeholder="Пароль"><button class="eyeBtn" onmousedown="event.preventDefault()" ontouchstart="event.preventDefault()" onclick="toggleEye('authPass')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
     <button class="mainBtn" id="authActionBtn" onclick="doAuth()">Войти</button>
     <button class="secBtn" onclick="openAdminLogin()" style="display:none;">🔑 Войти как администратор / Расширенный доступ</button>
     <button class="cancelBtn" onclick="closeOverlay('authOverlay')" style="display:none;">Отмена</button>
