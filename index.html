@@ -3518,11 +3518,11 @@ function wizShowPanel(step){
 
 function wizGoStep(step){
   if(step===2){
-    if(!wizCoords){showToast('Сначала укажите место на карте');return;}
+    if(!wizCoords){showToast(t('toastFirstPlace'));return;}
   }
   if(step===3){
     const title = document.getElementById('wizTitle').value.trim();
-    if(!title){showToast('Введите название туалета');document.getElementById('wizTitle').focus();return;}
+    if(!title){showToast(t('toastEnterTitle'));document.getElementById('wizTitle').focus();return;}
     wizFillConfirm();
   }
   wizShowPanel(step);
