@@ -3750,12 +3750,26 @@ function wizFillConfirm(){
     if(tags.isTaharatkhana){ const s=document.createElement('span'); s.className='mPill'; s.style.background='#fef3c7'; s.style.color='#92400e'; s.textContent='🕌 Тахаратхана'; pillsEl.appendChild(s); }
   }
 
-  // Описание
+  // Описание: если тахаратхана — показываем в спец блоке, иначе в обычном
   const desc = document.getElementById('wizDesc').value.trim();
   const descEl = document.getElementById('wizPreviewDesc');
-  if(descEl){
-    if(desc){ descEl.textContent = desc; descEl.classList.remove('hidden'); }
-    else { descEl.classList.add('hidden'); }
+  const taharatPreview = document.getElementById('wizPreviewTaharat');
+  const taharatNotePreview = document.getElementById('wizPreviewTaharatNote');
+
+  const tags = {};
+  document.querySelectorAll('.tagToggle').forEach(el=>{ tags[el.dataset.tag]=el.classList.contains('on'); });
+
+  if(tags.isTaharatkhana && desc){
+    // Описание идёт в спец блок тахаратханы
+    if(taharatNotePreview) taharatNotePreview.textContent = desc;
+    if(taharatPreview) taharatPreview.classList.remove('hidden');
+    if(descEl) descEl.classList.add('hidden');
+  } else {
+    if(taharatPreview) taharatPreview.classList.add('hidden');
+    if(descEl){
+      if(desc){ descEl.textContent = desc; descEl.classList.remove('hidden'); }
+      else { descEl.classList.add('hidden'); }
+    }
   }
 }
 
