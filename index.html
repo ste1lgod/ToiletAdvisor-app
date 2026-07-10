@@ -3982,16 +3982,16 @@ function showToast(msg){
   }, { passive: true });
   el.addEventListener('touchend', e=>{
     if(!_swiping){ el.style.transition = ''; el.style.transform = ''; el.style.opacity = ''; return; }
-    if(_tx < -80){
+    if(_tx < -110){
       // Достаточный свайп — закрываем
       clearTimeout(el._timer);
       _removeToast(el);
     } else {
-      // Недостаточный — возвращаем на место
-      el.style.transition = 'transform .3s cubic-bezier(.32,1,.46,1), opacity .3s ease';
+      // Недостаточный — пружинящий возврат на место
+      el.style.transition = 'transform .5s cubic-bezier(.34,1.56,.64,1), opacity .4s ease';
       el.style.transform = '';
       el.style.opacity = '';
-      setTimeout(()=>{ el.style.transition = ''; }, 300);
+      setTimeout(()=>{ el.style.transition = ''; }, 520);
     }
   });
 }
