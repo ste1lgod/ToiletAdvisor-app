@@ -2847,7 +2847,7 @@ async function submitReview(){
   const name=optimistic.userPhone;
   const col=COLORS[name.charCodeAt(0)%COLORS.length];
   const ini=name.replace(/\+/g,'').slice(0,2).toUpperCase();
-  const stars='★'.repeat(optimistic.rating)+'☆'.repeat(5-optimistic.rating);
+  const stars=('★'.repeat(optimistic.rating)+'☆'.repeat(5-optimistic.rating)).split('').join(' ');
   const d=new Date(optimistic.createdAt);
   const ds=`${d.getDate()} ${['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'][d.getMonth()]} ${d.getFullYear()}`;
   const newCard=`<div class="rvItem" id="${optimistic.id}" style="flex-direction:column;gap:0;padding:0;overflow:hidden;"><div style="display:flex;align-items:flex-start;gap:14px;padding:16px 16px 12px;"><div class="rvAvatar" style="background:${col}">${ini}</div><div class="rvBody"><div class="rvHeader"><span class="rvName">${name}</span><span class="rvDate">${ds}</span></div><div class="rvStars">${stars}</div></div></div><div style="height:1px;background:var(--border);margin:0 16px;opacity:0.7;"></div><div style="margin:0 16px 16px;padding-top:12px;font-size:14px;color:var(--text);line-height:1.55;word-break:break-word;opacity:0.78;">${text.replace(/\n/g,'<br>')}</div></div>`;
