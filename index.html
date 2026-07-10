@@ -2794,6 +2794,7 @@ function switchTab(tab){
 function showAdminDashboard(){
   document.getElementById('adminDashboard').style.display='';
   document.querySelectorAll('.adminSubview').forEach(el=>el.classList.add('hidden'));
+  _wizInProgress = false; // вернулись в меню — мастер не активен
   wizReset();
 }
 function showAdminSubview(id){
