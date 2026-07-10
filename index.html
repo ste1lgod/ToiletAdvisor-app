@@ -3828,8 +3828,8 @@ async function wizSaveToilet(){
   };
   try{
     await _loadFirebase();
-    const newDoc = await db.collection('toilets').add(body);
-    await loadToilets();
+    await db.collection('toilets').add(body);
+    loadToilets(); // не ждём — грузим в фоне
     showToast('Туалет добавлен!');
     logAction({
       type:'toilet',
@@ -3842,7 +3842,7 @@ async function wizSaveToilet(){
     switchTab('map');
   }catch(e){
     showToast('Ошибка: '+e.message);
-    if(btn){btn.textContent='✅ Сохранить';btn.disabled=false;}
+    if(btn){btn.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Сохранить';btn.disabled=false;}
     console.error(e);
   }
 }
