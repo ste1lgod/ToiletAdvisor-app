@@ -1936,6 +1936,27 @@ body.dark #wizPickAddressBar{border-color:rgba(255,255,255,0.10);}
     <div id="moderationList"><p style="text-align:center;color:var(--text2);font-size:13px;">Загрузка...</p></div>
   </div>
 
+  <!-- Сабвью: журнал действий -->
+  <div id="adminSubLogs" class="adminSubview hidden">
+    <button class="adminBackBtn" onclick="showAdminDashboard()">‹ Назад</button>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:10px;">
+      <div style="font-size:18px;font-weight:800;color:var(--text);letter-spacing:-.3px;">📋 Журнал действий</div>
+      <button id="logsRefreshBtn" onclick="loadActivityLogs()" style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--green);color:#fff;border:none;border-radius:12px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;box-shadow:0 2px 8px rgba(0,168,89,0.3);transition:opacity .15s;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/></svg>
+        Обновить
+      </button>
+    </div>
+    <!-- Фильтр по типу -->
+    <div id="logsFilter" style="display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;padding-bottom:2px;">
+      <button class="logFilterChip active" data-filter="all" onclick="setLogsFilter('all',this)">Все</button>
+      <button class="logFilterChip" data-filter="review" onclick="setLogsFilter('review',this)">Отзывы</button>
+      <button class="logFilterChip" data-filter="toilet" onclick="setLogsFilter('toilet',this)">Туалеты</button>
+      <button class="logFilterChip" data-filter="auth" onclick="setLogsFilter('auth',this)">Входы</button>
+      <button class="logFilterChip" data-filter="admin" onclick="setLogsFilter('admin',this)">Админ</button>
+    </div>
+    <div id="logsList"><p style="text-align:center;color:var(--text2);font-size:13px;padding:20px 0;">Загрузка...</p></div>
+  </div>
+
 </div>
 
 <!-- AUTH MODAL -->
