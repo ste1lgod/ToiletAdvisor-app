@@ -2564,13 +2564,16 @@ function toggleEye(id){
   const btn=i.closest('.passRow').querySelector('.eyeBtn');
   const show=i.dataset.visible!=='true';
   i.dataset.visible=show?'true':'false';
-  // Меняем только визуальное отображение через класс — тип НЕ меняем,
-  // чтобы iOS не сворачивал клавиатуру
-  if(show){
-    i.classList.add('passVisible');
+
+  // На iOS Safari меняем только CSS (без смены type) — клавиатура не закрывается.
+  // На остальных браузерах меняем type обычно.
+  const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
+  if(isIOS){
+    i.classList.toggle('passVisible', show);
   } else {
-    i.classList.remove('passVisible');
+    i.type = show ? 'text' : 'password';
   }
+
   if(!btn)return;
   btn.classList.toggle('open',show);
   btn.innerHTML=show
