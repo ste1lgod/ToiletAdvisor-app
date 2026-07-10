@@ -3893,7 +3893,7 @@ async function submitAddToiletModal(){
     logAction({
       type:'toilet',
       category:'toilet',
-      action:'Добавил туалет',
+      action:t('logAddedToilet'),
       detail:`"${body.title}" · [${body.lat.toFixed(5)}, ${body.lon.toFixed(5)}]`,
     });
     switchTab('map');
