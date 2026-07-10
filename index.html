@@ -3477,49 +3477,48 @@ function toggleToastTest(){
 }
 
 // ── TOAST STACK ──
-const _toastStack = [];
-const TOAST_DURATION = 4000; // мс на экране
+const TOAST_DURATION = 4200;
+
+const TOAST_TYPES = {
+  success: { label:'Готово',         ico:'✓'  },
+  error:   { label:'Ошибка',         ico:'✕'  },
+  warn:    { label:'Внимание',        ico:'!'  },
+  info:    { label:'Инфо',           ico:'i'  },
+};
+
+function _detectToastType(m){
+  if(/добавлен|успеш|восстановл|удал[её]н|вошли|вход|регистр|✅|✓/.test(m)) return 'success';
+  if(/ошибка|неверн|не найден|не зарегист|права|запрещ/.test(m))            return 'error';
+  if(/введите|заполните|укажите|выберите|сначала/.test(m))                  return 'warn';
+  return 'info';
+}
 
 function showToast(msg){
-  // Определяем тип по содержимому
-  let type = 'info', ico = 'ℹ️';
-  const m = msg.toLowerCase();
-  if(m.includes('✅') || m.includes('✓') || m.includes('добавлен') || m.includes('успеш') || m.includes('восстановл') || m.includes('удалён') || m.includes('вошли')){
-    type = 'success'; ico = '';
-  } else if(m.includes('ошибка') || m.includes('неверн') || m.includes('не найден') || m.includes('не зарегист') || m.includes('права')){
-    type = 'error'; ico = '';
-  } else if(m.includes('введите') || m.includes('заполните') || m.includes('укажите') || m.includes('выберите')){
-    type = 'warn'; ico = '';
-  } else if(m.includes('геолокац') || m.includes('нет точек') || m.includes('сохранён локально') || m.includes('вышли')){
-    type = 'info'; ico = '';
-  }
-
-  // Иконка уже может быть в тексте — не дублируем
-  const hasEmoji = /[\u{1F300}-\u{1FFFF}]|[\u2600-\u27BF]/u.test(msg.slice(0,3));
-  const icoHtml = hasEmoji ? '' : `<span class="toastItem-ico">${ico}</span>`;
-  const cleanMsg = hasEmoji ? msg : msg;
+  const type  = _detectToastType(msg.toLowerCase());
+  const tConf = TOAST_TYPES[type];
 
   const container = document.getElementById('toastContainer');
   const el = document.createElement('div');
   el.className = `toastItem t-${type}`;
-  el.innerHTML = `${icoHtml}<span class="toastItem-text">${cleanMsg}</span>`;
+  el.innerHTML = `
+    <div class="toastItem-ico">${tConf.ico}</div>
+    <div class="toastItem-body">
+      <div class="toastItem-label">${tConf.label}</div>
+      <div class="toastItem-text">${msg}</div>
+    </div>`;
   container.appendChild(el);
 
-  // Появление
   requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ el.classList.add('show'); }); });
 
-  // Автоскрытие
   const timer = setTimeout(()=>_removeToast(el), TOAST_DURATION);
   el._timer = timer;
-
-  // Тап — скрывает досрочно
   el.addEventListener('click', ()=>{ clearTimeout(el._timer); _removeToast(el); });
 }
 
 function _removeToast(el){
   el.classList.remove('show');
   el.classList.add('hide');
-  setTimeout(()=>{ if(el.parentNode) el.parentNode.removeChild(el); }, 250);
+  setTimeout(()=>{ if(el.parentNode) el.parentNode.removeChild(el); }, 220);
 }
 
 // ── OFFLINE BANNER ──
