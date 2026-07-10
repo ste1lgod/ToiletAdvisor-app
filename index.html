@@ -3330,7 +3330,7 @@ async function deleteReview(id, btn){
     const reviewData = reviewDoc.exists ? reviewDoc.data() : {};
     await db.collection('reviews').doc(id).delete();
     btn.closest('.rvItem').remove();
-    showToast('Отзыв удалён');
+    showToast(t('toastReviewDeleted'));
     // Лог
     logAction({
       type:'delete',
