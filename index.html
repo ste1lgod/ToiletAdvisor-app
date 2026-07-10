@@ -2975,7 +2975,8 @@ async function doAuth(){
       currentUser={id:userDoc.id,phone:userData.phone,role:userData.role||'user'};
       localStorage.setItem('ta_user',JSON.stringify(currentUser));
       closeOverlay('authOverlay');updateLoginBtn();resetReviewForm();
-      showToast('✓ Вы вошли в систему');
+      showToast('Вы вошли в систему');
+      logAction({ type:'auth', category:'auth', action:'Вход в систему', detail:`Пользователь ${phone}` });
     } else {
       // Регистрация
       const exists=await db.collection('users').where('phone','==',phone).limit(1).get();
@@ -2986,7 +2987,8 @@ async function doAuth(){
       currentUser={id:newDoc.id,phone,role:'user'};
       localStorage.setItem('ta_user',JSON.stringify(currentUser));
       closeOverlay('authOverlay');updateLoginBtn();resetReviewForm();
-      showToast('✓ Регистрация успешна');
+      showToast('Регистрация успешна');
+      logAction({ type:'auth', category:'auth', action:'Регистрация нового пользователя', detail:`Телефон: ${phone}` });
     }
   }catch(e){showToast('Ошибка: '+e.message);console.error(e);}
 }
