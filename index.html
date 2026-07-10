@@ -2751,7 +2751,13 @@ function switchTab(tab){
       document.getElementById('addScreen').classList.remove('hidden');
       addCoords=null;
       // Не сбрасываем если мастер добавления уже активен (пользователь вернулся с другой вкладки)
-      if(!_skipAdminDashboard && !_wizInProgress) showAdminDashboard();
+      if(!_skipAdminDashboard && !_wizInProgress) {
+        showAdminDashboard();
+      } else if(_wizInProgress) {
+        // Восстанавливаем вид мастера
+        document.getElementById('adminDashboard').style.display='none';
+        document.getElementById('adminSubAddForm').classList.remove('hidden');
+      }
       _skipAdminDashboard = false;
     } else {
       document.getElementById('adminDeniedScreen').classList.remove('hidden');
