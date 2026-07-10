@@ -1251,18 +1251,16 @@ body.dark .wizBtnPrev{
 }
 .toastItem.hide{
   opacity:0;
-  transform:translateX(-110%) scale(0.92);
-  transition:opacity .32s ease, transform .32s cubic-bezier(.4,0,.6,1);
-  /* Схлопываем высоту после свайпа чтобы список не оставлял дыру */
+  transform:translateX(-110%) scale(0.94);
+  transition:
+    opacity .52s ease,
+    transform .52s cubic-bezier(.4,0,.8,1),
+    max-height .36s ease .44s,
+    padding .36s ease .44s;
   max-height:0;
   padding-top:0;padding-bottom:0;
   margin-bottom:0;
   overflow:hidden;
-  transition:
-    opacity .32s ease,
-    transform .32s cubic-bezier(.4,0,.6,1),
-    max-height .28s ease .28s,
-    padding .28s ease .28s;
 }
 
 /* Иконка — цветной кружок */
