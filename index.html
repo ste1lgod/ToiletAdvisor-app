@@ -2842,7 +2842,7 @@ async function submitReview(){
     +'<span class="rvDate" style="flex-shrink:0;padding-top:4px;">'+ds+'</span>'
     +'</div>'
     +'<div style="height:1px;background:var(--border);margin:0 16px;opacity:0.7;"></div>'
-    +'<div style="margin:0 16px 16px;padding-top:12px;font-size:14px;color:var(--text);line-height:1.55;word-break:break-word;white-space:pre-wrap;opacity:0.78;">'+text+'</div>'
+    +'<div style="margin:0 16px 16px;padding-top:12px;font-size:14px;color:var(--text);line-height:1.55;word-break:break-word;white-space:pre-wrap;opacity:0.78;">'+text.replace(/\r\n/g,'\n').replace(/\r/g,'\n')+'</div>'
     +'</div>';
   const listEl=document.getElementById('reviewsList');
   // Добавляем новый отзыв в конец (старые сверху, новые снизу)
