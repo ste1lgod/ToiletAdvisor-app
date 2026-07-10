@@ -2860,6 +2860,13 @@ async function submitReview(){
     // Убираем tmp id
     const tmpEl=document.getElementById(optimistic.id);
     if(tmpEl)tmpEl.removeAttribute('id');
+    // Лог
+    logAction({
+      type:'review',
+      category:'review',
+      action:'Оставил отзыв',
+      detail:`Туалет: ${selectedToilet.title||selectedToilet.id} · Оценка: ${'★'.repeat(optimistic.rating)} · "${text.slice(0,80)}"`,
+    });
   }catch(e){
     console.error('Ошибка сохранения отзыва:',e);
     showToast('Отзыв сохранён локально, синхронизация при следующем открытии');
