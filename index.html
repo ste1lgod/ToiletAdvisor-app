@@ -2801,7 +2801,7 @@ function renderReviews(reviews){
     return`<div class="rvItem" style="flex-direction:column;gap:0;padding:0;overflow:hidden;">
       <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 16px 12px;">
         <div class="rvAvatar" style="background:${col}">${ini}</div>
-        <div class="rvBody">
+        <div class="rvBody" style="display:flex;flex-direction:column;align-items:flex-start;">
           <div class="rvHeader"><span class="rvName">${name}</span><span class="rvDate">${ds}</span></div>
           <div class="rvStars">${stars}</div>
         </div>
