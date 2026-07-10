@@ -3238,6 +3238,7 @@ async function wizSaveToilet(){
     await db.collection('toilets').add(body);
     await loadToilets();
     showToast('✅ Туалет добавлен!');
+    _wizInProgress = false;
     wizReset();
     showAdminDashboard();
     switchTab('map');
