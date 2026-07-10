@@ -1240,10 +1240,18 @@ body.dark .wizBtnPrev{
   display:flex;align-items:center;justify-content:center;
   flex-shrink:0;
   cursor:pointer;
-  color:rgba(255,255,255,0.4);
+  color:rgba(255,255,255,0.45);
   transition:background .15s,color .15s;
+  /* На десктопе скрываем до наведения */
+  opacity:0;
+  transition:opacity .2s, background .15s, color .15s;
 }
-.toastItem-close:hover{ background:rgba(255,255,255,0.14); color:rgba(255,255,255,0.7); }
+/* На тач-устройствах всегда виден */
+@media (pointer:coarse){
+  .toastItem-close{ opacity:1; }
+}
+.toastItem:hover .toastItem-close{ opacity:1; }
+.toastItem-close:hover{ background:rgba(255,255,255,0.15); color:rgba(255,255,255,0.8); }
 .toastItem-close svg{ width:10px;height:10px;stroke-width:3; }
 
 /* ===== TOAST TEST BUTTON ===== */
