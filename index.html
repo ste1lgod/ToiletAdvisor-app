@@ -2770,7 +2770,7 @@ function formatReviewText(text){
   return lines
     .map(line=>line.trim()===''
       ? '<p style="margin:0;padding:0;height:0.6em;"></p>'
-      : `<p style="margin:0;padding:0;text-indent:1.2em;">${line}</p>`)
+      : `<p style="margin:0;padding:0;text-indent:0.6em;">${line}</p>`)
     .join('');
 }
 function renderReviews(reviews){
