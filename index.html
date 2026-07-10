@@ -3445,7 +3445,6 @@ const TOAST_TEST_ITEMS = [
 function toggleToastTest(){
   const panel = document.getElementById('toastTestPanel');
   if(panel.classList.contains('hidden')){
-    // Заполняем список
     const list = document.getElementById('toastTestList');
     list.innerHTML = TOAST_TEST_ITEMS.map((item,i)=>`
       <div class="toastTestItem" onclick="showToast('${item.ico} ${item.text.replace(/'/g,"\\'")}')">
