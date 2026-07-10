@@ -2401,6 +2401,95 @@ function setLang(l){
   _updateProfileTexts();
   updateLoginBtn();
   if(typeof updateOfflineText==='function')updateOfflineText();
+  // ── Навбар ──
+  const navLabels=document.querySelectorAll('.navLabel');
+  if(navLabels[0])navLabels[0].textContent=t('navMap');
+  if(navLabels[1])navLabels[1].textContent=t('navProfile');
+  // ── Чипы категорий ──
+  const chips=document.querySelectorAll('.catChip');
+  const catKeys=['catAll','catTaharatkhana','catFree','catSoap','catPaper','catAccessible'];
+  chips.forEach((c,i)=>{ if(catKeys[i])c.textContent=t(catKeys[i]); });
+  // ── Шторка туалета ──
+  const reviewsT=document.getElementById('reviewsTitle');
+  if(reviewsT)reviewsT.textContent=t('reviewsTitle');
+  const authN=document.getElementById('authNotice');
+  if(authN)authN.textContent=t('authNotice');
+  // ── Тахаратхана ──
+  const taharatTitleEl=document.getElementById('taharatTitle');
+  if(taharatTitleEl)taharatTitleEl.textContent=t('taharatTitle');
+  const taharatSubEl=document.getElementById('taharatSub');
+  if(taharatSubEl)taharatSubEl.textContent=t('taharatSub');
+  const taharatNoteEl=document.getElementById('taharatNote');
+  if(taharatNoteEl)taharatNoteEl.textContent=t('taharatNote');
+  const tItems=document.querySelectorAll('.tItem');
+  const taharatKeys=['taharatHotWater','taharatSoap','taharatTowels','taharatSlippers'];
+  tItems.forEach((el,i)=>{ if(taharatKeys[i])el.textContent=t(taharatKeys[i]); });
+  // ── Панель администратора ──
+  const adminDashTitleEl=document.getElementById('adminDashTitle');
+  if(adminDashTitleEl)adminDashTitleEl.textContent=t('adminPanelTitle');
+  const dashLabels=document.querySelectorAll('.adminDashLabel');
+  const dashSubs=document.querySelectorAll('.adminDashSub');
+  const dashLabelKeys=['adminAddPoint','adminModeration','adminLogs'];
+  const dashSubKeys=['adminAddPointSub','adminModerationSub','adminLogsSub'];
+  dashLabels.forEach((el,i)=>{ if(dashLabelKeys[i])el.textContent=t(dashLabelKeys[i]); });
+  dashSubs.forEach((el,i)=>{ if(dashSubKeys[i])el.textContent=t(dashSubKeys[i]); });
+  // ── Модерация ──
+  const modTitle=document.querySelector('#adminSubModeration div[style*="font-size:17px"]');
+  if(modTitle)modTitle.textContent=t('adminModerationTitle');
+  // ── Журнал действий ──
+  const logsTitle=document.querySelector('#adminSubLogs div[style*="font-size:15px"]');
+  if(logsTitle)logsTitle.textContent=t('adminLogsTitle');
+  const logChips=document.querySelectorAll('.logFilterChip');
+  const logChipKeys=['logFilterAll','logFilterReviews','logFilterToilets','logFilterAuth','logFilterAdmin'];
+  logChips.forEach((el,i)=>{ if(logChipKeys[i])el.textContent=t(logChipKeys[i]); });
+  // ── Визард ──
+  const wizMapSubEl=document.getElementById('wizMapSub');
+  if(wizMapSubEl)wizMapSubEl.textContent=t('wizMapSub');
+  const wizPickHintEl=document.getElementById('wizPickHint');
+  if(wizPickHintEl)wizPickHintEl.textContent=t('wizPickHint');
+  const wizPickSearchEl=document.getElementById('wizPickSearch');
+  if(wizPickSearchEl)wizPickSearchEl.placeholder=t('wizPickSearch');
+  const wizPickConfirmEl=document.getElementById('wizPickConfirmBtn');
+  if(wizPickConfirmEl)wizPickConfirmEl.childNodes[0].textContent=t('wizPickSelect')+' ';
+  document.querySelectorAll('.wizTagsLabel').forEach((el,i)=>{
+    el.textContent=i===0?t('wizCatSpecial'):t('wizCatFeatures');
+  });
+  const wizTitleEl=document.getElementById('wizTitle');
+  if(wizTitleEl)wizTitleEl.placeholder=t('wizTitlePlaceholder');
+  const wizDescEl=document.getElementById('wizDesc');
+  if(wizDescEl)wizDescEl.placeholder=t('wizDescPlaceholder');
+  // Теги визарда
+  const tagMap={isTaharatkhana:'wizTagTaharatkhana',isFree:'wizTagFree',isOpen:'wizTagOpen',hasSoap:'wizTagSoap',hasPaper:'wizTagPaper',isAccessible:'wizTagAccessible'};
+  document.querySelectorAll('.tagToggle').forEach(el=>{
+    const key=tagMap[el.dataset.tag];
+    if(key){ const span=el.querySelectorAll('span')[1]; if(span)span.textContent=t(key); }
+  });
+  // Кнопки визарда
+  document.querySelectorAll('.wizBtnPrev').forEach(el=>el.textContent=t('wizPrev'));
+  document.querySelectorAll('.wizBtnNext:not(#wizSaveBtn)').forEach(el=>el.textContent=t('wizNext'));
+  const wizSaveBtnEl=document.getElementById('wizSaveBtn');
+  if(wizSaveBtnEl)wizSaveBtnEl.innerHTML=`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> ${t('wizSave')}`;
+  const wizPreviewNewBadgeEl=document.getElementById('wizPreviewNewBadge');
+  if(wizPreviewNewBadgeEl)wizPreviewNewBadgeEl.textContent=t('wizNew');
+  // Кнопки "Назад" в сабвью
+  document.querySelectorAll('.adminBackBtn').forEach(el=>el.textContent=t('adminBack'));
+  // ── Модалки ──
+  const mTitleEl=document.querySelector('#authBox .mTitle');
+  if(mTitleEl)mTitleEl.innerHTML=t('loginTitle')+'<br><span class="mSub">Toilet Advisor Tashkent</span>';
+  const mNoticeEl=document.querySelector('#authBox .mNotice');
+  if(mNoticeEl)mNoticeEl.textContent=t('loginNotice');
+  const tabLoginEl=document.getElementById('tabLogin');
+  if(tabLoginEl)tabLoginEl.textContent=t('tabLogin');
+  const tabRegEl=document.getElementById('tabReg');
+  if(tabRegEl)tabRegEl.textContent=t('tabRegister');
+  const authActionEl=document.getElementById('authActionBtn');
+  if(authActionEl)authActionEl.textContent=authTab==='login'?t('loginAction'):t('registerAction');
+  const adminTitleEl=document.querySelector('#adminBox .mTitle');
+  if(adminTitleEl)adminTitleEl.textContent=t('adminLoginTitle');
+  // Обновляем текущий шаг визарда
+  const wizTitles={1:t('wizStep1Title'),2:t('wizStep2Title'),3:t('wizStep3Title')};
+  const wizStepTitleEl=document.getElementById('wizStepTitle');
+  if(wizStepTitleEl&&wizCurrentStep)wizStepTitleEl.textContent=wizTitles[wizCurrentStep]||'';
 }
 
 // ── LOGIN BTN ──
