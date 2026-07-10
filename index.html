@@ -2591,42 +2591,53 @@ function renderMarkers(){
 // ── MARKER SVGs ──
 function pinSVG(color, emoji){
   const gid='pg'+color.replace('#','');
-  const light=lighten(color,40);
-  return '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="60" viewBox="0 0 48 60">'
-    +'<defs><radialGradient id="'+gid+'" cx="38%" cy="28%" r="65%">'
-    +'<stop offset="0%" stop-color="'+light+'"/>'
-    +'<stop offset="100%" stop-color="'+color+'"/>'
-    +'</radialGradient></defs>'
-    +'<path d="M24 2C14.6 2 7 9.6 7 19c0 12.5 17 37 17 37S41 31.5 41 19C41 9.6 33.4 2 24 2z" fill="url(#'+gid+')" stroke="#0d1117" stroke-width="0.5" stroke-linejoin="round"/>'
-    +'<circle cx="24" cy="19" r="13" fill="rgba(255,255,255,0.96)"/>'
-    +'<g transform="translate(24,19)" fill="'+color+'">'
-    +'<circle cx="-4.5" cy="-5" r="2.2"/>'
-    +'<circle cx="4.5" cy="-5" r="2.2"/>'
-    +'<path d="M-7.5 -2 L-7.5 3 L-5.5 3 L-5.5 7 L-3.5 7 L-3.5 3 L-1.5 3 L-1.5 -2 Z"/>'
-    +'<path d="M1.5 -2 L1.5 7 L3.5 7 L3.5 3 L5.5 3 L5.5 7 L7.5 7 L7.5 -2 Z"/>'
-    +'</g>'
-    +'</svg>';
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="60" viewBox="0 0 48 60">
+  <defs>
+    <radialGradient id="${gid}" cx="38%" cy="28%" r="65%">
+      <stop offset="0%" stop-color="${lighten(color,40)}"/>
+      <stop offset="100%" stop-color="${color}"/>
+    </radialGradient>
+  </defs>
+  <path
+    d="M24 2C14.6 2 7 9.6 7 19c0 12.5 17 37 17 37S41 31.5 41 19C41 9.6 33.4 2 24 2z"
+    fill="url(#${gid})"
+    stroke="#0d1117"
+    stroke-width="0.5"
+    stroke-linejoin="round"/>
+  <circle cx="24" cy="19" r="13" fill="rgba(255,255,255,0.96)"/>
+  <foreignObject x="11" y="6" width="26" height="26">
+    <div xmlns="http://www.w3.org/1999/xhtml"
+      style="width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1;">
+      ${emoji}
+    </div>
+  </foreignObject>
+</svg>`;
 }
 
 function mosqueSVG(){
   const color='#C8820A';
   const gid='pgmosque';
-  const light=lighten(color,40);
-  return '<svg xmlns="http://www.w3.org/2000/svg" width="52" height="64" viewBox="0 0 48 60">'
-    +'<defs><radialGradient id="'+gid+'" cx="38%" cy="28%" r="65%">'
-    +'<stop offset="0%" stop-color="'+light+'"/>'
-    +'<stop offset="100%" stop-color="'+color+'"/>'
-    +'</radialGradient></defs>'
-    +'<path d="M24 2C14.6 2 7 9.6 7 19c0 12.5 17 37 17 37S41 31.5 41 19C41 9.6 33.4 2 24 2z" fill="url(#'+gid+')" stroke="#0d1117" stroke-width="0.5" stroke-linejoin="round"/>'
-    +'<circle cx="24" cy="19" r="13" fill="rgba(255,255,255,0.96)"/>'
-    +'<g transform="translate(24,19)" fill="'+color+'">'
-    +'<rect x="-6" y="-1" width="12" height="8" rx="1"/>'
-    +'<rect x="-4" y="-4" width="8" height="4" rx="1"/>'
-    +'<ellipse cx="0" cy="-4" rx="3" ry="2.5"/>'
-    +'<rect x="-1.5" y="-8" width="3" height="4"/>'
-    +'<circle cx="0" cy="-8.5" r="1.2"/>'
-    +'</g>'
-    +'</svg>';
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="52" height="64" viewBox="0 0 48 60">
+  <defs>
+    <radialGradient id="${gid}" cx="38%" cy="28%" r="65%">
+      <stop offset="0%" stop-color="${lighten(color,40)}"/>
+      <stop offset="100%" stop-color="${color}"/>
+    </radialGradient>
+  </defs>
+  <path
+    d="M24 2C14.6 2 7 9.6 7 19c0 12.5 17 37 17 37S41 31.5 41 19C41 9.6 33.4 2 24 2z"
+    fill="url(#${gid})"
+    stroke="#0d1117"
+    stroke-width="0.5"
+    stroke-linejoin="round"/>
+  <circle cx="24" cy="19" r="13" fill="rgba(255,255,255,0.96)"/>
+  <foreignObject x="11" y="6" width="26" height="26">
+    <div xmlns="http://www.w3.org/1999/xhtml"
+      style="width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1;">
+      🕌
+    </div>
+  </foreignObject>
+</svg>`;
 }
 
 function lighten(hex, amount=55){
