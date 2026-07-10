@@ -3697,7 +3697,7 @@ function showToast(msg){
 function _removeToast(el){
   el.classList.remove('show');
   el.classList.add('hide');
-  setTimeout(()=>{ if(el.parentNode) el.parentNode.removeChild(el); }, 240);
+  setTimeout(()=>{ if(el.parentNode) el.parentNode.removeChild(el); }, 600);
 }
 
 // ── OFFLINE BANNER ──
