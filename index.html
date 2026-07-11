@@ -3442,13 +3442,16 @@ function showAdminSubview(id){
   if(id==='addForm'){
     document.getElementById('adminSubAddForm').classList.remove('hidden');
     wizReset();
-    _wizInProgress = true; // мастер запущен
+    _wizInProgress = true;
+    _activeAdminSubview = 'addForm';
   } else if(id==='moderation'){
     document.getElementById('adminSubModeration').classList.remove('hidden');
     loadModerationReviews();
+    _activeAdminSubview = 'moderation';
   } else if(id==='logs'){
     document.getElementById('adminSubLogs').classList.remove('hidden');
     loadActivityLogs();
+    _activeAdminSubview = 'logs';
   }
 }
 async function loadModerationReviews(){
