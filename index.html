@@ -658,14 +658,18 @@ body.dark .rvSkLine{background:var(--border);}
 <style>
 /* ===== OVERLAYS & MODALS ===== */
 .overlay{
-  position:fixed;inset:0;z-index:50;
+  position:fixed;
+  /* Фиксируем жёстко — игнорируем viewport resize от клавиатуры */
+  top:0;left:0;right:0;bottom:0;
+  z-index:50;
   background:rgba(0,0,0,.52);
   display:flex;align-items:flex-end;
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
   animation:fadeIn .2s ease;
-  /* Не двигаемся при клавиатуре — overflow:visible чтобы mBox скроллился */
   overflow:visible;
+  /* Запрещаем браузеру двигать overlay при появлении клавиатуры */
+  touch-action:none;
 }
 .overlay.hidden{display:none!important;}
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
@@ -681,22 +685,26 @@ body.dark .rvSkLine{background:var(--border);}
   box-shadow:
     0 -4px 40px rgba(0,0,0,0.13),
     inset 0 1px 0 rgba(255,255,255,0.9);
-  padding:0 20px 36px;
+  padding:0 20px 40px;
   width:100%;
-  /* Фиксированная высота — не прыгает при клавиатуре */
-  max-height:72vh;
+  /* Фиксированная высота — не прыгает. Пользователь скроллит сам внутри */
+  max-height:75vh;
+  min-height:auto;
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
+  /* Разрешаем скролл внутри */
+  touch-action:pan-y;
   animation:slideUp .3s cubic-bezier(.32,1,.46,1);
   position:relative;
   transform:none!important;
+  will-change:transform;
 }
 body.dark .mBox{
-  background:rgba(22,22,26,0.88);
-  border-color:rgba(255,255,255,0.10);
+  background:rgba(22,22,26,0.92);
+  border-color:rgba(255,255,255,0.12);
   box-shadow:
     0 -4px 40px rgba(0,0,0,0.5),
-    inset 0 1px 0 rgba(255,255,255,0.06);
+    inset 0 1px 0 rgba(255,255,255,0.07);
 }
 @keyframes slideUp{from{transform:translateY(60px);opacity:0;}to{transform:translateY(0);opacity:1;}}
 
