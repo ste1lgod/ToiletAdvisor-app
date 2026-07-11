@@ -3343,7 +3343,14 @@ initDrag(document.getElementById('adminDrag'),document.getElementById('adminBox'
 <script>
 // ── AUTH ──
 function openAuthModal(){document.getElementById('authOverlay').classList.remove('hidden');}
-function openAdminLogin(){closeOverlay('authOverlay');document.getElementById('adminOverlay').classList.remove('hidden');}
+function openAdminLogin(){
+  if(currentUser){
+    showToast('Выйдите из текущего аккаунта перед входом в другой');
+    return;
+  }
+  closeOverlay('authOverlay');
+  document.getElementById('adminOverlay').classList.remove('hidden');
+}
 function closeOverlay(id){document.getElementById(id).classList.add('hidden');}
 function overlayBgClick(e,id){if(e.target.id===id)closeOverlay(id);}
 function toggleEye(id){
