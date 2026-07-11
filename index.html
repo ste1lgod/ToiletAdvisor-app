@@ -2563,6 +2563,27 @@ let addCoords=null,myMap=null,searchTimer=null;
 let userCoords=null,userPlacemark=null;
 try{const s=localStorage.getItem('ta_user');if(s)currentUser=JSON.parse(s);}catch(e){}
 
+// При старте — дотягиваем ник из Firestore если он не был сохранён в localStorage
+async function _syncUserNick(){
+  if(!currentUser||!currentUser.id)return;
+  if(currentUser.nick)return; // ник уже есть — не запрашиваем
+  try{
+    await _loadFirebase();
+    const doc=await db.collection('users').doc(currentUser.id).get();
+    if(doc.exists){
+      const data=doc.data();
+      if(data.nick){
+        currentUser.nick=data.nick;
+        localStorage.setItem('ta_user',JSON.stringify(currentUser));
+        updateLoginBtn();
+        // Если профиль уже открыт — обновляем поле
+        const nickInput=document.getElementById('pNickInput');
+        if(nickInput&&!nickInput.value)nickInput.value=data.nick;
+      }
+    }
+  }catch(e){console.warn('_syncUserNick:',e.message);}
+}
+
 // Кэш хэшей паролей — не пересчитываем одно и то же
 const _hashCache={};
 async function hashPassword(pass){
