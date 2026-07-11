@@ -3678,6 +3678,9 @@ async function saveNick(nick){
       const snap=await db.collection('reviews').where('userId','==',currentUser.id).limit(100).get();
       const batch=db.batch();
       snap.docs.forEach(doc=>batch.update(doc.ref,{userPhone:displayName}));
+      // Обновляем actorName и actorNick в логах
+      const logSnap=await db.collection('logs').where('actorId','==',currentUser.id).limit(200).get();
+      logSnap.docs.forEach(doc=>batch.update(doc.ref,{actorName:displayName,actorNick:displayName}));
       await batch.commit();
     }
   }catch(e){console.warn('saveNick error:',e);}
