@@ -1298,6 +1298,104 @@ body.dark .statBadgeRed{background:rgba(239,68,68,0.18);color:#f87171;}
   font-size:13px;padding:40px 0;
 }
 
+/* ===== SKELETON LOADERS ===== */
+@keyframes skeletonShimmer{
+  0%{background-position:200% 0;}
+  100%{background-position:-200% 0;}
+}
+.skeletonBase{
+  background:linear-gradient(90deg,
+    var(--border) 25%,
+    rgba(255,255,255,0.4) 50%,
+    var(--border) 75%);
+  background-size:200% 100%;
+  animation:skeletonShimmer 1.5s ease-in-out infinite;
+  border-radius:8px;
+}
+body.dark .skeletonBase{
+  background:linear-gradient(90deg,
+    rgba(255,255,255,0.06) 25%,
+    rgba(255,255,255,0.12) 50%,
+    rgba(255,255,255,0.06) 75%);
+  background-size:200% 100%;
+  animation:skeletonShimmer 1.5s ease-in-out infinite;
+}
+/* Карточка-скелетон для модерации/логов */
+.skCard{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:16px;
+  margin-bottom:10px;
+  display:flex;flex-direction:column;gap:10px;
+}
+.skRow{display:flex;align-items:center;gap:12px;}
+.skCircle{
+  width:42px;height:42px;border-radius:50%;flex-shrink:0;
+}
+.skLine{height:10px;}
+.skLine.w80{width:80%;}
+.skLine.w60{width:60%;}
+.skLine.w40{width:40%;}
+.skLine.w30{width:30%;}
+
+/* Карточка-скелетон для избранного */
+.skFavCard{
+  background:rgba(255,255,255,0.72);
+  backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
+  border:1.5px solid rgba(236,72,153,0.25);
+  border-radius:24px;
+  padding:14px;
+  margin-bottom:12px;
+  display:flex;align-items:center;gap:12px;
+  min-height:80px;
+}
+body.dark .skFavCard{
+  background:rgba(30,20,35,0.72);
+  border-color:rgba(236,72,153,0.2);
+}
+.skFavCircle{width:42px;height:42px;border-radius:50%;flex-shrink:0;}
+.skFavBody{flex:1;display:flex;flex-direction:column;gap:8px;}
+
+/* Скелетон сводки статистики */
+.skStatCard{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:14px;
+  display:flex;flex-direction:column;gap:8px;
+  min-height:80px;
+}
+
+/* ===== REFRESH BUTTON ===== */
+.refreshBtn{
+  display:flex;align-items:center;justify-content:center;
+  width:36px;height:36px;
+  background:var(--card);
+  border:1.5px solid var(--border);
+  border-radius:50%;
+  cursor:pointer;
+  color:var(--text);
+  box-shadow:0 1px 4px rgba(0,0,0,0.08);
+  transition:border-color .2s, color .2s, box-shadow .2s;
+  flex-shrink:0;position:relative;z-index:1;
+}
+.refreshBtn:active{transform:scale(.9);}
+.refreshBtn svg{transition:color .2s;}
+.refreshBtn.loading{
+  border-color:var(--green);
+  color:var(--green);
+  box-shadow:0 0 0 3px rgba(0,168,89,0.12);
+}
+.refreshBtn.loading svg{
+  animation:spinRefresh .7s linear infinite;
+}
+@keyframes spinRefresh{
+  from{transform:rotate(0deg);}
+  to{transform:rotate(360deg);}
+}
+
 
 /* Admin subviews */
 .adminSubview{display:flex;flex-direction:column;gap:10px;width:100%;}
