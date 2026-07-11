@@ -3822,6 +3822,12 @@ async function saveNick(nick){
   const trimmed=nick.trim();
   currentUser.nick=trimmed;
   localStorage.setItem('ta_user',JSON.stringify(currentUser));
+  // Сразу обновляем кэш пользователей в памяти
+  if(_usersCache[currentUser.id]){
+    _usersCache[currentUser.id].nick=trimmed;
+  } else {
+    _usersCache[currentUser.id]={nick:trimmed,phone:currentUser.phone||'',login:currentUser.login||'',role:currentUser.role||'user'};
+  }
   updateLoginBtn();
   try{
     await _loadFirebase();
