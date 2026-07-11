@@ -3385,7 +3385,18 @@ function switchTab(tab){
       addCoords=null;
       // Не сбрасываем если мастер добавления уже активен (пользователь вернулся с другой вкладки)
       if(!_skipAdminDashboard && !_wizInProgress) {
-        showAdminDashboard();
+        // Восстанавливаем активную вкладку если была открыта
+        if(_activeAdminSubview && _activeAdminSubview !== 'addForm'){
+          document.getElementById('adminDashboard').style.display='none';
+          document.querySelectorAll('.adminSubview').forEach(el=>el.classList.add('hidden'));
+          if(_activeAdminSubview==='moderation'){
+            document.getElementById('adminSubModeration').classList.remove('hidden');
+          } else if(_activeAdminSubview==='logs'){
+            document.getElementById('adminSubLogs').classList.remove('hidden');
+          }
+        } else {
+          showAdminDashboard();
+        }
       } else if(_wizInProgress) {
         // Восстанавливаем вид мастера
         document.getElementById('adminDashboard').style.display='none';
