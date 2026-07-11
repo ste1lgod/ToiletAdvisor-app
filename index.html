@@ -3595,11 +3595,20 @@ function loadProfile(){
     badge.style.background='rgba(124,58,237,0.15)';
     badge.style.color='#7c3aed';
     badge.style.border='1px solid rgba(124,58,237,0.3)';
+    // Обводка статистики под цвет роли
+    const c1=document.getElementById('pStatReviewsCard');
+    const c2=document.getElementById('pStatFavCard');
+    if(c1)c1.style.borderColor='#7c3aed';
+    if(c2)c2.style.borderColor='#7c3aed';
   } else {
     badge.textContent='✦ User';
     badge.style.background='rgba(59,130,246,0.12)';
     badge.style.color='#2563eb';
     badge.style.border='1px solid rgba(59,130,246,0.3)';
+    const c1=document.getElementById('pStatReviewsCard');
+    const c2=document.getElementById('pStatFavCard');
+    if(c1)c1.style.borderColor='var(--green)';
+    if(c2)c2.style.borderColor='var(--green)';
   }
 
   // Статистика — грузим в фоне
