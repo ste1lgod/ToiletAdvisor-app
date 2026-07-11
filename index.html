@@ -4323,6 +4323,13 @@ function renderFavorites(){
     list.innerHTML='<p style="text-align:center;color:var(--text2);font-size:13px;padding:10px 0;">Нет избранных туалетов</p>';
     return;
   }
+  // Если туалеты ещё не загружены — показываем скелетоны
+  if(!allToilets.length){
+    list.innerHTML=_skFavCards(favs.length);
+    // Повторяем рендер когда данные придут
+    setTimeout(()=>{ if(allToilets.length) renderFavorites(); }, 1200);
+    return;
+  }
   // Заголовок секции по центру
   const favSection=document.getElementById('pFavSection');
   if(favSection){
