@@ -3628,11 +3628,20 @@ async function saveNick(nick){
   const trimmed=nick.trim();
   currentUser.nick=trimmed;
   localStorage.setItem('ta_user',JSON.stringify(currentUser));
-  // Сохраняем в Firestore
+  updateLoginBtn();
   try{
     await _loadFirebase();
+    // Сохраняем ник в профиле пользователя
     await db.collection('users').doc(currentUser.id).set({nick:trimmed},{merge:true});
-  }catch(e){}
+    // Обновляем userPhone (отображаемое имя) во всех отзывах пользователя
+    if(trimmed){
+      const displayName=trimmed;
+      const snap=await db.collection('reviews').where('userId','==',currentUser.id).limit(100).get();
+      const batch=db.batch();
+      snap.docs.forEach(doc=>batch.update(doc.ref,{userPhone:displayName}));
+      await batch.commit();
+    }
+  }catch(e){console.warn('saveNick error:',e);}
 }
 
 // ── ИЗБРАННОЕ (localStorage) ──
