@@ -756,11 +756,21 @@ body.dark .chkGrid label:has(input:checked){background:#0a2e1c;border-color:var(
 #pNickInput::placeholder{color:var(--text2);}
 .pFavItem{
   display:flex;align-items:center;gap:14px;
-  padding:12px 0;
-  border-bottom:1px solid var(--border);
+  padding:14px 16px;
+  background:rgba(255,255,255,0.06);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border-radius:20px;
+  border:1.5px solid rgba(236,72,153,0.35);
+  margin-bottom:10px;
   transition:opacity .15s;
+  box-shadow:0 2px 12px rgba(236,72,153,0.08);
 }
-.pFavItem:last-child{border-bottom:none;padding-bottom:0;}
+body.dark .pFavItem{
+  background:rgba(255,255,255,0.04);
+  border-color:rgba(236,72,153,0.3);
+}
+.pFavItem:last-child{margin-bottom:0;}
 .pFavItem:active{opacity:.7;}
 .pFavItem-info{flex:1;min-width:0;cursor:pointer;}
 .pFavItem-title{font-size:16px;font-weight:700;color:var(--text);white-space:normal;word-break:break-word;}
