@@ -4204,8 +4204,11 @@ function loadProfile(){
   if(statFav)statFav.textContent=favs.length;
   if(statReviews)statReviews.textContent='…';
 
-  // Рендерим избранное синхронно
+  // Рендерим избранное синхронно из кэша
   renderFavorites();
+
+  // Затем подтягиваем актуальные данные из Firestore в фоне
+  _loadFavoritesFromFirestore();
 
   // Грузим кол-во отзывов асинхронно
   loadProfileStats();
