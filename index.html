@@ -4009,6 +4009,7 @@ function switchTab(tab){
   } else if(tab==='profile'){
     const ps=document.getElementById('profileScreen');
     ps.classList.remove('hidden');
+    ps.style.display='flex';
     loadProfile();
   }
 }
