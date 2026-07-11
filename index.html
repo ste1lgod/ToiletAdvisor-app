@@ -3239,7 +3239,8 @@ function renderReviews(reviews){
   if(!reviews.length){c.innerHTML=`<p class="rvNoReviews">${t('noReviews')}</p>`;return;}
   const sorted=[...reviews].sort((a,b)=>new Date(a.createdAt)-new Date(b.createdAt));
   c.innerHTML=sorted.map(r=>{
-    const name=r.userPhone||r.userLogin||'Аноним';
+    // Всегда берём актуальный ник из кэша, fallback — сохранённое имя
+    const name=_getActualName(r.userId, r.userPhone||r.userLogin||'Аноним');
     const col=COLORS[name.charCodeAt(0)%COLORS.length];
     const ini=name.replace(/\+/g,'').slice(0,2).toUpperCase();
     const stars=('★'.repeat(r.rating)+'☆'.repeat(5-r.rating)).split('').join(' ');
