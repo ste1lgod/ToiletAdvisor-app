@@ -3878,12 +3878,19 @@ async function doAdminLogin(){
   }
 }
 function doLogout(){
-  // Логируем до сброса currentUser
   const who = currentUser ? (currentUser.phone || currentUser.login || '?') : '?';
   const role = currentUser?.role || 'user';
   logAction({ type:'auth', category:'auth', action:t('logLogout'), detail:`${role === 'admin' ? t('logAdmin') : t('logUser')}: ${who}` });
-  currentUser=null;localStorage.removeItem('ta_user');
-  updateLoginBtn();switchTab('map');showToast(t('toastLogout'));
+  currentUser=null;
+  localStorage.removeItem('ta_user');
+  updateLoginBtn();
+  switchTab('map');
+  showToast(t('toastLogout'));
+  // Сбрасываем профиль в состояние "гость"
+  const guest=document.getElementById('pGuestView');
+  const user=document.getElementById('pUserView');
+  if(guest)guest.style.cssText='display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:16px;padding:40px 24px;';
+  if(user)user.style.display='none';
 }
 </script>
 
