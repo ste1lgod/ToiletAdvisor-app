@@ -57,7 +57,14 @@ async function main() {
     console.log('   ✅ Admin создан: логин "admin", пароль "admin123"');
   }
 
-  // ── 1b. Второй админ ──────────────────────────────────────
+  // ── 1b. Второй админ (пересоздаём если нужно) ────────────
+  // Удаляем старый admin2 с неправильными данными если есть
+  const oldAdmin2 = await db.collection('users').doc('admin2').get();
+  if (oldAdmin2.exists && oldAdmin2.data().login !== 'admin777') {
+    await db.collection('users').doc('admin2').delete();
+    console.log('   🗑 Старый admin2 удалён');
+  }
+
   const admin2Snap = await db.collection('users')
     .where('login', '==', 'admin777').where('role', '==', 'admin').limit(1).get();
 
