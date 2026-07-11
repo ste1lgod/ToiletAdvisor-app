@@ -3601,21 +3601,36 @@ function resetReviewForm(){
 
 <script>
 // ── REVIEWS ──
+// Кэш отзывов: { toiletId: { ts: timestamp, data: [] } }
+const _reviewsCache = {};
+const _REVIEWS_CACHE_TTL = 60000; // 60 секунд
+
 async function getReviews(id){
+  // Возвращаем кэш если он свежий
+  const cached = _reviewsCache[id];
+  if(cached && Date.now() - cached.ts < _REVIEWS_CACHE_TTL){
+    return cached.data;
+  }
   await _loadFirebase();
+  let result = [];
   try{
     const snap=await db.collection('reviews')
       .where('toiletId','==',id)
       .orderBy('createdAt','desc')
       .limit(50)
       .get();
-    return snap.docs.map(d=>({id:d.id,...d.data()}));
+    result = snap.docs.map(d=>({id:d.id,...d.data()}));
   }catch(e){
-    console.warn('[getReviews] indexed query failed, reason:',e.code, e.message);
-    // Fallback — simple where без orderBy (медленнее, но работает без индекса)
+    // Fallback без orderBy
     const snap=await db.collection('reviews').where('toiletId','==',id).limit(50).get();
-    return snap.docs.map(d=>({id:d.id,...d.data()}));
+    result = snap.docs.map(d=>({id:d.id,...d.data()}));
   }
+  _reviewsCache[id] = { ts: Date.now(), data: result };
+  return result;
+}
+// Инвалидируем кэш после добавления нового отзыва
+function _invalidateReviewCache(toiletId){
+  delete _reviewsCache[toiletId];
 }
 function formatReviewText(text){
   const normalized=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').trim();
