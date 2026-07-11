@@ -3887,15 +3887,15 @@ function doLogout(){
 
 <script>
 // ── TABS ──
-// Двойной клик на Admin — при повторном нажатии (в любое время) возвращает в дашборд
+// Кнопка Admin: первый клик — открывает панель, повторный (в любое время) — возврат в дашборд
 let _adminNavLastClick=0;
 function onAdminNavClick(){
-  const isAlreadyOnAdd = document.querySelector('.navCenter.active') !== null;
+  const isAlreadyOnAdd=document.querySelector('.navCenter.active')!==null;
   if(isAlreadyOnAdd){
-    // Уже на вкладке Add — любое нажатие возвращает в дашборд
+    // Уже на вкладке — любое повторное нажатие возвращает в дашборд
     showAdminDashboard();
-    const addScreen = document.getElementById('addScreen');
-    if(addScreen) addScreen.scrollTo({top:0, behavior:'smooth'});
+    const addScreen=document.getElementById('addScreen');
+    if(addScreen)addScreen.scrollTo({top:0,behavior:'smooth'});
   } else {
     switchTab('add');
   }
