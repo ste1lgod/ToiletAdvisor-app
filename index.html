@@ -713,43 +713,14 @@ body.dark .chkGrid label:has(input:checked){background:#0a2e1c;border-color:var(
 .hidden{display:none!important;}
 
 /* ===== PROFILE SCREEN ===== */
-#profileScreen{gap:0;padding-left:16px;padding-right:16px;justify-content:flex-start;padding-top:calc(env(safe-area-inset-top,0px) + 25vh);padding-bottom:calc(var(--nav-offset) + 16px);}
-
-
-/* Profile avatar block */
-#pAvatarWrap{
-  width:80px;height:80px;border-radius:50%;
-  background:var(--green);
-  display:flex;align-items:center;justify-content:center;
-  font-size:32px;font-weight:700;color:#fff;
-  box-shadow:0 4px 20px rgba(1,148,81,0.3);
-  margin-bottom:12px;
-  flex-shrink:0;
+#profileScreen{
+  gap:0;padding-left:16px;padding-right:16px;
+  justify-content:flex-start;
+  padding-top:calc(env(safe-area-inset-top,0px) + 16px);
+  padding-bottom:calc(var(--nav-offset) + 16px);
+  align-items:stretch;
 }
-#pHeader{font-size:20px;font-weight:700;color:var(--text);font-family:var(--font);text-align:center;}
-#pSub{font-size:13px;color:var(--text2);margin-top:4px;text-align:center;}
-#pInfoCard{
-  width:100%;margin-top:20px;
-  background:var(--card);border-radius:var(--r);
-  box-shadow:var(--sh);
-  overflow:hidden;
-}
-.pInfoRow{
-  display:flex;align-items:center;gap:12px;
-  padding:14px 18px;border-bottom:1px solid var(--border);
-  font-size:14px;color:var(--text);
-}
-.pInfoRow:last-child{border-bottom:none;}
-.pInfoLabel{font-size:12px;font-weight:600;color:var(--text2);min-width:72px;}
-.pInfoVal{font-weight:600;color:var(--text);flex:1;}
-#pLogoutBtn{
-  margin-top:16px;width:100%;padding:14px;
-  background:#ef4444;color:#fff;border:none;
-  border-radius:var(--rs);font-size:14px;font-weight:700;
-  cursor:pointer;font-family:var(--font);
-  box-shadow:0 4px 14px rgba(239,68,68,0.3);
-}
-#pLogoutBtn:active{opacity:.85;}
+#pGuestView{flex:1;}
 
 /* Admin denied */
 #adminDeniedScreen{
