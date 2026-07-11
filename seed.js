@@ -41,7 +41,7 @@ const SEED_TOILETS = [
 
 async function main() {
   // ── 1. Admin-аккаунт ──────────────────────────────────────
-  console.log('\n👤 Создаём admin-аккаунт...');
+  console.log('\n👤 Создаём admin-аккаунты...');
   const adminSnap = await db.collection('users')
     .where('role', '==', 'admin').limit(1).get();
 
@@ -55,6 +55,23 @@ async function main() {
       createdAt: new Date().toISOString()
     });
     console.log('   ✅ Admin создан: логин "admin", пароль "admin123"');
+  }
+
+  // ── 1b. Второй админ ──────────────────────────────────────
+  const admin2Snap = await db.collection('users')
+    .where('login', '==', 'admin').where('role', '==', 'admin').limit(1).get();
+
+  const existingAdmin2 = admin2Snap.docs.find(d => d.data().passwordHash === hashPassword('admin777'));
+  if (existingAdmin2) {
+    console.log('   ✅ Admin (admin777) уже существует, пропускаем');
+  } else {
+    await db.collection('users').doc('admin2').set({
+      login: 'admin',
+      passwordHash: hashPassword('admin777'),
+      role: 'admin',
+      createdAt: new Date().toISOString()
+    });
+    console.log('   ✅ Admin2 создан: логин "admin", пароль "admin777"');
   }
 
   // ── 2. Туалеты ────────────────────────────────────────────
