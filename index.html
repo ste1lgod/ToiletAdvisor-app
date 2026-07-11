@@ -3851,7 +3851,7 @@ function saveFavorites(favs){
 function isFavorite(toiletId){
   return getFavorites().some(f=>f.id===toiletId);
 }
-function toggleFavorite(toiletId){
+async function toggleFavorite(toiletId){
   if(!currentUser){openAuthModal();return;}
   const favs=getFavorites();
   const idx=favs.findIndex(f=>f.id===toiletId);
@@ -3862,14 +3862,29 @@ function toggleFavorite(toiletId){
     showToast('Убрано из избранного');
     logAction({type:'fav',category:'fav',action:t('logRemovedFav'),detail:`${t('logToilet')}: ${removed?.title||toiletId}`});
   } else {
-    const toilet=allToilets.find(t=>t.id===toiletId);
+    const toilet=allToilets.find(x=>x.id===toiletId);
     if(!toilet)return;
-    // Геокодируем координаты туалета, а не текущую точку на карте
-    const addr=toilet.addr||toilet.description||'';
+    // Геокодируем реальный адрес по координатам туалета
+    let addr='';
+    try{
+      addr=await wizGeocode(toilet.lat,toilet.lon);
+    }catch(e){
+      addr=`${toilet.lat.toFixed(4)}, ${toilet.lon.toFixed(4)}`;
+    }
+    // Сохраняем геокодированный адрес обратно в Firestore (один раз)
+    if(addr && !toilet.addr){
+      toilet.addr=addr;
+      try{
+        await _loadFirebase();
+        await db.collection('toilets').doc(toilet.id).set({addr},{merge:true});
+      }catch(e){}
+    }
     favs.push({id:toilet.id,title:toilet.title,addr:addr,lat:toilet.lat,lon:toilet.lon});
     saveFavorites(favs);
     showToast('Добавлено в избранное ❤️');
     logAction({type:'fav',category:'fav',action:t('logAddedFav'),detail:`${t('logToilet')}: ${toilet.title}`});
+    // Обновляем карточку избранного если профиль открыт
+    renderFavorites();
   }
   updateFavBtn(toiletId);
 }
