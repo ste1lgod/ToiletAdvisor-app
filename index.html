@@ -3655,6 +3655,7 @@ let wizCurrentStep = 1;
 let wizPickMode = false;
 let _wizGeocodeTimer = null;
 let _wizInProgress = false; // true пока мастер добавления активен (шаг 1/2/3)
+let _activeAdminSubview = null; // запоминаем активную вкладку ('moderation'|'logs'|'addForm')
 
 // Управление оверлеем через класс .active — display:none на родителе скрывает всё включая position:fixed детей
 function _wizShowOverlay(){
