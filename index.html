@@ -2607,7 +2607,8 @@ function setLang(l){
 function updateLoginBtn(){
   const btn=document.getElementById('loginBtn');
   if(currentUser){
-    const label=currentUser.phone||currentUser.login||'';
+    const nick=currentUser.nick||'';
+    const label=nick||currentUser.phone||currentUser.login||'';
     btn.textContent=currentUser.role==='admin'?`⚙️ ${label}`:`👤 ${maskPhone(label)}`;
     btn.style.background=currentUser.role==='admin'?'#7c3aed':'var(--green)';
   } else {
