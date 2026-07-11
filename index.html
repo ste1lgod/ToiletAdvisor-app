@@ -5487,27 +5487,8 @@ setLang(currentLang);
 applyTheme();
 updateLoginBtn();
 
-// ── KEYBOARD LIFT — visualViewport API ──
-// Поднимаем .overlay когда появляется клавиатура (iOS/Android)
-(function(){
-  if(!window.visualViewport)return;
-  let _kbTimer=null;
-  function onViewportResize(){
-    clearTimeout(_kbTimer);
-    _kbTimer=setTimeout(()=>{
-      const vv=window.visualViewport;
-      const windowH=window.innerHeight;
-      const viewportH=vv.height;
-      // Высота клавиатуры = разница между окном и видимой областью
-      const kbH=Math.max(0,windowH-viewportH-vv.offsetTop);
-      document.querySelectorAll('.overlay:not(.hidden)').forEach(el=>{
-        el.style.paddingBottom=kbH>50?kbH+'px':'';
-      });
-    },50);
-  }
-  window.visualViewport.addEventListener('resize',onViewportResize);
-  window.visualViewport.addEventListener('scroll',onViewportResize);
-})();
+// ── KEYBOARD LIFT — ОТКЛЮЧЕНО ──
+// Модалки фиксированы, пользователь скроллит сам если нужно
 
 switchTab('map');
 // Подтягиваем ник пользователя из Firestore при старте (если не был сохранён)
