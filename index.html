@@ -2288,6 +2288,41 @@ body.dark #wizPickAddressBar{border-color:rgba(255,255,255,0.10);}
     <div id="logsList"><p style="text-align:center;color:var(--text2);font-size:13px;padding:20px 0;">Загрузка...</p></div>
   </div>
 
+  <!-- Сабвью: статистика -->
+  <div id="adminSubStats" class="adminSubview hidden">
+    <!-- Шапка -->
+    <div style="position:relative;display:flex;align-items:center;min-height:36px;margin-bottom:16px;">
+      <button class="adminBackBtn" style="margin-bottom:0;flex-shrink:0;padding:8px 14px;position:relative;z-index:1;" onclick="showAdminDashboard()">‹ Назад</button>
+      <div style="position:absolute;left:0;right:0;text-align:center;font-size:15px;font-weight:800;color:var(--text);letter-spacing:-.3px;pointer-events:none;">📊 Статистика</div>
+      <div style="flex:1;"></div>
+      <button onclick="loadAdminStats()" style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;background:var(--green);color:#fff;border:none;border-radius:50%;cursor:pointer;box-shadow:0 2px 8px rgba(0,168,89,0.3);transition:opacity .15s;flex-shrink:0;position:relative;z-index:1;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/></svg>
+      </button>
+    </div>
+
+    <!-- Переключатель секций -->
+    <div id="statsTabRow" style="display:flex;gap:8px;margin-bottom:16px;">
+      <button class="logFilterChip active" data-stab="toilets" onclick="switchStatsTab('toilets',this)">🚻 Точки</button>
+      <button class="logFilterChip" data-stab="users" onclick="switchStatsTab('users',this)">👥 Пользователи</button>
+    </div>
+
+    <!-- Секция точек -->
+    <div id="statsTabToilets">
+      <!-- Сводка -->
+      <div id="statsSummaryToilets" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;"></div>
+      <!-- Список точек -->
+      <div id="statsToiletsList"></div>
+    </div>
+
+    <!-- Секция пользователей -->
+    <div id="statsTabUsers" style="display:none;">
+      <!-- Сводка -->
+      <div id="statsSummaryUsers" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;"></div>
+      <!-- Список пользователей -->
+      <div id="statsUsersList"></div>
+    </div>
+  </div>
+
 </div>
 
 <!-- AUTH MODAL -->
