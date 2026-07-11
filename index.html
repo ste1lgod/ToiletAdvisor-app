@@ -4050,6 +4050,8 @@ async function loadModerationReviews(){
   if(btn)btn.style.opacity='0.6';
   try{
     await _loadFirebase();
+    // Подгружаем кэш пользователей для актуальных ников
+    await _loadUsersCache();
     const snap=await db.collection('reviews').orderBy('createdAt','desc').limit(50).get();
     if(snap.empty){list.innerHTML='<p style="text-align:center;color:var(--text2);font-size:13px;">Отзывов нет</p>';return;}
 
