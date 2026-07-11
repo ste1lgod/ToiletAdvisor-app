@@ -3863,10 +3863,12 @@ function renderFavorites(){
     const titleEl=favSection.querySelector('div:first-child');
     if(titleEl)titleEl.style.textAlign='center';
   }
-  list.innerHTML=favs.map(f=>`
-    <div class="pFavItem">
+  list.innerHTML=favs.map(f=>{
+    const _t=allToilets.find(x=>x.id===f.id);
+    const _ico=_t?.isTaharatkhana?'🕌':'🚻';
+    return`<div class="pFavItem">
       <div class="pFavItem-body">
-        <div class="pFavItem-ico">🚻</div>
+        <div class="pFavItem-ico">${_ico}</div>
         <div class="pFavItem-info" onclick="openFavSheet('${f.id}')">
           <div class="pFavItem-title">${f.title}</div>
           <div class="pFavItem-addr">${f.addr||f.description||'Нет адреса'}</div>
