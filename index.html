@@ -3696,7 +3696,10 @@ function toggleFavorite(toiletId){
   } else {
     const toilet=allToilets.find(t=>t.id===toiletId);
     if(!toilet)return;
-    favs.push({id:toilet.id,title:toilet.title,description:toilet.description||'',lat:toilet.lat,lon:toilet.lon});
+    // Геокодируем адрес если он есть в адресной плашке
+    const addrEl=document.getElementById('wizPickAddressMain');
+    const addr=(addrEl&&addrEl.textContent&&addrEl.textContent!=='Определяю адрес...')?addrEl.textContent:'';
+    favs.push({id:toilet.id,title:toilet.title,addr:addr||toilet.description||'',lat:toilet.lat,lon:toilet.lon});
     saveFavorites(favs);
     showToast('Добавлено в избранное ❤️');
   }
