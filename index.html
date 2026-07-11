@@ -1978,7 +1978,7 @@ body.dark #wizPickAddressBar{border-color:rgba(255,255,255,0.10);}
               <span class="tagIco">🟢</span><span>Открыто</span><span class="tagChk"></span>
             </div>
             <div class="tagToggle" data-tag="hasSoap" onclick="wizToggleTag(this)">
-              <span class="tagIco">�</span><span>Мыло</span><span class="tagChk"></span>
+              <span class="tagIco">🧼</span><span>Мыло</span><span class="tagChk"></span>
             </div>
             <div class="tagToggle" data-tag="hasPaper" onclick="wizToggleTag(this)">
               <span class="tagIco">🧻</span><span>Бумага</span><span class="tagChk"></span>
@@ -3125,17 +3125,17 @@ document.getElementById('authNotice').addEventListener('click',openAuthModal);
   ['wizTitle','wizDesc'].forEach(id=>{
     const el=document.getElementById(id);
     if(!el)return;
+    const maxH = id==='wizTitle' ? 160 : 200;
     function resizeWiz(){
-      // Сбрасываем высоту до минимума чтобы scrollHeight пересчитался
-      el.style.height='52px';
+      el.style.height='auto';
+      // Принудительный reflow для iOS Safari
+      void el.offsetHeight;
       const scrollH = el.scrollHeight;
-      const maxH = id==='wizTitle' ? 160 : 200;
       el.style.height = Math.min(scrollH, maxH) + 'px';
       el.style.overflowY = scrollH > maxH ? 'auto' : 'hidden';
     }
     el.addEventListener('input', resizeWiz);
     el.addEventListener('change', resizeWiz);
-    // Инициализируем при показе шага
     el.addEventListener('focus', resizeWiz);
   });
 })();
