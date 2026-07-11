@@ -4968,8 +4968,8 @@ updateLoginBtn();
 })();
 
 switchTab('map');
-</script>
-<!-- FAV CONFIRM DIALOG -->
+// Подтягиваем ник пользователя из Firestore при старте (если не был сохранён)
+_syncUserNick();
 <div id="pFavConfirm">
   <div style="width:40px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 16px;"></div>
   <div style="font-size:17px;font-weight:700;color:var(--text);text-align:center;margin-bottom:6px;">Убрать из избранного?</div>
