@@ -3156,7 +3156,11 @@ async function openSheet(toilet){
 
   // Отзывы грузим в фоне после открытия
   try{
-    const reviews=await getReviews(toilet.id);
+    // Подгружаем кэш пользователей для актуальных ников (параллельно с отзывами)
+    const [reviews] = await Promise.all([
+      getReviews(toilet.id),
+      _loadUsersCache()
+    ]);
     // Проверяем что шторка всё ещё открыта и тот же туалет
     if(!isSheetOpen||selectedToilet?.id!==toilet.id)return;
     const avg=reviews.length?(reviews.reduce((s,r)=>s+r.rating,0)/reviews.length):0;
