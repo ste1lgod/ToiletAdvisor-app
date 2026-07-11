@@ -3782,18 +3782,34 @@ function loadProfile(){
 
 async function loadProfileStats(){
   if(!currentUser)return;
+  // Сразу ставим 0 чтобы не оставались прочерки
+  const el=document.getElementById('pStatReviews');
+  const favEl=document.getElementById('pStatFav');
+  if(el)el.textContent='0';
+  // Кол-во избранных — из localStorage (синхронно)
+  const favs=getFavorites();
+  if(favEl)favEl.textContent=favs.length;
   try{
     await _loadFirebase();
-    // Кол-во отзывов
-    const revSnap=await db.collection('reviews')
-      .where('userId','==',currentUser.id).limit(100).get();
-    const el=document.getElementById('pStatReviews');
-    if(el)el.textContent=revSnap.size;
-    // Кол-во избранных — из localStorage
-    const favs=getFavorites();
-    const favEl=document.getElementById('pStatFav');
-    if(favEl)favEl.textContent=favs.length;
-  }catch(e){}
+    // Пробуем найти отзывы по userId
+    let revSize=0;
+    try{
+      const revSnap=await db.collection('reviews')
+        .where('userId','==',currentUser.id).limit(200).get();
+      revSize=revSnap.size;
+    }catch(e2){
+      // Fallback: ищем по userPhone/login если индекс не работает
+      try{
+        const name=currentUser.nick||currentUser.phone||currentUser.login||'';
+        if(name){
+          const revSnap2=await db.collection('reviews')
+            .where('userPhone','==',name).limit(200).get();
+          revSize=revSnap2.size;
+        }
+      }catch(e3){console.warn('loadProfileStats fallback failed:',e3.message);}
+    }
+    if(el)el.textContent=revSize;
+  }catch(e){console.warn('loadProfileStats error:',e.message);}
 }
 
 async function saveNick(nick){
