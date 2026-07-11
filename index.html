@@ -4667,8 +4667,6 @@ async function loadActivityLogs(){
     renderLogs();
   }catch(e){
     list.innerHTML = `<p style="text-align:center;color:#ef4444;font-size:13px;padding:20px 0;">Ошибка: ${e.message}</p>`;
-  }finally{
-    if(btn) btn.style.opacity = '1';
   }
 }
 
