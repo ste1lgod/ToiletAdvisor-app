@@ -3647,20 +3647,18 @@ function renderLogs(){
     const whoBadge = `<span class="logItem-who${isAdmin ? ' admin-badge' : ''}">${isAdmin ? '⚙️ ' : ''}${log.actorName || '?'}</span>`;
     const detail = log.detail ? `<div class="logItem-detail">${log.detail}</div>` : '';
     return `<div class="logItem ${icoClass}">
-      <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 14px 10px;">
-        <div class="logItem-ico ${icoClass}">${icoSvg}</div>
-        <div class="logItem-body">
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 16px 12px;">
+        <div class="logItem-ico ${icoClass}" style="margin-top:2px;">${icoSvg}</div>
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
           <div class="logItem-action">${log.action || '—'}</div>
-          <div class="logItem-meta">
-            ${whoBadge}
-          </div>
+          <div class="logItem-meta">${whoBadge}</div>
         </div>
-        <div class="logItem-datetime">
+        <div class="logItem-datetime" style="flex-shrink:0;padding-top:2px;">
           <span class="logItem-date">${dateStr}</span>
           <span class="logItem-time">${timeStr}</span>
         </div>
       </div>
-      ${detail}
+      ${detail ? `<div style="height:1px;background:var(--border);margin:0 16px;opacity:0.7;"></div><div class="logItem-detail" style="margin:0 14px 14px;margin-top:10px;">${detail.replace('<div class="logItem-detail">','').replace('</div>','')}</div>` : ''}
     </div>`;
   }).join('');
 }
