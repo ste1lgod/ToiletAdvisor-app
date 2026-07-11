@@ -721,6 +721,37 @@ body.dark .chkGrid label:has(input:checked){background:#0a2e1c;border-color:var(
   align-items:stretch;
 }
 #pGuestView{flex:1;}
+#pNickInput::placeholder{color:var(--text2);}
+.pFavItem{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;
+  background:var(--bg);
+  border-radius:16px;
+  border:1px solid var(--border);
+  margin-bottom:8px;
+  cursor:pointer;
+  transition:opacity .15s;
+}
+.pFavItem:last-child{margin-bottom:0;}
+.pFavItem:active{opacity:.7;}
+.pFavItem-info{flex:1;min-width:0;}
+.pFavItem-title{font-size:14px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pFavItem-addr{font-size:12px;color:var(--text2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pFavItem-btn{
+  width:36px;height:36px;flex-shrink:0;
+  background:var(--green-l);border:none;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--green);
+  transition:transform .15s;
+}
+.pFavItem-btn:active{transform:scale(.88);}
+.pFavRemove{
+  width:32px;height:32px;flex-shrink:0;
+  background:rgba(239,68,68,0.1);border:none;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:#ef4444;
+  transition:transform .15s;
+}
 
 /* Admin denied */
 #adminDeniedScreen{
