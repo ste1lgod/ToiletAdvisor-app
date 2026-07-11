@@ -3922,16 +3922,23 @@ async function logAction({ type, category, action, detail = '' }){
   try{
     await _loadFirebase();
     const actor = currentUser
-      ? { id: currentUser.id, name: currentUser.phone || currentUser.login || '?', role: currentUser.role || 'user' }
-      : { id: 'anonymous', name: 'Аноним', role: 'user' };
+      ? {
+          id: currentUser.id,
+          name: currentUser.phone || currentUser.login || '?',
+          nick: currentUser.nick || '',
+          role: currentUser.role || 'user'
+        }
+      : { id: 'unknown', name: '?', nick: '', role: 'user' };
     await db.collection('logs').add({
-      type,        // 'review' | 'toilet' | 'delete' | 'auth' | 'admin'
-      category,    // для фильтра
-      action,      // текст действия
-      detail,      // подробности
-      actorId:   actor.id,
-      actorName: actor.name,
-      actorRole: actor.role,
+      type,
+      category,
+      action,
+      detail,
+      actorId:    actor.id,
+      actorName:  actor.name,
+      actorNick:  actor.nick,
+      actorLogin: actor.name,
+      actorRole:  actor.role,
       createdAt: new Date().toISOString(),
     });
   }catch(e){
