@@ -4219,11 +4219,12 @@ async function loadActivityLogs(){
   if(btn) btn.style.opacity = '0.6';
   try{
     await _loadFirebase();
+    // Подгружаем кэш пользователей вместе с логами
+    await _loadUsersCache();
     let snap;
     try{
       snap = await db.collection('logs').orderBy('createdAt','desc').limit(200).get();
     }catch(idxErr){
-      // Индекс ещё не готов — fallback без сортировки
       snap = await db.collection('logs').limit(200).get();
     }
     _allLogs = snap.docs
