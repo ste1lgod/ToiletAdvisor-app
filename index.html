@@ -4415,9 +4415,9 @@ async function loadModerationReviews(){
       const col=COLORS[name.charCodeAt(0)%COLORS.length];
       const ini=name.replace(/\+/g,'').slice(0,2).toUpperCase();
       const toilet=toiletMap[r.toiletId];
-      // Адрес: берём из поля addr (если есть), иначе координаты
+      // Адрес: берём addr, иначе координаты — НЕ description
       const toiletAddr=toilet
-        ? (toilet.addr||toilet.description||'')
+        ? (toilet.addr||`${Number(toilet.lat).toFixed(4)}, ${Number(toilet.lon).toFixed(4)}`)
         : '';
       const toiletLabel=toilet
         ? `<span style="font-weight:700;color:var(--text);">${toilet.title}</span>`
