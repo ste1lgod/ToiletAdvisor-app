@@ -3918,12 +3918,15 @@ function renderFavorites(){
   list.innerHTML=favs.map(f=>{
     const _t=allToilets.find(x=>x.id===f.id);
     const _ico=_t?.isTaharatkhana?'🕌':'🚻';
+    // Показываем addr если он есть и не совпадает с description туалета
+    const _toiletDesc=_t?.description||'';
+    const _addr=(f.addr && f.addr!==_toiletDesc) ? f.addr : (f.lat ? `${Number(f.lat).toFixed(4)}, ${Number(f.lon).toFixed(4)}` : '—');
     return`<div class="pFavItem">
       <div class="pFavItem-body">
         <div class="pFavItem-ico">${_ico}</div>
         <div class="pFavItem-info" onclick="openFavSheet('${f.id}')">
           <div class="pFavItem-title">${f.title}</div>
-          <div class="pFavItem-addr">${f.addr||f.description||'Нет адреса'}</div>
+          <div class="pFavItem-addr">${_addr}</div>
         </div>
       </div>
       <div class="pFavItem-divider"></div>
@@ -3942,6 +3945,39 @@ function renderFavorites(){
       </div>
     </div>`;
   }).join('');
+  // После рендера — геокодируем элементы у которых адрес = description или пусто
+  _fixFavAddresses(favs);
+}
+
+// Исправляет адреса у уже сохранённых избранных (геокодирует координаты)
+async function _fixFavAddresses(favs){
+  if(!currentUser)return;
+  let changed=false;
+  for(const f of favs){
+    if(!f.lat||!f.lon)continue;
+    const _t=allToilets.find(x=>x.id===f.id);
+    const _desc=_t?.description||'';
+    // Нужно обновить если addr пустой, равен description, или выглядит как "нет адреса"
+    const needsUpdate=!f.addr||f.addr===_desc||f.addr==='Нет адреса'||f.addr==='—';
+    if(!needsUpdate)continue;
+    try{
+      const newAddr=await wizGeocode(f.lat,f.lon);
+      f.addr=newAddr;
+      changed=true;
+      // Также кэшируем в объекте туалета
+      if(_t&&!_t.addr){
+        _t.addr=newAddr;
+        try{
+          await _loadFirebase();
+          await db.collection('toilets').doc(f.id).set({addr:newAddr},{merge:true});
+        }catch(e){}
+      }
+    }catch(e){}
+  }
+  if(changed){
+    saveFavorites(favs);
+    renderFavorites(); // перерисовываем с реальными адресами
+  }
 }
 let _favConfirmId=null;
 function confirmRemoveFavorite(toiletId,title){
