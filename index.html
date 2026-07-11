@@ -3422,14 +3422,15 @@ async function doAdminLogin(){
   try{
     await _loadFirebase();
     const passHash=await hashPassword(pass);
-    // Firestore запрос с таймаутом 8 сек
-    const queryPromise=db.collection('users').where('login','==',login).where('role','==','admin').limit(1).get();
+    // Ищем всех админов с таким логином (может быть несколько с разными паролями)
+    const queryPromise=db.collection('users').where('login','==',login).where('role','==','admin').get();
     const timeoutPromise=new Promise((_,rej)=>setTimeout(()=>rej(new Error(t('toastTimeout'))),8000));
     const snap=await Promise.race([queryPromise,timeoutPromise]);
     if(snap.empty){showToast(t('toastAdminNotFound'));return;}
-    const userDoc=snap.docs[0];
+    // Ищем документ с совпадающим хешем пароля
+    const userDoc=snap.docs.find(d=>d.data().passwordHash===passHash);
+    if(!userDoc){showToast(t('toastWrongPass'));return;}
     const userData=userDoc.data();
-    if(userData.passwordHash!==passHash){showToast(t('toastWrongPass'));return;}
     currentUser={id:userDoc.id,login:userData.login,role:'admin'};
     localStorage.setItem('ta_user',JSON.stringify(currentUser));
     closeOverlay('adminOverlay');
