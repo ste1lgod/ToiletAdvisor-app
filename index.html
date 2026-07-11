@@ -5512,6 +5512,19 @@ updateLoginBtn();
 switchTab('map');
 // Подтягиваем ник пользователя из Firestore при старте (если не был сохранён)
 _syncUserNick();
+// Инициализируем начальное состояние профиля
+(function(){
+  const guest=document.getElementById('pGuestView');
+  const user=document.getElementById('pUserView');
+  if(!guest||!user)return;
+  if(currentUser){
+    guest.style.display='none';
+    user.style.display='flex';
+  } else {
+    guest.style.display='flex';
+    user.style.display='none';
+  }
+})();
 </script>
 <!-- FAV CONFIRM DIALOG -->
 <div id="pFavConfirm">
