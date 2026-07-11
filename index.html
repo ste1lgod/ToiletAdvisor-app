@@ -3504,6 +3504,157 @@ function switchTab(tab){
   }
 }
 
+// ── PROFILE ──
+function loadProfile(){
+  const guest=document.getElementById('pGuestView');
+  const user=document.getElementById('pUserView');
+  if(!currentUser){
+    guest.classList.remove('hidden');
+    user.classList.add('hidden');
+    return;
+  }
+  guest.classList.add('hidden');
+  user.classList.remove('hidden');
+
+  const label=currentUser.phone||currentUser.login||'?';
+  const ini=label.replace(/\+/g,'').slice(0,2).toUpperCase();
+  document.getElementById('pAvatarLetter').textContent=ini;
+  document.getElementById('pAvatarWrap').style.background=
+    currentUser.role==='admin'?'#7c3aed':'var(--green)';
+  document.getElementById('pPhoneLabel').textContent=label;
+
+  // Ник
+  const nick=currentUser.nick||'';
+  document.getElementById('pNickInput').value=nick;
+  document.getElementById('pNickInput').placeholder=label;
+
+  // Роль-бадж
+  const badge=document.getElementById('pRoleBadge');
+  if(currentUser.role==='admin'){
+    badge.textContent='⚙️ Admin';
+    badge.style.background='rgba(124,58,237,0.15)';
+    badge.style.color='#7c3aed';
+  } else {
+    badge.textContent='👤 User';
+    badge.style.background='var(--bg)';
+    badge.style.color='var(--text2)';
+  }
+
+  // Статистика — грузим в фоне
+  loadProfileStats();
+  renderFavorites();
+}
+
+async function loadProfileStats(){
+  if(!currentUser)return;
+  try{
+    await _loadFirebase();
+    // Кол-во отзывов
+    const revSnap=await db.collection('reviews')
+      .where('userId','==',currentUser.id).limit(100).get();
+    const el=document.getElementById('pStatReviews');
+    if(el)el.textContent=revSnap.size;
+    // Кол-во избранных — из localStorage
+    const favs=getFavorites();
+    const favEl=document.getElementById('pStatFav');
+    if(favEl)favEl.textContent=favs.length;
+  }catch(e){}
+}
+
+async function saveNick(nick){
+  if(!currentUser)return;
+  const trimmed=nick.trim();
+  currentUser.nick=trimmed;
+  localStorage.setItem('ta_user',JSON.stringify(currentUser));
+  // Сохраняем в Firestore
+  try{
+    await _loadFirebase();
+    await db.collection('users').doc(currentUser.id).set({nick:trimmed},{merge:true});
+  }catch(e){}
+}
+
+// ── ИЗБРАННОЕ (localStorage) ──
+function getFavorites(){
+  if(!currentUser)return[];
+  try{
+    const raw=localStorage.getItem('ta_fav_'+currentUser.id);
+    return raw?JSON.parse(raw):[];
+  }catch(e){return[];}
+}
+function saveFavorites(favs){
+  if(!currentUser)return;
+  localStorage.setItem('ta_fav_'+currentUser.id,JSON.stringify(favs));
+}
+function isFavorite(toiletId){
+  return getFavorites().some(f=>f.id===toiletId);
+}
+function toggleFavorite(toiletId){
+  if(!currentUser){openAuthModal();return;}
+  const favs=getFavorites();
+  const idx=favs.findIndex(f=>f.id===toiletId);
+  if(idx>=0){
+    favs.splice(idx,1);
+    saveFavorites(favs);
+    showToast('Убрано из избранного');
+  } else {
+    const toilet=allToilets.find(t=>t.id===toiletId);
+    if(!toilet)return;
+    favs.push({id:toilet.id,title:toilet.title,description:toilet.description||'',lat:toilet.lat,lon:toilet.lon});
+    saveFavorites(favs);
+    showToast('Добавлено в избранное ❤️');
+  }
+  // Обновляем кнопку сердечка
+  updateFavBtn(toiletId);
+}
+function updateFavBtn(toiletId){
+  const btn=document.getElementById('favBtn');
+  if(!btn)return;
+  const fav=isFavorite(toiletId);
+  btn.style.color=fav?'#ef4444':'var(--text2)';
+  btn.innerHTML=fav
+    ?`<svg width="18" height="18" viewBox="0 0 24 24" fill="#ef4444" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`
+    :`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+}
+function renderFavorites(){
+  const list=document.getElementById('pFavList');
+  if(!list)return;
+  const favs=getFavorites();
+  const favEl=document.getElementById('pStatFav');
+  if(favEl)favEl.textContent=favs.length;
+  if(!favs.length){
+    list.innerHTML='<p style="text-align:center;color:var(--text2);font-size:13px;padding:10px 0;">Нет избранных туалетов</p>';
+    return;
+  }
+  list.innerHTML=favs.map(f=>`
+    <div class="pFavItem">
+      <div class="pFavItem-info" onclick="openFavToilet('${f.id}')">
+        <div class="pFavItem-title">${f.title}</div>
+        <div class="pFavItem-addr">${f.description||'—'}</div>
+      </div>
+      <button class="pFavItem-btn" onclick="openFavToilet('${f.id}')" title="Открыть на карте">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+      </button>
+      <button class="pFavRemove" onclick="removeFavorite('${f.id}')" title="Убрать">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>`).join('');
+}
+function removeFavorite(toiletId){
+  const favs=getFavorites().filter(f=>f.id!==toiletId);
+  saveFavorites(favs);
+  renderFavorites();
+  updateFavBtn(toiletId);
+}
+function openFavToilet(toiletId){
+  const toilet=allToilets.find(t=>t.id===toiletId);
+  if(!toilet){showToast('Туалет не найден на карте');return;}
+  switchTab('map');
+  setTimeout(()=>{
+    myMap.setCenter([toilet.lat,toilet.lon],17,{duration:600});
+    setTimeout(()=>openSheet(toilet),700);
+  },300);
+}
+
 // ── ADMIN DASHBOARD ──
 function showAdminDashboard(){
   document.getElementById('adminDashboard').style.display='';
