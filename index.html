@@ -3552,7 +3552,7 @@ async function doAdminLogin(){
     const userDoc=snap.docs.find(d=>d.data().passwordHash===passHash);
     if(!userDoc){showToast(t('toastWrongPass'));return;}
     const userData=userDoc.data();
-    currentUser={id:userDoc.id,login:userData.login,role:'admin'};
+    currentUser={id:userDoc.id,login:userData.login,role:'admin',nick:userData.nick||''};
     localStorage.setItem('ta_user',JSON.stringify(currentUser));
     closeOverlay('adminOverlay');
     updateLoginBtn();
