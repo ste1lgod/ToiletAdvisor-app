@@ -4018,54 +4018,65 @@ function switchTab(tab){
 function loadProfile(){
   const guest=document.getElementById('pGuestView');
   const user=document.getElementById('pUserView');
+  if(!guest||!user)return;
+
   if(!currentUser){
-    guest.style.display='flex';
+    guest.style.cssText='display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:16px;padding:40px 24px;';
     user.style.display='none';
     return;
   }
+
   guest.style.display='none';
-  user.style.display='flex';
+  user.style.cssText='width:100%;display:flex;flex-direction:column;gap:14px;';
 
   const label=currentUser.phone||currentUser.login||'?';
   const ini=label.replace(/\+/g,'').slice(0,2).toUpperCase();
-  document.getElementById('pAvatarLetter').textContent=ini;
-  document.getElementById('pAvatarWrap').style.background=
-    currentUser.role==='admin'?'#7c3aed':'var(--green)';
-  document.getElementById('pPhoneLabel').textContent=label;
+
+  const avatarLetter=document.getElementById('pAvatarLetter');
+  if(avatarLetter)avatarLetter.textContent=ini;
+  const avatarWrap=document.getElementById('pAvatarWrap');
+  if(avatarWrap)avatarWrap.style.background=currentUser.role==='admin'?'#7c3aed':'var(--green)';
+  const phoneLabel=document.getElementById('pPhoneLabel');
+  if(phoneLabel)phoneLabel.textContent=label;
 
   // Ник
-  const nick=currentUser.nick||'';
   const nickInput=document.getElementById('pNickInput');
-  nickInput.value=nick;
-  nickInput.placeholder=label;
-  nickInput.style.color='var(--text)';
+  if(nickInput){
+    nickInput.value=currentUser.nick||'';
+    nickInput.placeholder=label;
+  }
 
   // Роль-бадж
   const badge=document.getElementById('pRoleBadge');
-  if(currentUser.role==='admin'){
-    badge.textContent='⚙️ Admin';
-    badge.style.background='rgba(124,58,237,0.15)';
-    badge.style.color='#7c3aed';
-    badge.style.border='1px solid rgba(124,58,237,0.3)';
-    // Обводка статистики под цвет роли
-    const c1=document.getElementById('pStatReviewsCard');
-    const c2=document.getElementById('pStatFavCard');
-    if(c1)c1.style.borderColor='#7c3aed';
-    if(c2)c2.style.borderColor='#7c3aed';
-  } else {
-    badge.textContent='✦ User';
-    badge.style.background='rgba(59,130,246,0.12)';
-    badge.style.color='#2563eb';
-    badge.style.border='1px solid rgba(59,130,246,0.3)';
-    const c1=document.getElementById('pStatReviewsCard');
-    const c2=document.getElementById('pStatFavCard');
-    if(c1)c1.style.borderColor='var(--green)';
-    if(c2)c2.style.borderColor='var(--green)';
+  if(badge){
+    if(currentUser.role==='admin'){
+      badge.textContent='⚙️ Admin';
+      badge.style.cssText='flex-shrink:0;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(124,58,237,0.15);color:#7c3aed;border:1px solid rgba(124,58,237,0.3);';
+    } else {
+      badge.textContent='✦ User';
+      badge.style.cssText='flex-shrink:0;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(59,130,246,0.12);color:#2563eb;border:1px solid rgba(59,130,246,0.3);';
+    }
   }
 
-  // Статистика — грузим в фоне
-  loadProfileStats();
+  // Обводка карточек статистики
+  const c1=document.getElementById('pStatReviewsCard');
+  const c2=document.getElementById('pStatFavCard');
+  const borderColor=currentUser.role==='admin'?'#7c3aed':'var(--green)';
+  if(c1)c1.style.borderColor=borderColor;
+  if(c2)c2.style.borderColor=borderColor;
+
+  // Сначала показываем данные из localStorage — сразу без задержки
+  const statFav=document.getElementById('pStatFav');
+  const statReviews=document.getElementById('pStatReviews');
+  const favs=getFavorites();
+  if(statFav)statFav.textContent=favs.length;
+  if(statReviews)statReviews.textContent='…';
+
+  // Рендерим избранное синхронно
   renderFavorites();
+
+  // Грузим кол-во отзывов асинхронно
+  loadProfileStats();
 }
 
 async function loadProfileStats(){
