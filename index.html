@@ -4551,7 +4551,6 @@ async function loadModerationReviews(){
       </div>`;
     }).join('');
   }catch(e){list.innerHTML=`<p style="text-align:center;color:#ef4444;font-size:13px;">Ошибка: ${e.message}</p>`;}
-  finally{if(btn)btn.style.opacity='1';}
 }
 async function deleteReview(id, btn){
   try{
