@@ -4019,10 +4019,8 @@ function renderLogs(){
     const isAdmin = log.actorRole === 'admin';
     const icoClass = log.type === 'delete' ? 'log-delete' : `log-${log.category || log.type}`;
     const icoSvg = LOG_ICONS[log.type] || LOG_ICONS.review;
-    // Логин + ник в скобках если есть
-    const actorLogin = log.actorName || log.actorLogin || '?';
-    const actorNick = log.actorNick ? ` (${log.actorNick})` : '';
-    const actorDisplay = actorLogin + actorNick;
+    // Только ник (или логин если ник не задан)
+    const actorDisplay = log.actorNick || log.actorName || log.actorLogin || '?';
     const whoBadge = `<span class="logItem-who${isAdmin ? ' admin-badge' : ''}">${isAdmin ? '⚙️ ' : ''}${actorDisplay}</span>`;
     const detail = log.detail ? `<div class="logItem-detail">${log.detail}</div>` : '';
     return `<div class="logItem ${icoClass}">
