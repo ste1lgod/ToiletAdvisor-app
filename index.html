@@ -3582,8 +3582,10 @@ function loadProfile(){
 
   // Ник
   const nick=currentUser.nick||'';
-  document.getElementById('pNickInput').value=nick;
-  document.getElementById('pNickInput').placeholder=label;
+  const nickInput=document.getElementById('pNickInput');
+  nickInput.value=nick;
+  nickInput.placeholder=label;
+  nickInput.style.color='var(--text)';
 
   // Роль-бадж
   const badge=document.getElementById('pRoleBadge');
