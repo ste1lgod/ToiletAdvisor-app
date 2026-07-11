@@ -4759,5 +4759,17 @@ updateLoginBtn();
 
 switchTab('map');
 </script>
+<!-- FAV CONFIRM DIALOG -->
+<div id="pFavConfirm">
+  <div style="width:40px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 16px;"></div>
+  <div style="font-size:17px;font-weight:700;color:var(--text);text-align:center;margin-bottom:6px;">Убрать из избранного?</div>
+  <div id="pFavConfirmTitle" style="font-size:14px;color:var(--text2);text-align:center;margin-bottom:20px;"></div>
+  <div style="display:flex;gap:10px;">
+    <button onclick="closeFavConfirm()" style="flex:1;padding:14px;background:var(--bg);border:1.5px solid var(--border);border-radius:18px;font-size:15px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--font);">Отмена</button>
+    <button id="pFavConfirmBtn" style="flex:1;padding:14px;background:#ef4444;border:none;border-radius:18px;font-size:15px;font-weight:700;color:#fff;cursor:pointer;font-family:var(--font);box-shadow:0 4px 14px rgba(239,68,68,0.3);">Удалить</button>
+  </div>
+</div>
+<div id="pFavBackdrop" onclick="closeFavConfirm()" style="display:none;position:fixed;inset:0;z-index:199;background:rgba(0,0,0,0.3);"></div>
+
 </body>
 </html>
