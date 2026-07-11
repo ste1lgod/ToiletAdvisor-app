@@ -3995,7 +3995,11 @@ function renderLogs(){
     const isAdmin = log.actorRole === 'admin';
     const icoClass = log.type === 'delete' ? 'log-delete' : `log-${log.category || log.type}`;
     const icoSvg = LOG_ICONS[log.type] || LOG_ICONS.review;
-    const whoBadge = `<span class="logItem-who${isAdmin ? ' admin-badge' : ''}">${isAdmin ? '⚙️ ' : ''}${log.actorName || '?'}</span>`;
+    // Логин + ник в скобках если есть
+    const actorLogin = log.actorName || log.actorLogin || '?';
+    const actorNick = log.actorNick ? ` (${log.actorNick})` : '';
+    const actorDisplay = actorLogin + actorNick;
+    const whoBadge = `<span class="logItem-who${isAdmin ? ' admin-badge' : ''}">${isAdmin ? '⚙️ ' : ''}${actorDisplay}</span>`;
     const detail = log.detail ? `<div class="logItem-detail">${log.detail}</div>` : '';
     return `<div class="logItem ${icoClass}">
       <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 16px 12px;">
