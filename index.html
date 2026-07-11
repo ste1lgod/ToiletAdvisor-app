@@ -2956,6 +2956,8 @@ async function openSheet(toilet){
     <div class="rvSkeleton"><div class="rvSkAvatar"></div><div class="rvSkBody"><div class="rvSkLine w40"></div><div class="rvSkLine w60"></div><div class="rvSkLine w80"></div></div></div>
   `;
   resetReviewForm();
+  // Обновляем кнопку избранного
+  updateFavBtn(toilet.id);
   document.getElementById('toiletSheet').classList.add('open');
   _openBackdrop();
 
