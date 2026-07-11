@@ -4018,12 +4018,11 @@ function loadProfile(){
   const guest=document.getElementById('pGuestView');
   const user=document.getElementById('pUserView');
   if(!currentUser){
-    guest.classList.remove('hidden');
-    user.classList.add('hidden');
+    guest.style.display='flex';
+    user.style.display='none';
     return;
   }
-  guest.classList.add('hidden');
-  user.classList.remove('hidden');
+  guest.style.display='none';
   user.style.display='flex';
 
   const label=currentUser.phone||currentUser.login||'?';
