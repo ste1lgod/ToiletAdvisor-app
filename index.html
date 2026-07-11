@@ -4651,7 +4651,6 @@ async function loadActivityLogs(){
   const list = document.getElementById('logsList');
   list.innerHTML = _skCards(5);
   const btn = document.getElementById('logsRefreshBtn');
-  if(btn) btn.style.opacity = '0.6';
   try{
     await _loadFirebase();
     // Подгружаем кэш пользователей вместе с логами
