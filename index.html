@@ -5505,6 +5505,30 @@ window.addEventListener('resize',()=>{
   setScreenPaddingTop();
 });
 
+// Патчим адреса seed-точек в Firestore (запускается один раз при старте)
+async function _patchSeedAddresses(){
+  try{
+    await _loadFirebase();
+    const batch=db.batch();
+    let hasChanges=false;
+    for(const t of FALLBACK_TOILETS){
+      if(!t.addr)continue;
+      // Обновляем в allToilets в памяти
+      const local=allToilets.find(x=>x.id===t.id);
+      if(local&&!local.addr)local.addr=t.addr;
+      // Обновляем в Firestore только если поле addr ещё не задано
+      try{
+        const doc=await db.collection('toilets').doc(t.id).get();
+        if(doc.exists&&!doc.data().addr){
+          batch.update(db.collection('toilets').doc(t.id),{addr:t.addr});
+          hasChanges=true;
+        }
+      }catch(e){}
+    }
+    if(hasChanges)await batch.commit();
+  }catch(e){console.warn('_patchSeedAddresses:',e.message);}
+}
+
 // ── INIT ──
 setLang(currentLang);
 applyTheme();
