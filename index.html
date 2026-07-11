@@ -4481,7 +4481,6 @@ async function loadModerationReviews(){
   const list=document.getElementById('moderationList');
   list.innerHTML=_skCards(4);
   const btn=document.getElementById('moderationRefreshBtn');
-  if(btn)btn.style.opacity='0.6';
   try{
     await _loadFirebase();
     // Подгружаем кэш пользователей для актуальных ников
