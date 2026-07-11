@@ -3107,9 +3107,30 @@ async function submitReview(){
 // ── ROUTE ──
 function goRoute(){
   if(!selectedToilet)return;
+  const lat=selectedToilet.lat;
+  const lon=selectedToilet.lon;
+  // Если есть сохранённые координаты — используем сразу, синхронно
+  if(userCoords){
+    window.open(`https://yandex.ru/maps/?rtext=${userCoords[0]},${userCoords[1]}~${lat},${lon}&rtt=pd`,'_blank');
+    return;
+  }
+  // Если нет — пробуем получить, но с таймаутом
+  let opened=false;
+  const timeout=setTimeout(()=>{
+    if(!opened){opened=true;window.open(`https://yandex.ru/maps/?rtext=~${lat},${lon}`,'_blank');}
+  },2000);
   navigator.geolocation.getCurrentPosition(
-    p=>window.open(`https://yandex.ru/maps/?rtext=${p.coords.latitude},${p.coords.longitude}~${selectedToilet.lat},${selectedToilet.lon}&rtt=pd`,'_blank'),
-    ()=>window.open(`https://yandex.ru/maps/?rtext=~${selectedToilet.lat},${selectedToilet.lon}`,'_blank')
+    p=>{
+      if(opened)return;
+      opened=true;clearTimeout(timeout);
+      window.open(`https://yandex.ru/maps/?rtext=${p.coords.latitude},${p.coords.longitude}~${lat},${lon}&rtt=pd`,'_blank');
+    },
+    ()=>{
+      if(opened)return;
+      opened=true;clearTimeout(timeout);
+      window.open(`https://yandex.ru/maps/?rtext=~${lat},${lon}`,'_blank');
+    },
+    {timeout:1500,maximumAge:30000}
   );
 }
 document.getElementById('authNotice').addEventListener('click',openAuthModal);
