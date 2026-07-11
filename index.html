@@ -4069,33 +4069,40 @@ function renderFavorites(){
 }
 
 // Исправляет адреса у уже сохранённых избранных (геокодирует координаты)
+// Флаг защиты от рекурсии
+let _fixFavRunning = false;
 async function _fixFavAddresses(favs){
-  if(!currentUser)return;
-  let changed=false;
+  if(!currentUser || _fixFavRunning) return;
+  _fixFavRunning = true;
+  let changed = false;
   for(const f of favs){
-    if(!f.lat||!f.lon)continue;
-    const _t=allToilets.find(x=>x.id===f.id);
-    const _desc=_t?.description||'';
-    // Нужно обновить если addr пустой, равен description, или выглядит как "нет адреса"
-    const needsUpdate=!f.addr||f.addr===_desc||f.addr==='Нет адреса'||f.addr==='—';
-    if(!needsUpdate)continue;
+    if(!f.lat || !f.lon) continue;
+    const _t = allToilets.find(x => x.id === f.id);
+    const _desc = _t?.description || '';
+    const needsUpdate = !f.addr || f.addr === _desc || f.addr === 'Нет адреса' || f.addr === '—';
+    if(!needsUpdate) continue;
     try{
-      const newAddr=await wizGeocode(f.lat,f.lon);
-      f.addr=newAddr;
-      changed=true;
-      // Также кэшируем в объекте туалета
-      if(_t&&!_t.addr){
-        _t.addr=newAddr;
+      const newAddr = await wizGeocode(f.lat, f.lon);
+      f.addr = newAddr;
+      changed = true;
+      if(_t && !_t.addr){
+        _t.addr = newAddr;
         try{
           await _loadFirebase();
-          await db.collection('toilets').doc(f.id).set({addr:newAddr},{merge:true});
+          await db.collection('toilets').doc(f.id).set({addr: newAddr}, {merge: true});
         }catch(e){}
       }
     }catch(e){}
   }
+  _fixFavRunning = false;
   if(changed){
     saveFavorites(favs);
-    renderFavorites(); // перерисовываем с реальными адресами
+    // Обновляем только текст адресов в DOM — без полного ре-рендера
+    const items = document.querySelectorAll('#pFavList .pFavItem');
+    favs.forEach((f, i) => {
+      const addrEl = items[i]?.querySelector('.pFavItem-addr');
+      if(addrEl && f.addr) addrEl.textContent = f.addr;
+    });
   }
 }
 let _favConfirmId=null;
