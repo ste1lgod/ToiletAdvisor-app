@@ -3867,7 +3867,7 @@ async function loadModerationReviews(){
       const toilet=toiletMap[r.toiletId];
       // Адрес: берём из поля addr (если есть), иначе координаты
       const toiletAddr=toilet
-        ? (toilet.addr||`${toilet.lat?.toFixed(4)||''}, ${toilet.lon?.toFixed(4)||''}`)
+        ? (toilet.addr||toilet.description||'')
         : '';
       const toiletLabel=toilet
         ? `<span style="font-weight:700;color:var(--text);">${toilet.title}</span>`
