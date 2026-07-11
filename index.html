@@ -2598,6 +2598,8 @@ function initMap(){
     startGeo();
     setTimeout(adjustControlsPosition,200);
     wizInitSearch();
+    // Применяем тёмную тему карты если активна
+    setTimeout(applyMapTheme, 500);
     // Дополнительная зачистка через DOM на случай если API игнорирует опции
     setTimeout(hideYandexUI,600);
     setTimeout(hideYandexUI,1500);
