@@ -3727,19 +3727,40 @@ function renderFavorites(){
     list.innerHTML='<p style="text-align:center;color:var(--text2);font-size:13px;padding:10px 0;">Нет избранных туалетов</p>';
     return;
   }
+  // Заголовок секции по центру
+  const favSection=document.getElementById('pFavSection');
+  if(favSection){
+    const titleEl=favSection.querySelector('div:first-child');
+    if(titleEl)titleEl.style.textAlign='center';
+  }
   list.innerHTML=favs.map(f=>`
     <div class="pFavItem">
-      <div class="pFavItem-info" onclick="openFavToilet('${f.id}')">
+      <div class="pFavItem-info" onclick="openFavSheet('${f.id}')">
         <div class="pFavItem-title">${f.title}</div>
-        <div class="pFavItem-addr">${f.description||'—'}</div>
+        <div class="pFavItem-addr">${f.addr||f.description||'—'}</div>
       </div>
-      <button class="pFavItem-btn" onclick="openFavToilet('${f.id}')" title="Открыть на карте">
+      <button class="pFavItem-btn" onclick="openFavOnMap('${f.id}')" title="Открыть на карте">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
       </button>
-      <button class="pFavRemove" onclick="removeFavorite('${f.id}')" title="Убрать">
+      <button class="pFavRemove" onclick="confirmRemoveFavorite('${f.id}','${f.title.replace(/'/g,"\\'")}')" title="Убрать">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>`).join('');
+}
+let _favConfirmId=null;
+function confirmRemoveFavorite(toiletId,title){
+  _favConfirmId=toiletId;
+  const titleEl=document.getElementById('pFavConfirmTitle');
+  if(titleEl)titleEl.textContent=title;
+  const btn=document.getElementById('pFavConfirmBtn');
+  if(btn)btn.onclick=()=>{removeFavorite(_favConfirmId);closeFavConfirm();};
+  document.getElementById('pFavConfirm').classList.add('open');
+  document.getElementById('pFavBackdrop').style.display='block';
+}
+function closeFavConfirm(){
+  document.getElementById('pFavConfirm').classList.remove('open');
+  document.getElementById('pFavBackdrop').style.display='none';
+  _favConfirmId=null;
 }
 function removeFavorite(toiletId){
   const favs=getFavorites().filter(f=>f.id!==toiletId);
@@ -3747,15 +3768,22 @@ function removeFavorite(toiletId){
   renderFavorites();
   updateFavBtn(toiletId);
 }
-function openFavToilet(toiletId){
+// Открыть карточку туалета прямо во вкладке профиля
+function openFavSheet(toiletId){
+  const toilet=allToilets.find(t=>t.id===toiletId);
+  if(!toilet){showToast('Туалет не найден');return;}
+  openSheet(toilet);
+}
+// Открыть точку на карте с зумом
+function openFavOnMap(toiletId){
   const toilet=allToilets.find(t=>t.id===toiletId);
   if(!toilet){showToast('Туалет не найден на карте');return;}
   switchTab('map');
   setTimeout(()=>{
     myMap.setCenter([toilet.lat,toilet.lon],17,{duration:600});
-    setTimeout(()=>openSheet(toilet),700);
   },300);
 }
+function openFavToilet(toiletId){openFavSheet(toiletId);}// обратная совместимость
 
 // ── ADMIN DASHBOARD ──
 function showAdminDashboard(){
