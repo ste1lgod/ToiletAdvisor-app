@@ -3399,6 +3399,21 @@ function doLogout(){
 
 <script>
 // ── TABS ──
+// Двойной клик на Admin — если уже на вкладке add, скролл вверх или возврат в дашборд
+let _adminNavLastClick=0;
+function onAdminNavClick(){
+  const now=Date.now();
+  const isAlreadyOnAdd=document.querySelector('.navCenter.active')!==null;
+  if(isAlreadyOnAdd && now-_adminNavLastClick<500){
+    // Двойной клик: возврат в дашборд + скролл вверх
+    showAdminDashboard();
+    const addScreen=document.getElementById('addScreen');
+    if(addScreen)addScreen.scrollTo({top:0,behavior:'smooth'});
+  } else {
+    switchTab('add');
+  }
+  _adminNavLastClick=now;
+}
 function switchTab(tab){
   closeSheet();
   // Если уходим с карты в pick режиме — отменяем
