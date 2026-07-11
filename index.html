@@ -3819,6 +3819,7 @@ async function doAuth(){
       currentUser={id:userDoc.id,phone:userData.phone,role:userData.role||'user',nick:userData.nick||''};
       localStorage.setItem('ta_user',JSON.stringify(currentUser));
       closeOverlay('authOverlay');updateLoginBtn();resetReviewForm();
+      if(!document.getElementById('profileScreen').classList.contains('hidden'))loadProfile();
       showToast(t('toastLoginOk'));
       logAction({ type:'auth', category:'auth', action:t('logLogin'), detail:`${t('logUser')} ${phone}` });
     } else {
@@ -3828,9 +3829,10 @@ async function doAuth(){
       const newDoc=await db.collection('users').add({
         phone,passwordHash:passHash,role:'user',createdAt:new Date().toISOString()
       });
-      currentUser={id:newDoc.id,phone,role:'user'};
+      currentUser={id:newDoc.id,phone,role:'user',nick:''};
       localStorage.setItem('ta_user',JSON.stringify(currentUser));
       closeOverlay('authOverlay');updateLoginBtn();resetReviewForm();
+      if(!document.getElementById('profileScreen').classList.contains('hidden'))loadProfile();
       showToast(t('toastRegOk'));
       logAction({ type:'auth', category:'auth', action:t('logRegister'), detail:`${t('logUser')}: ${phone}` });
     }
