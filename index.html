@@ -3659,7 +3659,7 @@ function renderLogs(){
           <span class="logItem-time">${timeStr}</span>
         </div>
       </div>
-      ${detail ? `<div style="height:1px;background:var(--border);margin:0 16px;opacity:0.7;"></div><div class="logItem-detail" style="margin:0 14px 14px;margin-top:10px;">${detail.replace('<div class="logItem-detail">','').replace('</div>','')}</div>` : ''}
+      ${detail ? `<div class="logItem-detail" style="margin:0 14px 14px;">${detail.replace('<div class="logItem-detail">','').replace('</div>','')}</div>` : ''}
     </div>`;
   }).join('');
 }
