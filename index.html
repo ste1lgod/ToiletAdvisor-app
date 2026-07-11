@@ -4205,12 +4205,19 @@ function loadProfile(){
   const statReviews=document.getElementById('pStatReviews');
   const favs=getFavorites();
   if(statFav)statFav.textContent=favs.length;
-  if(statReviews)statReviews.textContent='…';
+  if(statReviews)statReviews.textContent='0';
 
-  // Рендерим избранное синхронно из кэша
-  renderFavorites();
+  // Показываем скелетон пока грузим из Firestore
+  const list=document.getElementById('pFavList');
+  if(list){
+    if(favs.length){
+      renderFavorites(); // показываем кэш сразу
+    } else {
+      list.innerHTML=_skFavCards(3); // скелетон пока ждём Firestore
+    }
+  }
 
-  // Затем подтягиваем актуальные данные из Firestore в фоне
+  // Подтягиваем актуальные данные из Firestore в фоне
   _loadFavoritesFromFirestore();
 
   // Грузим кол-во отзывов асинхронно
