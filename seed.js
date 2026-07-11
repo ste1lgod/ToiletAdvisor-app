@@ -59,19 +59,18 @@ async function main() {
 
   // ── 1b. Второй админ ──────────────────────────────────────
   const admin2Snap = await db.collection('users')
-    .where('login', '==', 'admin').where('role', '==', 'admin').limit(1).get();
+    .where('login', '==', 'admin777').where('role', '==', 'admin').limit(1).get();
 
-  const existingAdmin2 = admin2Snap.docs.find(d => d.data().passwordHash === hashPassword('admin777'));
-  if (existingAdmin2) {
+  if (!admin2Snap.empty) {
     console.log('   ✅ Admin (admin777) уже существует, пропускаем');
   } else {
     await db.collection('users').doc('admin2').set({
-      login: 'admin',
+      login: 'admin777',
       passwordHash: hashPassword('admin777'),
       role: 'admin',
       createdAt: new Date().toISOString()
     });
-    console.log('   ✅ Admin2 создан: логин "admin", пароль "admin777"');
+    console.log('   ✅ Admin2 создан: логин "admin777", пароль "admin777"');
   }
 
   // ── 2. Туалеты ────────────────────────────────────────────
