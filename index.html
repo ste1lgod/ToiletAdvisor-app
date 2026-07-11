@@ -3850,6 +3850,7 @@ function loadProfile(){
   }
   guest.classList.add('hidden');
   user.classList.remove('hidden');
+  user.style.display='flex';
 
   const label=currentUser.phone||currentUser.login||'?';
   const ini=label.replace(/\+/g,'').slice(0,2).toUpperCase();
