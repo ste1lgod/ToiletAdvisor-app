@@ -3593,10 +3593,12 @@ function loadProfile(){
     badge.textContent='⚙️ Admin';
     badge.style.background='rgba(124,58,237,0.15)';
     badge.style.color='#7c3aed';
+    badge.style.border='1px solid rgba(124,58,237,0.3)';
   } else {
-    badge.textContent='👤 User';
-    badge.style.background='var(--bg)';
-    badge.style.color='var(--text2)';
+    badge.textContent='✦ User';
+    badge.style.background='rgba(59,130,246,0.12)';
+    badge.style.color='#2563eb';
+    badge.style.border='1px solid rgba(59,130,246,0.3)';
   }
 
   // Статистика — грузим в фоне
