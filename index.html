@@ -5516,6 +5516,8 @@ updateLoginBtn();
 switchTab('map');
 // Подтягиваем ник пользователя из Firestore при старте (если не был сохранён)
 _syncUserNick();
+// Обновляем адреса seed-точек в Firestore если их ещё нет
+_patchSeedAddresses();
 // Инициализируем начальное состояние профиля
 (function(){
   const guest=document.getElementById('pGuestView');
