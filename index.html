@@ -3123,23 +3123,32 @@ document.getElementById('authNotice').addEventListener('click',openAuthModal);
   }
   ta.addEventListener('input',resize);
 
-  // Авторасширение полей wizard
-  ['wizTitle','wizDesc'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(!el)return;
-    const maxH = id==='wizTitle' ? 160 : 200;
-    function resizeWiz(){
-      el.style.height='auto';
-      // Принудительный reflow для iOS Safari
-      void el.offsetHeight;
-      const scrollH = el.scrollHeight;
-      el.style.height = Math.min(scrollH, maxH) + 'px';
-      el.style.overflowY = scrollH > maxH ? 'auto' : 'hidden';
-    }
-    el.addEventListener('input', resizeWiz);
-    el.addEventListener('change', resizeWiz);
-    el.addEventListener('focus', resizeWiz);
-  });
+  // Авторасширение полей wizard (фоллбэк для браузеров без field-sizing)
+  if(!CSS.supports('field-sizing','content')){
+    ['wizTitle','wizDesc'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(!el)return;
+      const maxH = id==='wizTitle' ? 160 : 200;
+      const minH = 52;
+      function resizeWiz(){
+        // Убираем height полностью → scrollHeight становится реальным
+        el.style.height='';
+        const sh=el.scrollHeight;
+        el.style.height=Math.max(minH,Math.min(sh,maxH))+'px';
+        el.style.overflowY=sh>maxH?'auto':'hidden';
+      }
+      el.addEventListener('input',resizeWiz);
+      el.addEventListener('focus',resizeWiz);
+      // Запускаем при активации шага
+      const panel=document.getElementById('wizPanel2');
+      if(panel){
+        const obs=new MutationObserver(()=>{
+          if(panel.classList.contains('active'))resizeWiz();
+        });
+        obs.observe(panel,{attributeFilter:['class']});
+      }
+    });
+  }
 })();
 </script>
 
