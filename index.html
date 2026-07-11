@@ -4267,18 +4267,69 @@ async function saveNick(nick){
   }catch(e){console.warn('saveNick error:',e);}
 }
 
-// ── ИЗБРАННОЕ (localStorage) ──
+// ── ИЗБРАННОЕ (Firestore + localStorage cache) ──
+// localStorage используется как быстрый синхронный кэш, Firestore — источник правды
+
+function _favKey(){ return currentUser ? 'ta_fav_'+currentUser.id : null; }
+
 function getFavorites(){
   if(!currentUser)return[];
   try{
-    const raw=localStorage.getItem('ta_fav_'+currentUser.id);
+    const raw=localStorage.getItem(_favKey());
     return raw?JSON.parse(raw):[];
   }catch(e){return[];}
 }
+
+function _setFavCache(favs){
+  const key=_favKey();
+  if(key)localStorage.setItem(key,JSON.stringify(favs));
+}
+
+// Загружает избранное из Firestore и синхронизирует с localStorage
+async function _loadFavoritesFromFirestore(){
+  if(!currentUser)return;
+  try{
+    await _loadFirebase();
+    const snap=await db.collection('users').doc(currentUser.id)
+      .collection('favorites').get();
+    if(snap.empty){
+      // Если в Firestore пусто — проверяем localStorage (миграция старых данных)
+      const local=getFavorites();
+      if(local.length>0){
+        await _saveFavoritesToFirestore(local);
+      }
+      return;
+    }
+    const favs=snap.docs.map(d=>({id:d.id,...d.data()}));
+    _setFavCache(favs);
+    renderFavorites();
+    const favEl=document.getElementById('pStatFav');
+    if(favEl)favEl.textContent=favs.length;
+  }catch(e){console.warn('_loadFavoritesFromFirestore:',e.message);}
+}
+
+async function _saveFavoritesToFirestore(favs){
+  if(!currentUser)return;
+  try{
+    await _loadFirebase();
+    const colRef=db.collection('users').doc(currentUser.id).collection('favorites');
+    const batch=db.batch();
+    // Удаляем старые
+    const oldSnap=await colRef.get();
+    oldSnap.docs.forEach(d=>batch.delete(d.ref));
+    // Пишем новые
+    favs.forEach(f=>batch.set(colRef.doc(f.id),f));
+    await batch.commit();
+  }catch(e){console.warn('_saveFavoritesToFirestore:',e.message);}
+}
+
 function saveFavorites(favs){
   if(!currentUser)return;
-  localStorage.setItem('ta_fav_'+currentUser.id,JSON.stringify(favs));
+  _setFavCache(favs);
+  // Сохраняем в Firestore в фоне
+  _saveFavoritesToFirestore(favs);
 }
+
 function isFavorite(toiletId){
   return getFavorites().some(f=>f.id===toiletId);
 }
