@@ -3692,20 +3692,21 @@ function toggleFavorite(toiletId){
   const favs=getFavorites();
   const idx=favs.findIndex(f=>f.id===toiletId);
   if(idx>=0){
+    const removed=favs[idx];
     favs.splice(idx,1);
     saveFavorites(favs);
     showToast('Убрано из избранного');
+    logAction({type:'fav',category:'fav',action:t('logRemovedFav'),detail:`${t('logToilet')}: ${removed?.title||toiletId}`});
   } else {
     const toilet=allToilets.find(t=>t.id===toiletId);
     if(!toilet)return;
-    // Геокодируем адрес если он есть в адресной плашке
     const addrEl=document.getElementById('wizPickAddressMain');
     const addr=(addrEl&&addrEl.textContent&&addrEl.textContent!=='Определяю адрес...')?addrEl.textContent:'';
     favs.push({id:toilet.id,title:toilet.title,addr:addr||toilet.description||'',lat:toilet.lat,lon:toilet.lon});
     saveFavorites(favs);
     showToast('Добавлено в избранное ❤️');
+    logAction({type:'fav',category:'fav',action:t('logAddedFav'),detail:`${t('logToilet')}: ${toilet.title}`});
   }
-  // Обновляем кнопку сердечка
   updateFavBtn(toiletId);
 }
 function updateFavBtn(toiletId){
