@@ -4768,11 +4768,11 @@ function switchStatsTab(tab, chipEl){
 }
 
 async function loadAdminStats(){
-  // Показываем загрузку в обеих секциях
-  document.getElementById('statsSummaryToilets').innerHTML='';
-  document.getElementById('statsSummaryUsers').innerHTML='';
-  document.getElementById('statsToiletsList').innerHTML=`<div class="statsLoading">Загрузка...</div>`;
-  document.getElementById('statsUsersList').innerHTML=`<div class="statsLoading">Загрузка...</div>`;
+  // Показываем скелетоны в обеих секциях
+  document.getElementById('statsSummaryToilets').innerHTML=_skStatSummary();
+  document.getElementById('statsSummaryUsers').innerHTML=_skStatSummary();
+  document.getElementById('statsToiletsList').innerHTML=_skCards(3);
+  document.getElementById('statsUsersList').innerHTML=_skCards(3);
 
   try{
     await _loadFirebase();
