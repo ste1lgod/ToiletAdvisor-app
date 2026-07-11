@@ -3127,14 +3127,17 @@ document.getElementById('authNotice').addEventListener('click',openAuthModal);
     const el=document.getElementById(id);
     if(!el)return;
     function resizeWiz(){
-      el.style.height='1px';
-      const maxH=parseInt(el.style.maxHeight)||200;
-      el.style.height=Math.min(el.scrollHeight, maxH)+'px';
-      // Показываем скролл только если достигнут максимум
-      el.style.overflowY=el.scrollHeight>maxH?'auto':'hidden';
+      // Сбрасываем высоту до минимума чтобы scrollHeight пересчитался
+      el.style.height='52px';
+      const scrollH = el.scrollHeight;
+      const maxH = id==='wizTitle' ? 160 : 200;
+      el.style.height = Math.min(scrollH, maxH) + 'px';
+      el.style.overflowY = scrollH > maxH ? 'auto' : 'hidden';
     }
-    el.addEventListener('input',resizeWiz);
-    el.addEventListener('change',resizeWiz);
+    el.addEventListener('input', resizeWiz);
+    el.addEventListener('change', resizeWiz);
+    // Инициализируем при показе шага
+    el.addEventListener('focus', resizeWiz);
   });
 })();
 </script>
