@@ -3508,7 +3508,7 @@ async function doAuth(){
       const userDoc=snap.docs[0];
       const userData=userDoc.data();
       if(userData.passwordHash!==passHash){showToast(t('toastWrongPass'));return;}
-      currentUser={id:userDoc.id,phone:userData.phone,role:userData.role||'user'};
+      currentUser={id:userDoc.id,phone:userData.phone,role:userData.role||'user',nick:userData.nick||''};
       localStorage.setItem('ta_user',JSON.stringify(currentUser));
       closeOverlay('authOverlay');updateLoginBtn();resetReviewForm();
       showToast(t('toastLoginOk'));
