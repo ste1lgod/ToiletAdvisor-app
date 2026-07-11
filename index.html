@@ -4076,7 +4076,8 @@ async function loadModerationReviews(){
     Object.values(extraToilets).forEach(t=>{ toiletMap[t.id]=t; });
 
     list.innerHTML=reviews.map(r=>{
-      const name=r.userPhone||r.userLogin||'Аноним';
+      // Актуальный ник из кэша пользователей
+      const name=_getActualName(r.userId, r.userPhone||r.userLogin||'Аноним');
       const stars=('★'.repeat(r.rating)+'☆'.repeat(5-r.rating)).split('').join(' ');
       const d=new Date(r.createdAt);
       const MONTHS=['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
