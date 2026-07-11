@@ -4227,6 +4227,7 @@ function loadProfile(){
 async function loadProfileStats(){
   if(!currentUser)return;
   const el=document.getElementById('pStatReviews');
+  if(el)el.textContent='0';
   try{
     await _loadFirebase();
     let revSize=0;
@@ -4246,7 +4247,7 @@ async function loadProfileStats(){
     }
     if(el)el.textContent=revSize;
   }catch(e){
-    if(el)el.textContent='—';
+    if(el)el.textContent='0';
   }
 }
 
