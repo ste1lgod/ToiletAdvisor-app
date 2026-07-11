@@ -4158,6 +4158,12 @@ function showAdminSubview(id){
     document.getElementById('adminSubLogs').classList.remove('hidden');
     loadActivityLogs();
     _activeAdminSubview = 'logs';
+  } else if(id==='stats'){
+    document.getElementById('adminSubStats').classList.remove('hidden');
+    _activeAdminSubview = 'stats';
+    _statsCurrentTab = 'toilets';
+    switchStatsTab('toilets', document.querySelector('#statsTabRow [data-stab="toilets"]'));
+    loadAdminStats();
   }
 }
 async function loadModerationReviews(){
