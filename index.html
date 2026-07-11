@@ -3745,10 +3745,12 @@ async function submitReview(){
     await db.collection('reviews').add({
       toiletId:selectedToilet.id,
       userId:currentUser.id,
-      userPhone:currentUser.phone||currentUser.login||'Пользователь',
+      userPhone:currentUser.nick||currentUser.phone||currentUser.login||'Пользователь',
       text,rating:optimistic.rating,
       createdAt:optimistic.createdAt
     });
+    // Инвалидируем кэш отзывов для этого туалета
+    _invalidateReviewCache(selectedToilet.id);
     // Убираем tmp id
     const tmpEl=document.getElementById(optimistic.id);
     if(tmpEl)tmpEl.removeAttribute('id');
