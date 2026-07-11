@@ -664,8 +664,8 @@ body.dark .rvSkLine{background:var(--border);}
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
   animation:fadeIn .2s ease;
-  /* Фиксируем — не двигаемся при клавиатуре */
-  overflow:hidden;
+  /* Не двигаемся при клавиатуре — overflow:visible чтобы mBox скроллился */
+  overflow:visible;
 }
 .overlay.hidden{display:none!important;}
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
