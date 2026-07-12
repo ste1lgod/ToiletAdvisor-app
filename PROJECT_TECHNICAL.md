@@ -100,3 +100,87 @@ init.js        → глобальные переменные состояния,
 | `wizCoords` | Array\|null | Координаты выбранные в визарде добавления туалета. |
 | `isSheetOpen` | Boolean | Открыта ли нижняя шторка. |
 | `wizPickMode` | Boolean | Активен ли режим выбора места на карте в визарде. |
+
+---
+
+## 5. База данных Firestore — структура коллекций
+
+### 5.1 `toilets/{id}`
+```js
+{
+  title:         String,   // "Туалет в ТРЦ Next"
+  addr:          String,   // "проспект Амира Темура, 108"
+  description:   String,   // краткое описание
+  lat:           Number,   // широта
+  lon:           Number,   // долгота
+  isOpen:        Boolean,  // сейчас открыт?
+  isFree:        Boolean,  // бесплатный?
+  hasSoap:       Boolean,  // есть мыло?
+  hasPaper:      Boolean,  // есть бумага?
+  isAccessible:  Boolean,  // доступно для людей с ограниченными возможностями?
+  isTaharatkhana:Boolean,  // место для омовения (тахаратхана)?
+  photo:         String,   // URL фото (пока пустая строка)
+  addedBy:       String,   // userId кто добавил
+  createdAt:     String,   // ISO-дата создания
+}
+```
+
+### 5.2 `reviews/{id}`
+```js
+{
+  toiletId:  String,   // ID туалета
+  userId:    String,   // ID пользователя
+  userPhone: String,   // отображаемое имя (ник, телефон или логин)
+  rating:    Number,   // 1–5
+  text:      String,   // текст отзыва
+  createdAt: String,   // ISO-дата
+}
+```
+
+### 5.3 `users/{id}`
+```js
+// Обычный пользователь
+{
+  phone:        String,   // "+998901234567"
+  passwordHash: String,   // SHA-256 хэш пароля
+  nick:         String,   // никнейм (опционально)
+  role:         String,   // "user"
+  createdAt:    String,
+}
+// Администратор
+{
+  login:        String,   // логин (не телефон)
+  passwordHash: String,
+  nick:         String,   // "Admin(Amal)"
+  role:         String,   // "admin"
+  createdAt:    String,
+}
+```
+
+### 5.4 `users/{userId}/favorites/{toiletId}`
+```js
+// Подколлекция — у каждого пользователя своя
+{
+  id:    String,   // = toiletId
+  title: String,   // название туалета (денормализованное — копия из toilets)
+  addr:  String,   // адрес (денормализованное)
+  lat:   Number,
+  lon:   Number,
+}
+```
+> **Денормализация** — данные дублируются специально, чтобы не делать лишний запрос к `toilets` при загрузке избранного. Минус: при изменении данных туалета нужно обновлять и в favorites.
+
+### 5.5 `logs/{id}`
+```js
+{
+  type:       String,   // 'review', 'toilet', 'delete', 'auth', 'admin', 'fav'
+  category:   String,   // то же самое (для фильтрации)
+  action:     String,   // человекочитаемое действие: "Добавил туалет"
+  detail:     String,   // подробности: название туалета, текст отзыва и т.д.
+  actorId:    String,   // userId кто сделал
+  actorName:  String,   // телефон/логин актора
+  actorNick:  String,   // ник актора
+  actorRole:  String,   // 'user' или 'admin'
+  createdAt:  String,   // ISO-дата
+}
+```
