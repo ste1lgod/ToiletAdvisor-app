@@ -4436,15 +4436,8 @@ function renderFavorites(){
   // Если туалеты ещё не загружены — показываем скелетоны
   if(!allToilets.length){
     list.innerHTML=_skFavCards(favs.length);
-    // Повторяем рендер когда данные придут
     setTimeout(()=>{ if(allToilets.length) renderFavorites(); }, 1200);
     return;
-  }
-  // Заголовок секции по центру
-  const favSection=document.getElementById('pFavSection');
-  if(favSection){
-    const titleEl=favSection.querySelector('div:first-child');
-    if(titleEl)titleEl.style.textAlign='center';
   }
   list.innerHTML=favs.map(f=>{
     const _t=allToilets.find(x=>x.id===f.id);
