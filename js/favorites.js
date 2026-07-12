@@ -106,16 +106,19 @@ async function toggleFavorite(toiletId){
   } else {
     const toilet=allToilets.find(x=>x.id===toiletId);
     if(!toilet)return;
-    let addr=toilet.addr||'';
+    const _desc=toilet.description||'';
+    let addr=(!_isBadAddr(toilet.addr,_desc))?toilet.addr:'';
     if(!addr){
       try{ addr=await wizGeocode(toilet.lat,toilet.lon); }
       catch(e){ addr=`${toilet.lat.toFixed(4)}, ${toilet.lon.toFixed(4)}`; }
-      if(addr){
+      if(addr && !_isBadAddr(addr,_desc)){
         toilet.addr=addr;
         try{
           await _loadFirebase();
           await db.collection('toilets').doc(toilet.id).set({addr},{merge:true});
         }catch(e){}
+      } else {
+        addr=toilet.addr||`${toilet.lat.toFixed(4)}, ${toilet.lon.toFixed(4)}`;
       }
     }
     const favItem={id:toilet.id,title:toilet.title,addr,lat:toilet.lat,lon:toilet.lon};
