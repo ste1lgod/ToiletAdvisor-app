@@ -85,6 +85,8 @@ updateLoginBtn();
 switchTab('map');
 _syncUserNick();
 _patchSeedAddresses();
+// Синхронизируем избранное из Firestore при старте — чтобы сердечки были правильными
+if(currentUser){ _loadFavoritesFromFirestore(); }
 
 // Начальное состояние профиля (синхронно, до первого рендера)
 (function(){
