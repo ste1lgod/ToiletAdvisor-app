@@ -303,7 +303,9 @@ async function saveNick(nick){
       const logSnap=await db.collection('logs').where('actorId','==',currentUser.id).limit(200).get();
       logSnap.docs.forEach(doc=>batch.update(doc.ref,{actorName:displayName,actorNick:displayName}));
       await batch.commit();
+      // Инвалидируем оба кэша — отзывов и пользователей
       Object.keys(_reviewsCache).forEach(k=>delete _reviewsCache[k]);
+      _usersCacheLoaded=false;
     }
   }catch(e){console.warn('saveNick error:',e);}
 }
