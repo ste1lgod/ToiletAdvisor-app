@@ -176,3 +176,74 @@ function renderFavorites(){
   }).join('');
   _fixFavAddresses(favs);
 }
+
+let _fixFavRunning=false;
+async function _fixFavAddresses(favs){
+  if(!currentUser||_fixFavRunning)return;
+  _fixFavRunning=true;
+  let changed=false;
+  for(const f of favs){
+    if(!f.lat||!f.lon)continue;
+    const _t=allToilets.find(x=>x.id===f.id);
+    const _desc=_t?.description||'';
+    const needsUpdate=!f.addr||f.addr===_desc||f.addr==='Нет адреса'||f.addr==='—';
+    if(!needsUpdate)continue;
+    try{
+      const newAddr=await wizGeocode(f.lat,f.lon);
+      f.addr=newAddr; changed=true;
+      if(_t&&!_t.addr){
+        _t.addr=newAddr;
+        try{ await _loadFirebase(); await db.collection('toilets').doc(f.id).set({addr:newAddr},{merge:true}); }catch(e){}
+      }
+    }catch(e){}
+  }
+  _fixFavRunning=false;
+  if(changed){
+    saveFavorites(favs);
+    const items=document.querySelectorAll('#pFavList .pFavItem');
+    favs.forEach((f,i)=>{ const el=items[i]?.querySelector('.pFavItem-addr'); if(el&&f.addr)el.textContent=f.addr; });
+  }
+}
+
+let _favConfirmId=null;
+function confirmRemoveFavorite(toiletId,title){
+  _favConfirmId=toiletId;
+  const titleEl=document.getElementById('pFavConfirmTitle');
+  if(titleEl)titleEl.textContent=title;
+  const btn=document.getElementById('pFavConfirmBtn');
+  if(btn)btn.onclick=()=>{removeFavorite(_favConfirmId);closeFavConfirm();};
+  document.getElementById('pFavConfirm').classList.add('open');
+  document.getElementById('pFavBackdrop').style.display='block';
+}
+
+function closeFavConfirm(){
+  document.getElementById('pFavConfirm').classList.remove('open');
+  document.getElementById('pFavBackdrop').style.display='none';
+  _favConfirmId=null;
+}
+
+function removeFavorite(toiletId){
+  const favs=getFavorites().filter(f=>f.id!==toiletId);
+  saveFavorites(favs);
+  _removeFavFromFirestore(toiletId);
+  renderFavorites();
+  updateFavBtn(toiletId);
+  const favEl=document.getElementById('pStatFav');
+  if(favEl)favEl.textContent=favs.length;
+}
+
+function openFavSheet(toiletId){
+  const toilet=allToilets.find(t=>t.id===toiletId);
+  if(!toilet){showToast('Туалет не найден');return;}
+  openSheet(toilet);
+}
+
+function openFavOnMap(toiletId){
+  const toilet=allToilets.find(t=>t.id===toiletId);
+  if(!toilet){showToast('Туалет не найден на карте');return;}
+  switchTab('map');
+  setTimeout(()=>{ myMap.setCenter([toilet.lat,toilet.lon],17,{duration:600}); },300);
+}
+
+// обратная совместимость
+function openFavToilet(toiletId){openFavSheet(toiletId);}
