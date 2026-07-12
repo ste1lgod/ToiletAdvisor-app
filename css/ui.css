@@ -41,7 +41,7 @@ body.dark .skFavCard{background:rgba(30,20,35,0.72);border-color:rgba(236,72,153
 .refreshBtn:active{transform:scale(.9);}
 .refreshBtn.loading{border-color:var(--green);color:var(--green);box-shadow:0 0 0 3px rgba(0,168,89,0.12);}
 .refreshBtn.loading svg{animation:spinRefresh .7s linear infinite;}
-@keyframes spinRefresh{from{transform:rotate(0deg);}to{transform:rotate(-360deg);}
+@keyframes spinRefresh{from{transform:rotate(0deg);}to{transform:rotate(-360deg);}}
 
 /* ===== OFFLINE BANNER ===== */
 #offlineBanner{
