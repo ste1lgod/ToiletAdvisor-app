@@ -272,10 +272,10 @@ async function loadAdminStats(){
     // ── ПОЛЬЗОВАТЕЛИ ──
     const adminCount=users.filter(u=>u.role==='admin').length;
     document.getElementById('statsSummaryUsers').innerHTML=`
-      <div class="statSummaryCard"><div class="statSummaryIcon">👥</div><div class="statSummaryNum">${users.length}</div><div class="statSummaryLabel">Всего аккаунтов</div></div>
-      <div class="statSummaryCard"><div class="statSummaryIcon">⚙️</div><div class="statSummaryNum">${adminCount}</div><div class="statSummaryLabel">Администраторов</div></div>
-      <div class="statSummaryCard"><div class="statSummaryIcon">✦</div><div class="statSummaryNum">${users.length-adminCount}</div><div class="statSummaryLabel">Обычных юзеров</div></div>
-      <div class="statSummaryCard"><div class="statSummaryIcon">💬</div><div class="statSummaryNum">${reviews.length}</div><div class="statSummaryLabel">Всего отзывов</div></div>`;
+      <div class="statSummaryCard"><div class="statSummaryRow"><span class="statSummaryIcon">👥</span><span class="statSummaryNum">${users.length}</span></div><div class="statSummaryLabel">Всего аккаунтов</div></div>
+      <div class="statSummaryCard"><div class="statSummaryRow"><span class="statSummaryIcon">⚙️</span><span class="statSummaryNum">${adminCount}</span></div><div class="statSummaryLabel">Администраторов</div></div>
+      <div class="statSummaryCard"><div class="statSummaryRow"><span class="statSummaryIcon">✦</span><span class="statSummaryNum">${users.length-adminCount}</span></div><div class="statSummaryLabel">Обычных юзеров</div></div>
+      <div class="statSummaryCard"><div class="statSummaryRow"><span class="statSummaryIcon">💬</span><span class="statSummaryNum">${reviews.length}</span></div><div class="statSummaryLabel">Всего отзывов</div></div>`;
 
     const reviewsByUser={};
     reviews.forEach(r=>{if(r.userId)reviewsByUser[r.userId]=(reviewsByUser[r.userId]||0)+1;});
