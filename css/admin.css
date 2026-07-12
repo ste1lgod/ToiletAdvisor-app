@@ -24,6 +24,25 @@ body.dark .adminDashBtn{background:var(--card);border-color:var(--border);box-sh
 /* Admin subviews */
 .adminSubview{display:flex;flex-direction:column;gap:10px;width:100%;}
 .adminSubview.hidden{display:none!important;}
+
+/* Шапка субвью — три равные колонки, заголовок всегда по центру */
+.adminSubHeader{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  margin-bottom:16px;
+  gap:8px;
+  min-height:36px;
+}
+.adminSubHeaderTitle{
+  font-size:15px;font-weight:800;color:var(--text);
+  letter-spacing:-.3px;text-align:center;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+/* Кнопка Обновить — прижата вправо */
+.adminSubHeader .refreshBtn{
+  justify-self:end;
+}
 .adminBackBtn{
   display:flex;align-items:center;gap:7px;
   height:36px;
