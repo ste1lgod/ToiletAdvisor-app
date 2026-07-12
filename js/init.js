@@ -7,6 +7,44 @@ let addCoords=null,myMap=null,searchTimer=null;
 let userCoords=null,userPlacemark=null;
 try{const s=localStorage.getItem('ta_user');if(s)currentUser=JSON.parse(s);}catch(e){}
 
+// ── ПАТЧ НИКНЕЙМОВ В ОТЗЫВАХ ──
+// Проходит по всем отзывам, для каждого смотрит userId → берёт актуальный ник из users
+// Если userPhone отличается от ника — обновляет в Firestore
+async function _patchReviewNicks(){
+  try{
+    await _loadFirebase();
+    await _loadUsersCache();
+    const snap = await db.collection('reviews').limit(500).get();
+    if(snap.empty) return;
+
+    const batch = db.batch();
+    let changes = 0;
+
+    for(const doc of snap.docs){
+      const r = doc.data();
+      if(!r.userId) continue;
+      const u = _usersCache[r.userId];
+      if(!u) continue;
+      const correctName = u.nick || u.phone || u.login || '';
+      if(!correctName) continue;
+      // Обновляем только если userPhone не совпадает с актуальным ником
+      if(r.userPhone !== correctName){
+        batch.update(doc.ref, { userPhone: correctName });
+        changes++;
+      }
+    }
+
+    if(changes > 0){
+      await batch.commit();
+      console.log(`[patchNicks] Обновлено ${changes} отзывов`);
+      // Инвалидируем кэш отзывов — при следующем открытии шторки подтянутся свежие
+      Object.keys(_reviewsCache).forEach(k => delete _reviewsCache[k]);
+    }
+  }catch(e){
+    console.warn('[patchReviewNicks]', e.message);
+  }
+}
+
 // ── ПАТЧ АДРЕСОВ ТУАЛЕТОВ ──
 // Запускается при старте: записывает addr в Firestore для точек у которых его нет
 async function _patchSeedAddresses(){
