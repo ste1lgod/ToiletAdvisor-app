@@ -302,3 +302,103 @@ async function loadAdminStats(){
     document.getElementById('statsUsersList').innerHTML=`<div class="statsLoading" style="color:#ef4444;">Ошибка: ${e.message}</div>`;
   }
 }
+
+// ── WIZARD ──
+let wizCoords=null;
+let wizCurrentStep=1;
+let wizPickMode=false;
+let _wizGeocodeTimer=null;
+let _wizSearchTimer=null;
+let _wizLastGeocodeCoords=null;
+
+function wizReset(){
+  wizCoords=null; wizCurrentStep=1; wizPickMode=false;
+  const nav=document.getElementById('bottomNav');
+  if(nav)nav.style.display='';
+  _wizHideOverlay();
+  const confirmed=document.getElementById('wizCoordsConfirmed');
+  if(confirmed){confirmed.style.display='none';confirmed.textContent='';}
+  const next1=document.getElementById('wizNext1');
+  if(next1)next1.disabled=true;
+  const navRow1=document.getElementById('wizNavRow1');
+  if(navRow1)navRow1.style.display='none';
+  const menuBtnRow=document.getElementById('wizMenuBtnRow');
+  if(menuBtnRow)menuBtnRow.style.display='flex';
+  const titleEl=document.getElementById('wizTitle');
+  if(titleEl){titleEl.value='';titleEl.style.height='';}
+  const descEl=document.getElementById('wizDesc');
+  if(descEl){descEl.value='';descEl.style.height='';}
+  document.querySelectorAll('.tagToggle').forEach(el=>{
+    const def=el.dataset.tag==='isFree'||el.dataset.tag==='isOpen';
+    el.classList.toggle('on',def);
+  });
+  wizShowPanel(1);
+}
+
+function wizShowPanel(step){
+  wizCurrentStep=step;
+  document.querySelectorAll('.wizPanel').forEach((p,i)=>p.classList.toggle('active',i===step-1));
+  const titles={1:'📍 Укажите место',2:'✏️ Добавьте описание',3:'🔍 Проверьте данные'};
+  const titleEl=document.getElementById('wizStepTitle');
+  if(titleEl){titleEl.textContent=titles[step]||'';titleEl.classList.toggle('wizStepTitleConfirm',step===3);}
+}
+
+function wizGoStep(step){
+  if(step===2&&!wizCoords){showToast(t('toastFirstPlace'));return;}
+  if(step===3){
+    const title=document.getElementById('wizTitle').value.trim();
+    if(!title){showToast(t('toastEnterTitle'));document.getElementById('wizTitle').focus();return;}
+    wizFillConfirm();
+  }
+  wizShowPanel(step);
+}
+
+function wizFillConfirm(){
+  const coords=wizCoords?`${wizCoords[0].toFixed(5)}, ${wizCoords[1].toFixed(5)}`:'—';
+  const title=document.getElementById('wizTitle').value.trim();
+  document.getElementById('wizPreviewTitle').textContent=title||'—';
+
+  const addrMain=document.getElementById('wizPickAddressMain');
+  const addrText=(addrMain&&addrMain.textContent&&
+    addrMain.textContent!=='Определяю адрес...'&&
+    addrMain.textContent!=='...'&&
+    addrMain.textContent!=='Перемещаю...')
+    ?addrMain.textContent:coords;
+  document.getElementById('wizPreviewAddrText').textContent=addrText;
+
+  const pillsEl=document.getElementById('wizPreviewPills');
+  if(pillsEl){
+    pillsEl.innerHTML='';
+    const tags={};
+    document.querySelectorAll('.tagToggle').forEach(el=>{tags[el.dataset.tag]=el.classList.contains('on');});
+    const openSpan=document.createElement('span');
+    openSpan.className='mPill '+(tags.isOpen?'pGreen':'pRed');
+    openSpan.textContent=tags.isOpen?'🟢 Открыто':'🔴 Закрыто';
+    pillsEl.appendChild(openSpan);
+    const freeSpan=document.createElement('span');
+    freeSpan.className='mPill '+(tags.isFree?'pGreen2':'pBlue');
+    freeSpan.textContent=tags.isFree?'🆓 Бесплатно':'💳 Платно';
+    pillsEl.appendChild(freeSpan);
+    if(tags.hasSoap){const s=document.createElement('span');s.className='mPill pBlue';s.textContent='🧼 Мыло';pillsEl.appendChild(s);}
+    if(tags.hasPaper){const s=document.createElement('span');s.className='mPill pBlue';s.textContent='🧻 Бумага';pillsEl.appendChild(s);}
+    if(tags.isAccessible){const s=document.createElement('span');s.className='mPill pBlue';s.textContent='♿ Доступно';pillsEl.appendChild(s);}
+    if(tags.isTaharatkhana){const s=document.createElement('span');s.className='mPill';s.style.background='#fef3c7';s.style.color='#92400e';s.textContent='🕌 Тахаратхана';pillsEl.appendChild(s);}
+  }
+
+  const desc=document.getElementById('wizDesc').value.trim();
+  const descEl=document.getElementById('wizPreviewDesc');
+  const taharatPreview=document.getElementById('wizPreviewTaharat');
+  const taharatNotePreview=document.getElementById('wizPreviewTaharatNote');
+  const tags={};
+  document.querySelectorAll('.tagToggle').forEach(el=>{tags[el.dataset.tag]=el.classList.contains('on');});
+  if(tags.isTaharatkhana&&desc){
+    if(taharatNotePreview)taharatNotePreview.textContent=desc;
+    if(taharatPreview)taharatPreview.classList.remove('hidden');
+    if(descEl)descEl.classList.add('hidden');
+  } else {
+    if(taharatPreview)taharatPreview.classList.add('hidden');
+    if(descEl){desc?(descEl.textContent=desc,descEl.classList.remove('hidden')):descEl.classList.add('hidden');}
+  }
+}
+
+function wizToggleTag(el){el.classList.toggle('on');}
