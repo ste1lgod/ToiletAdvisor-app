@@ -5,6 +5,10 @@ server/node_modules/
 
 # Ключи и секреты — никогда не коммитить
 serviceAccountKey.json
+*.json
+!manifest.json
+!package.json
+!package-lock.json
 *.env
 .env
 
