@@ -324,12 +324,11 @@ function onAdminNavClick(){
   }
 }
 
-// Двойной клик на профиль — скролл в начало
 function onProfileNavClick(){
   const isAlreadyOnProfile=document.querySelector('.navBtn[data-tab="profile"].active')!==null;
   if(isAlreadyOnProfile){
     const ps=document.getElementById('profileScreen');
-    if(ps)ps.scrollTo({top:0,behavior:'smooth'});
+    if(ps)ps.scrollTo({top:0,behavior:'instant'});
   } else {
     switchTab('profile');
   }
