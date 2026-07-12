@@ -49,23 +49,97 @@ function closeLangOut(e){
 }
 
 function setLang(l){
-  currentLang=l;localStorage.setItem('ta_lang',l);
+  currentLang=l;
+  localStorage.setItem('ta_lang',l);
   document.getElementById('langLabel').textContent=l.toUpperCase();
   document.getElementById('langDrop').classList.remove('open');
   document.getElementById('langBtn').classList.remove('open');
   document.querySelectorAll('.lOpt').forEach(o=>o.classList.toggle('active',o.textContent.trim().toLowerCase()===l));
-  
-  // Update all translated elements
+
+  // Хедер
   document.getElementById('searchInput').placeholder=t('search');
-  document.getElementById('fnLabel').textContent=t('findNearest');
-  document.getElementById('reviewText').placeholder=t('writeReview');
-  const lrt=document.getElementById('leaveReviewTitle');
-  if(lrt)lrt.textContent=t('leaveReview');
-  const rl=document.getElementById('routeLabel');
-  if(rl)rl.textContent=t('route');
-  const sl=document.getElementById('submitLabel');
-  if(sl)sl.textContent=t('submit');
-  
+  const fnLabel=document.getElementById('fnLabel');
+  if(fnLabel)fnLabel.textContent=t('findNearest');
+
+  // Шторка
+  const reviewTextEl=document.getElementById('reviewText');
+  if(reviewTextEl)reviewTextEl.placeholder=t('writeReview');
+  const leaveReviewTitle=document.getElementById('leaveReviewTitle');
+  if(leaveReviewTitle)leaveReviewTitle.textContent=t('leaveReview');
+  const routeLabel=document.getElementById('routeLabel');
+  if(routeLabel)routeLabel.textContent=t('route');
+  const submitLabel=document.getElementById('submitLabel');
+  if(submitLabel)submitLabel.textContent=t('submit');
+  const reviewsTitle=document.getElementById('reviewsTitle');
+  if(reviewsTitle)reviewsTitle.textContent=t('reviewsTitle');
+  const authNotice=document.getElementById('authNotice');
+  if(authNotice)authNotice.textContent=t('authNotice');
+
+  // Тахаратхана
+  const taharatTitleEl=document.getElementById('taharatTitle');
+  if(taharatTitleEl)taharatTitleEl.textContent=t('taharatTitle');
+  const taharatSubEl=document.getElementById('taharatSub');
+  if(taharatSubEl)taharatSubEl.textContent=t('taharatSub');
+  const taharatNoteEl=document.getElementById('taharatNote');
+  if(taharatNoteEl)taharatNoteEl.textContent=t('taharatNote');
+  const tItems=document.querySelectorAll('.tItem');
+  ['taharatHotWater','taharatSoap','taharatTowels','taharatSlippers'].forEach((k,i)=>{
+    if(tItems[i])tItems[i].textContent=t(k);
+  });
+
+  // Admin denied
+  const adTitle=document.getElementById('adTitle');
+  if(adTitle)adTitle.textContent=t('adminDeniedTitle');
+  const adText=document.getElementById('adText');
+  if(adText)adText.textContent=t('adminDenied');
+  const adBtnLabel=document.getElementById('adBtnLabel');
+  if(adBtnLabel)adBtnLabel.textContent=t('adminDeniedBtn');
+
+  // Навбар
+  const navLabels=document.querySelectorAll('.navLabel');
+  if(navLabels[0])navLabels[0].textContent=t('navMap');
+  if(navLabels[1])navLabels[1].textContent=t('navProfile');
+
+  // Чипы категорий
+  const catChips=document.querySelectorAll('.catChip');
+  const catKeys=['catAll','catTaharatkhana','catFree','catSoap','catPaper','catAccessible'];
+  catChips.forEach((c,i)=>{ if(catKeys[i])c.textContent=t(catKeys[i]); });
+
+  // Панель администратора
+  const adminDashTitleEl=document.getElementById('adminDashTitle');
+  if(adminDashTitleEl)adminDashTitleEl.textContent=t('adminPanelTitle');
+
+  // Визард
+  const wizMapSubEl=document.getElementById('wizMapSub');
+  if(wizMapSubEl)wizMapSubEl.textContent=t('wizMapSub');
+  const wizPickHintEl=document.getElementById('wizPickHint');
+  if(wizPickHintEl)wizPickHintEl.textContent=t('wizPickHint');
+  const wizPickSearchEl=document.getElementById('wizPickSearch');
+  if(wizPickSearchEl)wizPickSearchEl.placeholder=t('wizPickSearch');
+  const wizTitleEl=document.getElementById('wizTitle');
+  if(wizTitleEl)wizTitleEl.placeholder=t('wizTitlePlaceholder');
+  const wizDescEl=document.getElementById('wizDesc');
+  if(wizDescEl)wizDescEl.placeholder=t('wizDescPlaceholder');
+
+  // Журнал — чипы фильтров
+  const logChips=document.querySelectorAll('.logFilterChip[data-filter]');
+  const logKeys=['logFilterAll','logFilterReviews','logFilterToilets','logFilterAuth','logFilterAdmin'];
+  logChips.forEach((c,i)=>{ if(logKeys[i])c.textContent=t(logKeys[i]); });
+
+  // Модалки
+  const mTitleEl=document.querySelector('#authBox .mTitle');
+  if(mTitleEl)mTitleEl.innerHTML=t('loginTitle')+'<br><span class="mSub">Toilet Advisor Tashkent</span>';
+  const mNoticeEl=document.querySelector('#authBox .mNotice');
+  if(mNoticeEl)mNoticeEl.textContent=t('loginNotice');
+  const tabLoginEl=document.getElementById('tabLogin');
+  if(tabLoginEl)tabLoginEl.textContent=t('tabLogin');
+  const tabRegEl=document.getElementById('tabReg');
+  if(tabRegEl)tabRegEl.textContent=t('tabRegister');
+  const authActionEl=document.getElementById('authActionBtn');
+  if(authActionEl)authActionEl.textContent=authTab==='login'?t('loginAction'):t('registerAction');
+  const adminTitleEl=document.querySelector('#adminBox .mTitle');
+  if(adminTitleEl)adminTitleEl.textContent=t('adminLoginTitle');
+
   updateLoginBtn();
   if(typeof updateOfflineText==='function')updateOfflineText();
 }
