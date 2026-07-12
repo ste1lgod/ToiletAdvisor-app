@@ -202,3 +202,11 @@ body.dark .chkGrid label:has(input:checked){background:#0a2e1c;border-color:var(
 }
 .tScreen.hidden{display:none!important;}
 .hidden{display:none!important;}
+
+/* ── Admin modal — расстояние между заголовком и полями ── */
+#adminBox .mTitle{
+  margin-bottom:20px;
+}
+#adminBox .pInput{
+  margin-top:0;margin-bottom:14px;
+}
