@@ -67,8 +67,8 @@ async function openSheet(toilet){
     _usersCacheLoaded = false;
     const [reviews] = await Promise.all([
       getReviews(toilet.id),
-      _loadUsersCache(),
-      _loadFavoritesFromFirestore()   // параллельно — сердечко сразу
+      _loadUsersCache()
+      // _loadFavoritesFromFirestore грузится при старте приложения — не дублируем здесь
     ]);
     if(!isSheetOpen||selectedToilet?.id!==toilet.id)return;
     const avg=reviews.length?(reviews.reduce((s,r)=>s+r.rating,0)/reviews.length):0;
