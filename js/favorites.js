@@ -190,6 +190,16 @@ function renderFavorites(){
   _fixFavAddresses(favs);
 }
 
+// Проверяет, является ли адрес плохим (пустой, заглушка, координаты, совпадает с description)
+function _isBadAddr(addr, desc){
+  if(!addr)return true;
+  if(addr==='Нет адреса'||addr==='—')return true;
+  if(desc&&addr===desc)return true;
+  // Если адрес выглядит как координаты — тоже плохой
+  if(/^-?\d{1,3}\.\d{3,},\s*-?\d{1,3}\.\d{3,}$/.test(addr.trim()))return true;
+  return false;
+}
+
 let _fixFavRunning=false;
 async function _fixFavAddresses(favs){
   if(!currentUser||_fixFavRunning)return;
@@ -199,23 +209,35 @@ async function _fixFavAddresses(favs){
     if(!f.lat||!f.lon)continue;
     const _t=allToilets.find(x=>x.id===f.id);
     const _desc=_t?.description||'';
-    const needsUpdate=!f.addr||f.addr===_desc||f.addr==='Нет адреса'||f.addr==='—'
-      ||(f.addr&&_t?.description&&f.addr===_t.description);
-    if(!needsUpdate)continue;
+    if(!_isBadAddr(f.addr,_desc))continue; // адрес уже хороший
     try{
       const newAddr=await wizGeocode(f.lat,f.lon);
-      f.addr=newAddr; changed=true;
-      if(_t&&!_t.addr){
-        _t.addr=newAddr;
-        try{ await _loadFirebase(); await db.collection('toilets').doc(f.id).set({addr:newAddr},{merge:true}); }catch(e){}
+      if(newAddr&&!_isBadAddr(newAddr,_desc)){
+        f.addr=newAddr; changed=true;
+        // Обновляем адрес в DOM сразу
+        const items=document.querySelectorAll('#pFavList .pFavItem');
+        const idx=favs.indexOf(f);
+        const addrEl=items[idx]?.querySelector('.pFavItem-addr');
+        if(addrEl)addrEl.textContent=newAddr;
+        // Сохраняем адрес в туалете если его там не было
+        if(_t&&_isBadAddr(_t.addr,_desc)){
+          _t.addr=newAddr;
+          try{ await _loadFirebase(); await db.collection('toilets').doc(f.id).set({addr:newAddr},{merge:true}); }catch(e){}
+        }
       }
     }catch(e){}
   }
   _fixFavRunning=false;
   if(changed){
     saveFavorites(favs);
-    const items=document.querySelectorAll('#pFavList .pFavItem');
-    favs.forEach((f,i)=>{ const el=items[i]?.querySelector('.pFavItem-addr'); if(el&&f.addr)el.textContent=f.addr; });
+    // Обновляем также в Firestore каждый исправленный элемент
+    try{
+      await _loadFirebase();
+      const batch=db.batch();
+      const colRef=db.collection('users').doc(currentUser.id).collection('favorites');
+      favs.forEach(f=>{ if(f.addr&&!_isBadAddr(f.addr,''))batch.set(colRef.doc(f.id),f); });
+      await batch.commit();
+    }catch(e){}
   }
 }
 
