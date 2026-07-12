@@ -219,6 +219,9 @@ async function doAdminLogin(){
     const userData=userDoc.data();
     currentUser={id:userDoc.id,login:userData.login,role:'admin',nick:userData.nick||''};
     localStorage.setItem('ta_user',JSON.stringify(currentUser));
+    // Обновляем кэш — admin мог поменять ник
+    _usersCache[userDoc.id]={nick:userData.nick||'',phone:'',login:userData.login||'',role:'admin'};
+    try{ localStorage.setItem(_USERS_CACHE_KEY, JSON.stringify({ts:Date.now(),data:_usersCache})); }catch(e){}
     closeOverlay('adminOverlay');
     updateLoginBtn();
     showToast(t('toastAdminLoginOk'));
