@@ -69,14 +69,14 @@ function _invalidateUsersCache(){
 // Возвращает актуальное отображаемое имя для userId
 // Приоритет: ник из кэша > телефон из кэша > логин из кэша > fallback из отзыва
 function _getActualName(userId, fallback){
-  if(!userId) return fallback || '?';
+  if(!userId) return fallback || 'Пользователь';
   const u = _usersCache[userId];
   if(u){
     if(u.nick)   return u.nick;
     if(u.phone)  return u.phone;
     if(u.login)  return u.login;
   }
-  return fallback || '?';
+  return fallback || 'Пользователь';
 }
 
 // ── SYNC NICK ──
