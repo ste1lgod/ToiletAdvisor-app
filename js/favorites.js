@@ -225,10 +225,8 @@ async function _fixFavAddresses(favs){
       const newAddr=await wizGeocode(f.lat,f.lon);
       if(newAddr&&!_isBadAddr(newAddr,_desc)){
         f.addr=newAddr; changed=true;
-        // Обновляем адрес в DOM сразу
-        const items=document.querySelectorAll('#pFavList .pFavItem');
-        const idx=favs.indexOf(f);
-        const addrEl=items[idx]?.querySelector('.pFavItem-addr');
+        // Обновляем адрес в DOM по data-fav-id — надёжнее чем по индексу
+        const addrEl=document.querySelector(`#pFavList .pFavItem[data-fav-id="${f.id}"] .pFavItem-addr`);
         if(addrEl)addrEl.textContent=newAddr;
         // Сохраняем адрес в туалете если его там не было
         if(_t&&_isBadAddr(_t.addr,_desc)){
