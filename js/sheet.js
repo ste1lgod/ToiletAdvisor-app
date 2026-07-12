@@ -180,3 +180,139 @@ function renderReviews(reviews){
     </div>`;
   }).join('');
 }
+
+// ── STAR INPUT ──
+document.querySelectorAll('.starBtn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    if(!currentUser){openAuthModal();return;}
+    reviewRating=parseInt(this.dataset.s);
+    document.querySelectorAll('.starBtn').forEach((s,i)=>{
+      s.classList.toggle('lit', i<reviewRating);
+    });
+  });
+});
+
+// ── SUBMIT REVIEW ──
+async function submitReview(){
+  if(!currentUser){openAuthModal();return;}
+  if(!selectedToilet)return;
+  const ta=document.getElementById('reviewText');
+  const text=ta.value.replace(/\r\n/g,'\n').replace(/\r/g,'\n').trim();
+  if(!text||!reviewRating){showToast(t('toastEnterReview'));return;}
+
+  const optimistic={
+    id:'tmp_'+Date.now(),
+    toiletId:selectedToilet.id,
+    userId:currentUser.id,
+    userPhone:currentUser.phone||currentUser.login||'Пользователь',
+    text,rating:reviewRating,
+    createdAt:new Date().toISOString()
+  };
+
+  const existingItems=document.querySelectorAll('#reviewsList .rvItem');
+  const existingCount=existingItems.length;
+  const name=optimistic.userPhone;
+  const col=COLORS[name.charCodeAt(0)%COLORS.length];
+  const ini=name.replace(/\+/g,'').slice(0,2).toUpperCase();
+  const stars=('★'.repeat(optimistic.rating)+'☆'.repeat(5-optimistic.rating)).split('').join(' ');
+  const d=new Date(optimistic.createdAt);
+  const ds=d.getDate()+' '+['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'][d.getMonth()]+' '+d.getFullYear();
+  const newCard='<div class="rvItem" id="'+optimistic.id+'" style="flex-direction:column;gap:0;padding:0;overflow:hidden;">'
+    +'<div style="display:flex;align-items:flex-start;gap:14px;padding:16px 16px 12px;">'
+    +'<div class="rvAvatar" style="background:'+col+'">'+ini+'</div>'
+    +'<div class="rvBody">'
+    +'<div class="rvName">'+name+'</div>'
+    +'<div class="rvStars">'+stars+'</div>'
+    +'</div>'
+    +'<span class="rvDate" style="flex-shrink:0;padding-top:4px;">'+ds+'</span>'
+    +'</div>'
+    +'<div style="height:1px;background:var(--border);margin:0 16px;opacity:0.7;"></div>'
+    +'<div style="margin:0 16px 16px;padding-top:12px;font-size:14px;color:var(--text);line-height:1.55;word-break:break-word;opacity:0.78;">'+formatReviewText(text)+'</div>'
+    +'</div>';
+  const listEl=document.getElementById('reviewsList');
+  if(existingCount===0){ listEl.innerHTML=newCard; }
+  else { listEl.insertAdjacentHTML('beforeend',newCard); }
+
+  const currentRating=document.getElementById('sRatingVal').textContent;
+  const prevAvg=currentRating==='—'?0:parseFloat(currentRating);
+  const newAvg=existingCount===0?optimistic.rating:((prevAvg*existingCount)+optimistic.rating)/(existingCount+1);
+  document.getElementById('sRatingVal').textContent=newAvg.toFixed(1);
+
+  resetReviewForm();
+  showToast(t('success'));
+
+  try{
+    await _loadFirebase();
+    await db.collection('reviews').add({
+      toiletId:selectedToilet.id,
+      userId:currentUser.id,
+      userPhone:currentUser.nick||currentUser.phone||currentUser.login||'Пользователь',
+      text,rating:optimistic.rating,
+      createdAt:optimistic.createdAt
+    });
+    _invalidateReviewCache(selectedToilet.id);
+    const tmpEl=document.getElementById(optimistic.id);
+    if(tmpEl)tmpEl.removeAttribute('id');
+    logAction({
+      type:'review', category:'review', action:t('logLeftReview'),
+      detail:`${t('logToilet')}: ${selectedToilet.title||selectedToilet.id} · ${t('logRating')}: ${'★'.repeat(optimistic.rating)} · "${text.slice(0,80)}"`,
+    });
+  }catch(e){
+    console.error('Ошибка сохранения отзыва:',e);
+    showToast(t('toastReviewSaved'));
+  }
+}
+
+// ── ROUTE ──
+function goRoute(){
+  if(!selectedToilet)return;
+  const lat=selectedToilet.lat, lon=selectedToilet.lon;
+  if(userCoords){
+    window.open(`https://yandex.ru/maps/?rtext=${userCoords[0]},${userCoords[1]}~${lat},${lon}&rtt=pd`,'_blank');
+    return;
+  }
+  let opened=false;
+  const timeout=setTimeout(()=>{ if(!opened){opened=true;window.open(`https://yandex.ru/maps/?rtext=~${lat},${lon}`,'_blank');} },2000);
+  navigator.geolocation.getCurrentPosition(
+    p=>{ if(opened)return; opened=true;clearTimeout(timeout); window.open(`https://yandex.ru/maps/?rtext=${p.coords.latitude},${p.coords.longitude}~${lat},${lon}&rtt=pd`,'_blank'); },
+    ()=>{ if(opened)return; opened=true;clearTimeout(timeout); window.open(`https://yandex.ru/maps/?rtext=~${lat},${lon}`,'_blank'); },
+    {timeout:1500,maximumAge:30000}
+  );
+}
+
+// ── iOS DRAG-TO-DISMISS ──
+function initDrag(dragZone,panel,onDismiss){
+  let startY=0,startT=0,curY=0,dragging=false,dismissing=false;
+  function onStart(clientY){ if(dismissing)return; startY=clientY;startT=Date.now();curY=0;dragging=true; panel.style.transition='none'; }
+  function onMove(clientY){ if(!dragging||dismissing)return; curY=Math.max(0,clientY-startY); panel.style.transform=`translateY(${curY}px)`; }
+  function onEnd(){
+    if(!dragging||dismissing)return; dragging=false; panel.style.transition='';
+    const vel=(curY)/(Date.now()-startT);
+    if(curY>panel.offsetHeight*0.45||vel>0.6){
+      dismissing=true; panel.style.transform='translateY(100%)';
+      setTimeout(()=>{ dismissing=false; panel.style.transform=''; onDismiss(); },320);
+    } else { panel.style.transform=''; }
+  }
+  dragZone.addEventListener('touchstart',e=>{onStart(e.touches[0].clientY);},{passive:true});
+  dragZone.addEventListener('touchmove',e=>{onMove(e.touches[0].clientY);},{passive:true});
+  dragZone.addEventListener('touchend',onEnd);
+  dragZone.addEventListener('mousedown',e=>{onStart(e.clientY);});
+  document.addEventListener('mousemove',e=>{if(dragging)onMove(e.clientY);});
+  document.addEventListener('mouseup',()=>{if(dragging)onEnd();});
+}
+
+// ── AUTO-RESIZE REVIEW TEXTAREA ──
+document.addEventListener('DOMContentLoaded', function(){
+  const ta=document.getElementById('reviewText');
+  if(ta){
+    function resize(){ ta.style.height='auto'; ta.style.height=Math.min(ta.scrollHeight, 320)+'px'; }
+    ta.addEventListener('input',resize);
+  }
+  // Sheet drag
+  initDrag(document.getElementById('sDragZone'),document.getElementById('toiletSheet'),closeSheet);
+  // Backdrop click
+  document.getElementById('sheetBackdrop').addEventListener('click',()=>{ if(isSheetOpen)closeSheet(); });
+  // Auth notice click
+  const notice=document.getElementById('authNotice');
+  if(notice)notice.addEventListener('click',openAuthModal);
+});
