@@ -299,3 +299,111 @@ async function saveNick(nick){
     }
   }catch(e){console.warn('saveNick error:',e);}
 }
+
+// ── TABS ──
+let _adminNavLastClick=0;
+
+function onAdminNavClick(){
+  const isAlreadyOnAdd=document.querySelector('.navCenter.active')!==null;
+  if(isAlreadyOnAdd){
+    showAdminDashboard();
+    const addScreen=document.getElementById('addScreen');
+    if(addScreen)addScreen.scrollTo({top:0,behavior:'smooth'});
+  } else {
+    switchTab('add');
+  }
+}
+
+function switchTab(tab){
+  closeSheet();
+  if(tab!=='map'&&wizPickMode){
+    wizPickMode=false;
+    _wizHideOverlay();
+    const nav=document.getElementById('bottomNav');
+    if(nav)nav.style.display='';
+    if(myMap){
+      myMap.events.remove('boundschange',_wizOnMapMove);
+      myMap.events.remove('actionbegin',_wizOnMapDragStart);
+      myMap.events.remove('actionend',_wizOnMapDragEnd);
+    }
+  }
+  document.querySelectorAll('.navBtn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  const nc=document.querySelector('.navCenter');
+  if(nc)nc.classList.toggle('active',tab==='add');
+
+  const isMap=tab==='map';
+  const hp=document.getElementById('headerPanel');
+  if(hp){hp.style.display=isMap?'':'none';hp.style.visibility=isMap?'':'hidden';}
+
+  ['zoomControls','geoBtn','findNearestBtn'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    if(isMap){el.style.display='';el.style.visibility='visible';}
+    else{el.style.display='none';el.style.visibility='hidden';}
+  });
+
+  const mc=document.getElementById('mapControls');
+  if(mc)mc.style.display=isMap?'':'none';
+
+  if(isMap){
+    if(hp){hp.style.display='';hp.style.visibility='visible';}
+    if(mc)mc.style.display='';
+    if(wizPickMode){
+      if(hp){hp.style.display='none';hp.style.visibility='hidden';}
+      if(mc)mc.style.display='none';
+      ['findNearestBtn'].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el){el.style.display='none';el.style.visibility='hidden';}
+      });
+    }
+    requestAnimationFrame(()=>requestAnimationFrame(()=>adjustControlsPosition()));
+  } else {
+    setScreenPaddingTop();
+  }
+
+  document.getElementById('profileScreen').classList.add('hidden');
+  document.getElementById('adminDeniedScreen').classList.add('hidden');
+  document.getElementById('addScreen').classList.add('hidden');
+
+  if(tab==='add'){
+    if(currentUser&&currentUser.role==='admin'){
+      document.getElementById('addScreen').classList.remove('hidden');
+      addCoords=null;
+      if(!_skipAdminDashboard&&!_wizInProgress){
+        if(_activeAdminSubview&&_activeAdminSubview!=='addForm'){
+          document.getElementById('adminDashboard').style.display='none';
+          document.querySelectorAll('.adminSubview').forEach(el=>el.classList.add('hidden'));
+          if(_activeAdminSubview==='moderation')document.getElementById('adminSubModeration').classList.remove('hidden');
+          else if(_activeAdminSubview==='logs')document.getElementById('adminSubLogs').classList.remove('hidden');
+          else if(_activeAdminSubview==='stats')document.getElementById('adminSubStats').classList.remove('hidden');
+        } else {
+          showAdminDashboard();
+        }
+      } else if(_wizInProgress){
+        document.getElementById('adminDashboard').style.display='none';
+        document.getElementById('adminSubAddForm').classList.remove('hidden');
+      }
+      _skipAdminDashboard=false;
+    } else {
+      document.getElementById('adminDeniedScreen').classList.remove('hidden');
+      document.getElementById('adTitle').textContent=t('adminDeniedTitle');
+      document.getElementById('adText').textContent=t('adminDenied');
+      document.getElementById('adBtnLabel').textContent=t('adminDeniedBtn');
+    }
+  } else if(tab==='profile'){
+    const ps=document.getElementById('profileScreen');
+    ps.classList.remove('hidden');
+    ps.style.display='flex';
+    loadProfile();
+  }
+}
+
+function setScreenPaddingTop(){
+  // Padding управляется CSS через env(safe-area-inset-top) — no-op для совместимости
+}
+
+// ── MODAL DRAGS ──
+document.addEventListener('DOMContentLoaded',function(){
+  initDrag(document.getElementById('authDrag'),document.getElementById('authBox'),()=>closeOverlay('authOverlay'));
+  initDrag(document.getElementById('adminDrag'),document.getElementById('adminBox'),()=>closeOverlay('adminOverlay'));
+});
