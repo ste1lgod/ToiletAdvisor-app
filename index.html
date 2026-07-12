@@ -4282,7 +4282,8 @@ async function saveNick(nick){
 }
 
 // ── ИЗБРАННОЕ (Firestore + localStorage cache) ──
-// localStorage используется как быстрый синхронный кэш, Firestore — источник правды
+// localStorage — быстрый синхронный кэш
+// Firestore — единственный источник правды между устройствами
 
 function _favKey(){ return currentUser ? 'ta_fav_'+currentUser.id : null; }
 
@@ -4299,49 +4300,67 @@ function _setFavCache(favs){
   if(key)localStorage.setItem(key,JSON.stringify(favs));
 }
 
-// Загружает избранное из Firestore и синхронизирует с localStorage
+// Загружает избранное из Firestore → обновляет кэш и UI
 async function _loadFavoritesFromFirestore(){
   if(!currentUser)return;
   try{
     await _loadFirebase();
-    const snap=await db.collection('users').doc(currentUser.id)
-      .collection('favorites').get();
+    const colRef=db.collection('users').doc(currentUser.id).collection('favorites');
+    const snap=await colRef.get();
+
     if(snap.empty){
-      // Если в Firestore пусто — проверяем localStorage (миграция старых данных)
+      // Firestore пуст — мигрируем localStorage если там что-то есть
       const local=getFavorites();
       if(local.length>0){
-        await _saveFavoritesToFirestore(local);
+        // Записываем localStorage → Firestore
+        const batch=db.batch();
+        local.forEach(f=>batch.set(colRef.doc(f.id),f));
+        await batch.commit();
+        // После миграции — рендерим то что есть
+        _setFavCache(local);
+      } else {
+        // Оба пусты — просто показываем пустой список
+        _setFavCache([]);
       }
-      return;
+    } else {
+      // Firestore есть данные — они главные
+      const favs=snap.docs.map(d=>({id:d.id,...d.data()}));
+      _setFavCache(favs);
     }
-    const favs=snap.docs.map(d=>({id:d.id,...d.data()}));
-    _setFavCache(favs);
+    // Всегда рендерим после синхронизации
     renderFavorites();
     const favEl=document.getElementById('pStatFav');
-    if(favEl)favEl.textContent=favs.length;
-  }catch(e){console.warn('_loadFavoritesFromFirestore:',e.message);}
+    if(favEl)favEl.textContent=getFavorites().length;
+  }catch(e){
+    console.warn('_loadFavoritesFromFirestore:',e.message);
+    // Fallback — показываем что есть в localStorage
+    renderFavorites();
+  }
 }
 
-async function _saveFavoritesToFirestore(favs){
+// Добавить одну точку в Firestore-избранное
+async function _addFavToFirestore(favItem){
   if(!currentUser)return;
   try{
     await _loadFirebase();
-    const colRef=db.collection('users').doc(currentUser.id).collection('favorites');
-    const batch=db.batch();
-    // Удаляем старые
-    const oldSnap=await colRef.get();
-    oldSnap.docs.forEach(d=>batch.delete(d.ref));
-    // Пишем новые
-    favs.forEach(f=>batch.set(colRef.doc(f.id),f));
-    await batch.commit();
-  }catch(e){console.warn('_saveFavoritesToFirestore:',e.message);}
+    await db.collection('users').doc(currentUser.id)
+      .collection('favorites').doc(favItem.id).set(favItem);
+  }catch(e){console.warn('_addFavToFirestore:',e.message);}
+}
+
+// Удалить одну точку из Firestore-избранного
+async function _removeFavFromFirestore(toiletId){
+  if(!currentUser)return;
+  try{
+    await _loadFirebase();
+    await db.collection('users').doc(currentUser.id)
+      .collection('favorites').doc(toiletId).delete();
+  }catch(e){console.warn('_removeFavFromFirestore:',e.message);}
 }
 
 function saveFavorites(favs){
   if(!currentUser)return;
   _setFavCache(favs);
-  // Сохраняем в Firestore в фоне
-  _saveFavoritesToFirestore(favs);
 }
 
 function isFavorite(toiletId){
