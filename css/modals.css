@@ -50,13 +50,13 @@ body.dark .mBox{
 }
 @keyframes slideUp{from{transform:translateY(60px);opacity:0;}to{transform:translateY(0);opacity:1;}}
 
-.mDragZone{padding:12px 0 4px;cursor:grab;user-select:none;}
+.mDragZone{padding:16px 0 6px;cursor:grab;user-select:none;}
 .mHandle{width:40px;height:4px;background:rgba(0,0,0,0.12);border-radius:4px;margin:0 auto;}
 body.dark .mHandle{background:rgba(255,255,255,0.20);}
 
 .mTitle{
   font-size:20px;font-weight:800;color:#111;
-  text-align:center;margin-bottom:4px;
+  text-align:center;margin-top:8px;margin-bottom:6px;
   line-height:1.3;font-family:var(--font);letter-spacing:-.3px;
 }
 body.dark .mTitle{color:#ffffff;}
