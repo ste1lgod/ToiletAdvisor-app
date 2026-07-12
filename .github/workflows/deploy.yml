@@ -22,6 +22,12 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      # Удаляем серверные папки — они не должны попасть на GitHub Pages
+      - name: Remove server-only folders
+        run: |
+          rm -rf scripts/
+          rm -rf server/
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
