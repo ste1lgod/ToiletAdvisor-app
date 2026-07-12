@@ -218,3 +218,65 @@ body.dark #geoBtn{border-color:rgba(255,255,255,0.12);}
   transform:translate(-50%,-50%);
   box-shadow:0 2px 8px rgba(59,130,246,.5);
 }
+
+/* ===== FIND NEAREST BUTTON ===== */
+#findNearestBtn{
+  position:fixed;
+  bottom:calc(var(--nav-offset) + 16px);
+  left:50%;transform:translateX(-50%);z-index:15;
+  display:flex;align-items:center;gap:7px;
+  padding:12px 22px;
+  background:var(--glass-bg);
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
+  border:1px solid rgba(255,255,255,0.6);
+  border-radius:30px;
+  font-size:13px;font-weight:700;font-family:var(--font);color:var(--green);
+  cursor:pointer;white-space:nowrap;
+  box-shadow:var(--sh-float);
+  transition:transform .15s,opacity .15s;
+}
+body.dark #findNearestBtn{border-color:rgba(255,255,255,0.12);}
+#findNearestBtn:active{transform:translateX(-50%) scale(.96);opacity:.85;}
+
+/* ===== BOTTOM NAV — iOS floating card, glassmorphism ===== */
+#bottomNav{
+  position:fixed;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 12px);
+  left:var(--side-gap);right:var(--side-gap);
+  z-index:20;
+  background:var(--glass-bg);
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
+  border:1px solid rgba(255,255,255,0.6);
+  border-radius:24px;
+  display:flex;
+  align-items:center;
+  padding:10px 0 calc(12px + env(safe-area-inset-bottom,0px));
+  box-shadow:var(--sh-float);
+  overflow:visible;
+}
+body.dark #bottomNav{
+  background:var(--glass-bg);
+  border-color:rgba(255,255,255,0.10);
+}
+
+/* ===== HIDE YANDEX DEFAULT UI — CSS layer ===== */
+[class*="ymaps-"][class*="-copyright"],
+[class*="ymaps-"][class*="-logo"],
+[class*="ymaps-"][class*="-gotoymaps"],
+[class*="ymaps-"][class*="-float-button"],
+[class*="ymaps-"][class*="-controls__control"],
+[class*="ymaps-"][class*="-controls__pane"],
+[class*="ymaps-"][class*="-controls__toolbar"],
+[class*="ymaps-"][class*="-scale"],
+[class*="ymaps-"][class*="-ruler"],
+[class*="ymaps-"][class*="-searchbox"]{
+  display:none!important;
+  opacity:0!important;
+  pointer-events:none!important;
+  visibility:hidden!important;
+  width:0!important;
+  height:0!important;
+  overflow:hidden!important;
+}
