@@ -57,11 +57,14 @@ async function openSheet(toilet){
     <div class="rvSkeleton"><div class="rvSkAvatar"></div><div class="rvSkBody"><div class="rvSkLine w40"></div><div class="rvSkLine w60"></div><div class="rvSkLine w80"></div></div></div>
   `;
   resetReviewForm();
+  // Сердечко ставим сразу из localStorage-кэша
   updateFavBtn(toilet.id);
   document.getElementById('toiletSheet').classList.add('open');
   _openBackdrop();
 
   try{
+    // Всегда перезагружаем кэш пользователей — чтобы ники были актуальны
+    _usersCacheLoaded = false;
     const [reviews] = await Promise.all([
       getReviews(toilet.id),
       _loadUsersCache()
@@ -70,6 +73,8 @@ async function openSheet(toilet){
     const avg=reviews.length?(reviews.reduce((s,r)=>s+r.rating,0)/reviews.length):0;
     document.getElementById('sRatingVal').textContent=avg>0?avg.toFixed(1):'—';
     renderReviews(reviews);
+    // Обновляем сердечко повторно — к этому моменту allToilets точно загружен
+    updateFavBtn(toilet.id);
   }catch(e){
     document.getElementById('reviewsList').innerHTML=`<p class="rvNoReviews">${t('noReviews')}</p>`;
   }
