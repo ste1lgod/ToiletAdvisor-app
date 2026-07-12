@@ -624,6 +624,18 @@ async function wizSaveToilet(){
     isAccessible:tags.isAccessible||false,isTaharatkhana:tags.isTaharatkhana||false,
     addedBy:currentUser.id,createdAt:new Date().toISOString()
   };
+  // Геокодируем адрес до записи в Firestore
+  try{
+    const addrEl=document.getElementById('wizPickAddressMain');
+    const addrFromUI=(addrEl&&addrEl.textContent&&
+      addrEl.textContent!=='Определяю адрес...'&&
+      addrEl.textContent!=='...'&&
+      addrEl.textContent!=='Перемещаю...')
+      ?addrEl.textContent:'';
+    body.addr=addrFromUI||await wizGeocode(body.lat,body.lon);
+  }catch(e){
+    body.addr=`${body.lat.toFixed(5)}, ${body.lon.toFixed(5)}`;
+  }
   try{
     await _loadFirebase();
     await db.collection('toilets').add(body);
