@@ -29,6 +29,7 @@ function isFavorite(toiletId){
 }
 
 // Загружает избранное из Firestore → обновляет кэш и UI
+// Неблокирующая: localStorage кэш уже показан, Firestore тихо догоняет
 async function _loadFavoritesFromFirestore(){
   if(!currentUser)return;
   try{
@@ -38,6 +39,7 @@ async function _loadFavoritesFromFirestore(){
     if(snap.empty){
       const local=getFavorites();
       if(local.length>0){
+        // Локальные данные есть — синхронизируем их в Firestore
         const batch=db.batch();
         local.forEach(f=>batch.set(colRef.doc(f.id),f));
         await batch.commit();
@@ -47,20 +49,24 @@ async function _loadFavoritesFromFirestore(){
       }
     } else {
       const favs=snap.docs.map(d=>({id:d.id,...d.data()}));
+      // Проверяем изменились ли данные перед перерисовкой
+      const localRaw = localStorage.getItem(_favKey());
+      const localFavs = localRaw ? JSON.parse(localRaw) : [];
+      const localIds = localFavs.map(f=>f.id).sort().join(',');
+      const remoteIds = favs.map(f=>f.id).sort().join(',');
       _setFavCache(favs);
+      // Перерисовываем только если состав изменился
+      if(localIds !== remoteIds) renderFavorites();
     }
-    renderFavorites();
     const favEl=document.getElementById('pStatFav');
     if(favEl)favEl.textContent=getFavorites().length;
-    // Если шторка открыта — обновляем сердечко по актуальным данным Firestore
+    // Если шторка открыта — обновляем сердечко
     if(isSheetOpen&&selectedToilet){
       updateFavBtn(selectedToilet.id);
     }
   }catch(e){
     console.warn('_loadFavoritesFromFirestore:',e.message);
-    // Даже при ошибке — обновляем сердечко из localStorage
     if(isSheetOpen&&selectedToilet){ updateFavBtn(selectedToilet.id); }
-    renderFavorites();
   }
 }
 
