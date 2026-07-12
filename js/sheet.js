@@ -117,33 +117,86 @@ function resetReviewForm(){
 }
 
 // ── REVIEWS ──
+// Кэш отзывов с TTL — stale-while-revalidate
 const _reviewsCache = {};
-const _REVIEWS_CACHE_TTL = 300000; // 5 минут
+const _REVIEWS_CACHE_KEY = 'ta_rv_'; // prefix для localStorage
+const _REVIEWS_CACHE_TTL = 5 * 60 * 1000; // 5 минут
 
-async function getReviews(id){
-  const cached = _reviewsCache[id];
-  if(cached && Date.now() - cached.ts < _REVIEWS_CACHE_TTL){
-    return cached.data;
-  }
-  await _loadFirebase();
-  let result = [];
+// Восстанавливаем кэш отзывов из localStorage при старте
+(function _restoreReviewsCache(){
   try{
-    const snap=await db.collection('reviews')
+    for(let i = 0; i < localStorage.length; i++){
+      const k = localStorage.key(i);
+      if(!k || !k.startsWith(_REVIEWS_CACHE_KEY)) continue;
+      const toiletId = k.slice(_REVIEWS_CACHE_KEY.length);
+      const raw = localStorage.getItem(k);
+      if(!raw) continue;
+      const stored = JSON.parse(raw);
+      if(stored && stored.data && Date.now() - stored.ts < _REVIEWS_CACHE_TTL){
+        _reviewsCache[toiletId] = { ts: stored.ts, data: stored.data };
+      } else {
+        localStorage.removeItem(k);
+      }
+    }
+  }catch(e){}
+})();
+
+function _saveReviewsToStorage(toiletId, data){
+  try{
+    localStorage.setItem(_REVIEWS_CACHE_KEY + toiletId, JSON.stringify({ ts: Date.now(), data }));
+  }catch(e){}
+}
+
+async function _fetchReviewsFromFirestore(id){
+  await _loadFirebase();
+  try{
+    const snap = await db.collection('reviews')
       .where('toiletId','==',id)
       .orderBy('createdAt','desc')
       .limit(50)
       .get();
-    result = snap.docs.map(d=>({id:d.id,...d.data()}));
+    return snap.docs.map(d=>({id:d.id,...d.data()}));
   }catch(e){
-    const snap=await db.collection('reviews').where('toiletId','==',id).limit(50).get();
-    result = snap.docs.map(d=>({id:d.id,...d.data()}));
+    const snap = await db.collection('reviews').where('toiletId','==',id).limit(50).get();
+    return snap.docs.map(d=>({id:d.id,...d.data()}));
   }
+}
+
+// Stale-While-Revalidate:
+// - Если кэш есть → возвращает его мгновенно
+// - Параллельно идёт в Firestore
+// - Когда Firestore ответил → обновляет кэш + вызывает onFresh(reviews) если данные изменились
+async function getReviews(id, onFresh){
+  const cached = _reviewsCache[id];
+  const now = Date.now();
+
+  if(cached && (now - cached.ts) < _REVIEWS_CACHE_TTL){
+    // Кэш свежий — возвращаем сразу, фоново тихо проверяем обновления
+    if(onFresh){
+      _fetchReviewsFromFirestore(id).then(fresh => {
+        if(!fresh) return;
+        // Обновляем кэш независимо от onFresh — данные актуальны
+        _reviewsCache[id] = { ts: Date.now(), data: fresh };
+        _saveReviewsToStorage(id, fresh);
+        // Вызываем колбэк только если что-то поменялось
+        const oldIds = cached.data.map(r=>r.id+r.userPhone).join(',');
+        const newIds = fresh.map(r=>r.id+r.userPhone).join(',');
+        if(oldIds !== newIds) onFresh(fresh);
+      }).catch(()=>{});
+    }
+    return cached.data;
+  }
+
+  // Кэша нет или устарел — грузим из Firestore
+  const result = await _fetchReviewsFromFirestore(id);
   _reviewsCache[id] = { ts: Date.now(), data: result };
+  _saveReviewsToStorage(id, result);
   return result;
 }
 
 function _invalidateReviewCache(toiletId){
   delete _reviewsCache[toiletId];
+  try{ localStorage.removeItem(_REVIEWS_CACHE_KEY + toiletId); }catch(e){}
 }
 
 function formatReviewText(text){
