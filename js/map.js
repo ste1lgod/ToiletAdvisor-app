@@ -169,6 +169,8 @@ async function loadToilets(){
   if(isSheetOpen && selectedToilet){
     updateFavBtn(selectedToilet.id);
   }
+  // Фоновое геокодирование точек без адреса
+  _geocodeMissingAddresses();
 }
 
 function renderMarkers(){
