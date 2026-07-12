@@ -55,12 +55,13 @@ async function _patchReviewNicks(){
 }
 
 // ── ПАТЧ АДРЕСОВ ТУАЛЕТОВ ──
-// Запускается при старте: записывает addr в Firestore для точек у которых его нет
+// Запускается при старте: записывает addr seed-точек в Firestore если их там нет.
+// Геокодирование новых точек без адреса делает _geocodeMissingAddresses в map.js —
+// чтобы не было двойных запросов к Nominatim.
 async function _patchSeedAddresses(){
   try{
     await _loadFirebase();
-
-    // Шаг 1 — seed-точки: у них адреса уже есть в constants.js, просто пишем в Firestore
+    // Только seed-точки: у них адреса уже есть в constants.js, просто пишем в Firestore
     const seedBatch=db.batch();
     let seedChanges=false;
     for(const toilet of FALLBACK_TOILETS){
@@ -76,20 +77,7 @@ async function _patchSeedAddresses(){
       }catch(e){}
     }
     if(seedChanges)await seedBatch.commit();
-
-    // Шаг 2 — остальные точки без addr: геокодируем через Nominatim (по 1 в секунду — rate limit)
-    const needsGeo=allToilets.filter(t=>!t.addr);
-    if(!needsGeo.length)return;
-    for(const toilet of needsGeo){
-      try{
-        await new Promise(r=>setTimeout(r,1100)); // уважаем rate limit Nominatim
-        const addr=await wizGeocode(toilet.lat,toilet.lon);
-        if(addr&&!addr.includes('.toFixed')){
-          toilet.addr=addr;
-          await db.collection('toilets').doc(toilet.id).set({addr},{merge:true});
-        }
-      }catch(e){}
-    }
+    // Геокодирование остальных точек без адреса делает _geocodeMissingAddresses (map.js)
   }catch(e){console.warn('_patchSeedAddresses:',e.message);}
 }
 
