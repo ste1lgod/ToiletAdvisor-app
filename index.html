@@ -444,13 +444,10 @@
   <!-- Сабвью: статистика -->
   <div id="adminSubStats" class="adminSubview hidden">
     <!-- Шапка -->
-    <div style="position:relative;display:flex;align-items:center;min-height:36px;margin-bottom:16px;gap:8px;">
-      <button class="adminBackBtn" style="position:relative;z-index:1;" onclick="showAdminDashboard()">‹ Назад</button>
-      <div style="position:absolute;left:0;right:0;text-align:center;font-size:15px;font-weight:800;color:var(--text);letter-spacing:-.3px;pointer-events:none;">📊 Статистика</div>
-      <div style="flex:1;"></div>
-      <button id="statsRefreshBtn" class="refreshBtn" style="position:relative;z-index:1;" onclick="runRefresh(this,loadAdminStats)">
-        Обновить
-      </button>
+    <div class="adminSubHeader">
+      <button class="adminBackBtn" onclick="showAdminDashboard()">‹ Назад</button>
+      <div class="adminSubHeaderTitle">📊 Статистика</div>
+      <button id="statsRefreshBtn" class="refreshBtn" onclick="runRefresh(this,loadAdminStats)">Обновить</button>
     </div>
 
     <!-- Переключатель секций -->
