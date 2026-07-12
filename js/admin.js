@@ -238,10 +238,10 @@ async function loadAdminStats(){
     const freeCount=toilets.filter(x=>x.isFree).length;
     const taharatCount=toilets.filter(x=>x.isTaharatkhana).length;
     document.getElementById('statsSummaryToilets').innerHTML=`
-      <div class="statSummaryCard"><div class="statSummaryIcon">🚻</div><div class="statSummaryNum">${toilets.length}</div><div class="statSummaryLabel">Всего точек</div></div>
-      <div class="statSummaryCard"><div class="statSummaryIcon">🟢</div><div class="statSummaryNum">${openCount}</div><div class="statSummaryLabel">Открытых</div></div>
-      <div class="statSummaryCard"><div class="statSummaryIcon">🆓</div><div class="statSummaryNum">${freeCount}</div><div class="statSummaryLabel">Бесплатных</div></div>
-      <div class="statSummaryCard"><div class="statSummaryIcon">🕌</div><div class="statSummaryNum">${taharatCount}</div><div class="statSummaryLabel">Тахаратхан</div></div>`;
+      <div class="statSummaryCard"><div class="statSummaryRow"><span class="statSummaryIcon">🚻</span><span class="statSummaryNum">${toilets.length}</span></div><div class="statSummaryLabel">Всего точек</div></div>
+      <div class="statSummaryCard"><div class="statSummaryRow"><span class="statSummaryIcon">🟢</span><span class="statSummaryNum">${openCount}</span></div><div class="statSummaryLabel">Открытых</div></div>
+      <div class="statSummaryCard"><div class="statSummaryRow"><span class="statSummaryIcon">🆓</span><span class="statSummaryNum">${freeCount}</span></div><div class="statSummaryLabel">Бесплатных</div></div>
+      <div class="statSummaryCard"><div class="statSummaryRow"><span class="statSummaryIcon">🕌</span><span class="statSummaryNum">${taharatCount}</span></div><div class="statSummaryLabel">Тахаратхан</div></div>`;
 
     const reviewsByToilet={};
     reviews.forEach(r=>{
