@@ -1,0 +1,53 @@
+/* ===== RESET ===== */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+*::-webkit-scrollbar{display:none;}
+*{scrollbar-width:none;}
+
+/* ===== DESIGN TOKENS ===== */
+:root{
+  --green:#00A859;
+  --green-l:#e6f7ee;
+  --bg:#f2f4f7;
+  --card:#ffffff;
+  --text:#111827;
+  --text2:#8e9199;
+  --border:#ebebeb;
+  --sh:0 2px 12px rgba(0,0,0,0.07),0 6px 24px rgba(0,0,0,0.05);
+  --sh2:0 8px 40px rgba(0,0,0,0.14);
+  --sh-float:0 8px 32px rgba(0,0,0,0.10),0 2px 8px rgba(0,0,0,0.06);
+  --panel-bg:#ffffff;
+  --panel-border:rgba(0,0,0,0.06);
+  --r:20px;--rs:16px;
+  --star:#f59e0b;
+  --purple:#7c3aed;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --header-h:138px;
+  --nav-h:72px;
+  --nav-offset:calc(var(--nav-h) + var(--side-gap) + env(safe-area-inset-bottom,0px));
+  --side-gap:12px;
+  --glass-bg:rgba(255,255,255,0.82);
+  --glass-blur:blur(18px);
+}
+body.dark{
+  --bg:#000000;
+  --card:#1c1c1e;
+  --text:#ffffff;
+  --text2:#8e8e93;
+  --border:#38383a;
+  --sh:0 2px 12px rgba(0,0,0,0.6),0 6px 24px rgba(0,0,0,0.5);
+  --panel-bg:#1c1c1e;
+  --panel-border:rgba(255,255,255,0.10);
+  --glass-bg:rgba(28,28,30,0.95);
+  --green-l:#0a2e1c;
+}
+
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-family:var(--font);color:var(--text);}
+
+/* ===== MAP ===== */
+#map{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:auto;}
+
+/* ===== HIDE YANDEX DEFAULT UI ===== */
+[class*="ymaps-"][class*="-copyright"],
+[class*="ymaps-"][class*="-logo"],
+[class*="ymaps-"][class*="-gotoymaps"],
+[class*="ymaps-"][class*="-float-button"],
