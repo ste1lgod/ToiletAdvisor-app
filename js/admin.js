@@ -276,33 +276,30 @@ async function loadAdminStats(){
     }).join('')||'<div class="statsLoading">Нет точек</div>';
 
     // ── ПОЛЬЗОВАТЕЛИ ──
-    // Фильтруем дубликаты: если несколько пользователей с одинаковым телефоном без ника —
-    // оставляем только одного (у которого есть отзывы, иначе первого по дате)
-    const phoneCount = {};
-    users.forEach(u => { if(u.phone && !u.nick) phoneCount[u.phone] = (phoneCount[u.phone]||0)+1; });
-    const seenDupPhone = {};
-    const dedupUsers = users.filter(u => {
-      // Администраторов и пользователей с ником всегда показываем
-      if(u.role === 'admin' || u.nick) return true;
-      // Пользователь с уникальным телефоном — показываем
-      if(!u.phone || phoneCount[u.phone] <= 1) return true;
-      // Дубликат: если у него есть отзывы — показываем
-      if(reviewsByUser[u.id] > 0) return true;
-      // Иначе — первый дубль показываем, остальные скрываем
-      if(!seenDupPhone[u.phone]){ seenDupPhone[u.phone] = true; return true; }
+    const reviewsByUser={};
+    reviews.forEach(r=>{if(r.userId)reviewsByUser[r.userId]=(reviewsByUser[r.userId]||0)+1;});
+
+    // Фильтруем дубликаты: если несколько аккаунтов с одинаковым телефоном без ника и без отзывов —
+    // оставляем только одного (у которого есть отзывы, иначе первого)
+    const phoneCount={};
+    users.forEach(u=>{ if(u.phone&&!u.nick) phoneCount[u.phone]=(phoneCount[u.phone]||0)+1; });
+    const seenDupPhone={};
+    const dedupUsers=users.filter(u=>{
+      if(u.role==='admin'||u.nick) return true;
+      if(!u.phone||phoneCount[u.phone]<=1) return true;
+      if(reviewsByUser[u.id]>0) return true;
+      if(!seenDupPhone[u.phone]){ seenDupPhone[u.phone]=true; return true; }
       return false;
     });
 
     const adminCount=dedupUsers.filter(u=>u.role==='admin').length;
     document.getElementById('statsSummaryUsers').innerHTML=`
-      <div class="statSummaryCard"><div class="statSummaryRow"><span class="statSummaryIcon">👥</span><span class="statSummaryNum">${users.length}</span></div><div class="statSummaryLabel">Всего аккаунтов</div></div>
+      <div class="statSummaryCard"><div class="statSummaryRow"><span class="statSummaryIcon">👥</span><span class="statSummaryNum">${dedupUsers.length}</span></div><div class="statSummaryLabel">Всего аккаунтов</div></div>
       <div class="statSummaryCard"><div class="statSummaryRow"><span class="statSummaryIcon">⚙️</span><span class="statSummaryNum">${adminCount}</span></div><div class="statSummaryLabel">Администраторов</div></div>
-      <div class="statSummaryCard"><div class="statSummaryRow"><span class="statSummaryIcon">✦</span><span class="statSummaryNum">${users.length-adminCount}</span></div><div class="statSummaryLabel">Обычных юзеров</div></div>
+      <div class="statSummaryCard"><div class="statSummaryRow"><span class="statSummaryIcon">✦</span><span class="statSummaryNum">${dedupUsers.length-adminCount}</span></div><div class="statSummaryLabel">Обычных юзеров</div></div>
       <div class="statSummaryCard"><div class="statSummaryRow"><span class="statSummaryIcon">💬</span><span class="statSummaryNum">${reviews.length}</span></div><div class="statSummaryLabel">Всего отзывов</div></div>`;
 
-    const reviewsByUser={};
-    reviews.forEach(r=>{if(r.userId)reviewsByUser[r.userId]=(reviewsByUser[r.userId]||0)+1;});
-    const sortedUsers=[...users].sort((a,b)=>(reviewsByUser[b.id]||0)-(reviewsByUser[a.id]||0));
+    const sortedUsers=[...dedupUsers].sort((a,b)=>(reviewsByUser[b.id]||0)-(reviewsByUser[a.id]||0));
     document.getElementById('statsUsersList').innerHTML=sortedUsers.map(u=>{
       const isAdmin=u.role==='admin';
       const displayName=u.nick||u.phone||u.login||'—';
