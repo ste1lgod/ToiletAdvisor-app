@@ -332,3 +332,60 @@ body.dark #bottomNav{
   text-align:center;
   color:inherit;
 }
+
+/* ===== SHEET BACKDROP ===== */
+#sheetBackdrop{
+  position:fixed;inset:0;z-index:28;
+  background:rgba(0,0,0,0);
+  /* Всегда pointer-events:none по умолчанию — включается только JS */
+  pointer-events:none;
+  transition:background .3s;
+}
+#sheetBackdrop.vis{
+  background:rgba(0,0,0,0.32);
+  /* pointer-events управляется только через JS, не CSS */
+}
+
+/* ===== BOTTOM SHEET ===== */
+#toiletSheet{
+  position:fixed;bottom:0;left:0;right:0;z-index:30;
+  background:var(--card);border-radius:36px 36px 0 0;
+  max-height:82vh;
+  transform:translateY(100%);
+  transition:transform .36s cubic-bezier(.32,1,.46,1);
+  box-shadow:0 -4px 40px rgba(0,0,0,0.16);
+  will-change:transform;touch-action:none;
+  pointer-events:none;
+  border-top:1px solid var(--border);
+}
+body.dark #toiletSheet{background:var(--card);border-color:var(--border);}
+#toiletSheet.open{transform:translateY(0);pointer-events:auto;}
+
+#sDragZone{padding:14px 0 6px;cursor:grab;user-select:none;-webkit-user-select:none;}
+#sHandle{width:48px;height:4px;background:#d1d5db;border-radius:4px;margin:0 auto;opacity:.6;}
+body.dark #sHandle{background:#4b5568;}
+#sScroll{padding:4px 20px 160px;max-height:calc(82vh - 30px);overflow-y:auto;}
+
+#sTopRow{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  gap:10px;margin-bottom:16px;margin-top:10px;
+}
+#sTitle{font-size:22px;font-weight:800;color:var(--text);flex:1;line-height:1.25;letter-spacing:-.4px;}
+.sTopActions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+#sRatingPill{
+  display:flex;align-items:center;gap:4px;
+  background:rgba(245,158,11,0.15);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border:1.5px solid rgba(245,158,11,0.4);
+  border-radius:14px;
+  padding:8px 12px;font-weight:800;font-size:14px;
+  flex-shrink:0;color:#92400e;
+  box-shadow:0 2px 8px rgba(245,158,11,0.15);
+}
+body.dark #sRatingPill{
+  background:rgba(245,158,11,0.15);
+  border-color:rgba(245,158,11,0.4);
+  color:#fcd34d;
+  box-shadow:0 2px 8px rgba(245,158,11,0.1);
+}
