@@ -157,9 +157,14 @@ function renderFavorites(){
   }
   if(!allToilets.length){
     list.innerHTML=_skFavCards(favs.length);
-    setTimeout(()=>{ if(allToilets.length)renderFavorites(); },1200);
+    // Ждём загрузки туалетов, но не более 3 попыток
+    let _rfAttempts = (renderFavorites._attempts = (renderFavorites._attempts||0) + 1);
+    if(_rfAttempts <= 3){
+      setTimeout(()=>{ if(allToilets.length){ renderFavorites._attempts=0; renderFavorites(); } },1200);
+    }
     return;
   }
+  renderFavorites._attempts = 0;
   list.innerHTML=favs.map(f=>{
     const _t=allToilets.find(x=>x.id===f.id);
     const _ico=_t?.isTaharatkhana?'🕌':'🚻';
