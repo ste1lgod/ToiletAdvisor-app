@@ -193,7 +193,8 @@ async function _fixFavAddresses(favs){
     if(!f.lat||!f.lon)continue;
     const _t=allToilets.find(x=>x.id===f.id);
     const _desc=_t?.description||'';
-    const needsUpdate=!f.addr||f.addr===_desc||f.addr==='Нет адреса'||f.addr==='—';
+    const needsUpdate=!f.addr||f.addr===_desc||f.addr==='Нет адреса'||f.addr==='—'
+      ||(f.addr&&_t?.description&&f.addr===_t.description);
     if(!needsUpdate)continue;
     try{
       const newAddr=await wizGeocode(f.lat,f.lon);
