@@ -203,10 +203,11 @@ async function getReviews(id, onFresh){
         // Обновляем кэш независимо от onFresh — данные актуальны
         _reviewsCache[id] = { ts: Date.now(), data: fresh };
         _saveReviewsToStorage(id, fresh);
-        // Вызываем колбэк только если что-то поменялось
-        const oldIds = cached.data.map(r=>r.id+r.userPhone).join(',');
-        const newIds = fresh.map(r=>r.id+r.userPhone).join(',');
-        if(oldIds !== newIds) onFresh(fresh);
+        // Сравниваем по id+userPhone+rating+text(первые 20 символов)
+        const sig = r => r.id + r.userPhone + r.rating + (r.text||'').slice(0,20);
+        const oldSig = cached.data.map(sig).join('|');
+        const newSig = fresh.map(sig).join('|');
+        if(oldSig !== newSig) onFresh(fresh);
       }).catch(()=>{});
     }
     return cached.data;
