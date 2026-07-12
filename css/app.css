@@ -44,3 +44,56 @@ body.dark{
 }
 
 html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-family:var(--font);color:var(--text);}
+
+/* ===== MAP ===== */
+#map{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:auto;}
+
+/* ===== HEADER PANEL — floating card ===== */
+#headerPanel{
+  position:fixed;top:0;left:0;right:0;z-index:20;
+}
+.headerCard{
+  margin:calc(env(safe-area-inset-top,0px) + 8px) var(--side-gap) 0;
+  background:var(--glass-bg);
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
+  border-radius:24px;
+  border:1px solid rgba(255,255,255,0.6);
+  box-shadow:var(--sh-float);
+  padding-top:0;
+}
+body.dark .headerCard{
+  background:var(--glass-bg);
+  border-color:rgba(255,255,255,0.10);
+}
+.hRow1{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 14px 8px;
+}
+#hTitle{font-size:17px;font-weight:700;letter-spacing:-.3px;white-space:nowrap;flex-shrink:0;}
+#hDot,#hAdv{color:var(--green);}
+.hControls{display:flex;align-items:center;gap:6px;margin-left:auto;}
+
+/* Lang dropdown */
+.langWrap{position:relative;overflow:visible;}
+#langBtn{
+  display:flex;align-items:center;gap:4px;padding:6px 10px;
+  border:none;border-radius:10px;background:#f2f4f7;
+  color:var(--text);font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;
+  position:relative;z-index:1001;
+}
+body.dark #langBtn{background:var(--card);}
+#langChevron{width:10px;height:10px;transition:transform .18s;color:var(--text2);}
+#langBtn.open #langChevron{transform:rotate(180deg);}
+#langDrop{
+  position:fixed;min-width:90px;
+  background:var(--card);border-radius:var(--rs);box-shadow:var(--sh2);
+  border:1px solid var(--border);z-index:10000;
+  opacity:0;transform:translateY(-6px) scale(.96);pointer-events:none;
+  transition:opacity .18s,transform .18s;
+  overflow:hidden;
+}
+#langDrop.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;}
+.lOpt{padding:11px 18px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text);transition:background .12s;}
+.lOpt:hover,.lOpt.active{color:var(--green);}
+.lOpt:hover{background:var(--green-l);}
