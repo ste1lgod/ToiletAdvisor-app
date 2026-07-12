@@ -48,7 +48,9 @@ async function _patchReviewNicks(){
     }
   }catch(e){
     console.warn('[patchReviewNicks]', e.message);
-    _patchReviewNicksDone = false; // разрешаем повторный запуск при ошибке
+    _patchReviewNicksDone = false;
+    // Повтор через 30 сек при ошибке сети
+    setTimeout(_patchReviewNicks, 30000);
   }
 }
 
