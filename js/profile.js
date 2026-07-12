@@ -240,8 +240,9 @@ function loadProfile(){
   const statFav=document.getElementById('pStatFav');
   const statReviews=document.getElementById('pStatReviews');
   const favs=getFavorites();
-  if(statFav)statFav.textContent=favs.length;
-  if(statReviews)statReviews.textContent='0';
+  // Показываем скелетон в счётчиках пока данные грузятся
+  if(statFav)statFav.innerHTML='<span class="skeletonBase" style="display:inline-block;width:28px;height:22px;border-radius:6px;vertical-align:middle;"></span>';
+  if(statReviews)statReviews.innerHTML='<span class="skeletonBase" style="display:inline-block;width:28px;height:22px;border-radius:6px;vertical-align:middle;"></span>';
 
   const list=document.getElementById('pFavList');
   if(list){
