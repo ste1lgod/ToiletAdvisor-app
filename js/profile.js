@@ -338,6 +338,8 @@ async function loadProfileStats(){
 async function saveNick(nick){
   if(!currentUser)return;
   const trimmed=nick.trim();
+  // Не сохраняем если ник не изменился
+  if(trimmed===(currentUser.nick||''))return;
   currentUser.nick=trimmed;
   localStorage.setItem('ta_user',JSON.stringify(currentUser));
   if(_usersCache[currentUser.id]){_usersCache[currentUser.id].nick=trimmed;}
