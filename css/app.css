@@ -280,3 +280,55 @@ body.dark #bottomNav{
   height:0!important;
   overflow:hidden!important;
 }
+
+/* Боковые кнопки (Карта / Профиль) — каждая занимает треть */
+.navBtn{
+  flex:1;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  background:none;border:none;cursor:pointer;
+  color:var(--text2);
+  font-family:var(--font);
+  padding:0;
+  min-width:0;
+  transition:color .18s;
+}
+.navBtn.active{color:var(--green);}
+
+.navLabel{
+  font-size:10px;font-weight:600;
+  letter-spacing:-.1px;
+  text-align:center;
+  font-family:var(--font);
+}
+.navIco svg{
+  width:24px;height:24px;
+  stroke:currentColor;fill:none;
+  stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
+}
+
+/* Центральная кнопка (Admin) — стиль как navBtn */
+.navCenter{
+  flex:1;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  cursor:pointer;padding:0;min-width:0;
+  color:var(--text2);
+  transition:color .18s;
+}
+.navCenter.active{color:#7c3aed;}
+.navCenterCircle{
+  width:24px;height:24px;
+  display:flex;align-items:center;justify-content:center;
+  background:none;
+}
+.navCenterCircle svg{
+  width:24px;height:24px;
+  stroke:currentColor;fill:none;
+  stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
+}
+.navCenterLabel{
+  font-size:10px;font-weight:600;
+  font-family:var(--font);
+  letter-spacing:-.1px;
+  text-align:center;
+  color:inherit;
+}
