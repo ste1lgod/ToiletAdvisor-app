@@ -365,7 +365,11 @@ async function saveNick(nick){
       try{ localStorage.removeItem(_REVIEWS_CACHE_KEY + k); }catch(e){}
     });
     _invalidateUsersCache();
-  }catch(e){console.warn('saveNick error:',e);}
+    showToast(trimmed ? 'Ник сохранён ✓' : 'Ник удалён');
+  }catch(e){
+    console.warn('saveNick error:',e);
+    showToast('Ошибка сохранения ника');
+  }
 }
 
 // ── TABS ──
