@@ -4410,8 +4410,6 @@ async function toggleFavorite(toiletId){
     logAction({type:'fav',category:'fav',action:t('logAddedFav'),detail:`${t('logToilet')}: ${toilet.title}`});
   }
 }
-  updateFavBtn(toiletId);
-}
 function updateFavBtn(toiletId){
   // Кнопка в шторке (sFavBtn)
   const btn=document.getElementById('sFavBtn');
