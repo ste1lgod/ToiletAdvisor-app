@@ -63,12 +63,10 @@ async function openSheet(toilet){
   _openBackdrop();
 
   try{
-    // Всегда перезагружаем кэш пользователей — чтобы ники были актуальны
-    _usersCacheLoaded = false;
+    // Загружаем кэш пользователей только если ещё не загружен
     const [reviews] = await Promise.all([
       getReviews(toilet.id),
-      _loadUsersCache()
-      // _loadFavoritesFromFirestore грузится при старте приложения — не дублируем здесь
+      _usersCacheLoaded ? Promise.resolve() : _loadUsersCache()
     ]);
     if(!isSheetOpen||selectedToilet?.id!==toilet.id)return;
     const avg=reviews.length?(reviews.reduce((s,r)=>s+r.rating,0)/reviews.length):0;
