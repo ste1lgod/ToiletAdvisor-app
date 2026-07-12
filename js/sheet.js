@@ -210,14 +210,14 @@ async function submitReview(){
     id:'tmp_'+Date.now(),
     toiletId:selectedToilet.id,
     userId:currentUser.id,
-    userPhone:currentUser.phone||currentUser.login||'Пользователь',
+    userPhone:currentUser.nick||currentUser.phone||currentUser.login||'Пользователь',
     text,rating:reviewRating,
     createdAt:new Date().toISOString()
   };
 
   const existingItems=document.querySelectorAll('#reviewsList .rvItem');
   const existingCount=existingItems.length;
-  const name=optimistic.userPhone;
+  const name=_getActualName(currentUser.id, optimistic.userPhone);
   const col=COLORS[name.charCodeAt(0)%COLORS.length];
   const ini=name.replace(/\+/g,'').slice(0,2).toUpperCase();
   const stars=('★'.repeat(optimistic.rating)+'☆'.repeat(5-optimistic.rating)).split('').join(' ');
