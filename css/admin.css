@@ -1,0 +1,110 @@
+/* ===== ADMIN DASHBOARD ===== */
+#adminDashTitle{
+  font-size:22px;font-weight:800;color:var(--text);
+  font-family:var(--font);letter-spacing:-.3px;
+  text-align:center;margin-bottom:24px;
+}
+#adminDashCards{display:flex;flex-direction:column;gap:12px;}
+.adminDashBtn{
+  display:flex;align-items:center;gap:14px;
+  width:100%;padding:18px 16px;min-height:80px;
+  background:var(--card);border:1.5px solid var(--border);border-radius:20px;
+  box-shadow:0 2px 12px rgba(0,0,0,0.07);
+  cursor:pointer;text-align:left;font-family:var(--font);
+  transition:transform .12s,box-shadow .12s;
+}
+body.dark .adminDashBtn{background:var(--card);border-color:var(--border);box-shadow:none;}
+.adminDashBtn:active{transform:scale(.98);box-shadow:0 1px 6px rgba(0,0,0,0.05);}
+.adminDashIcon{font-size:28px;flex-shrink:0;}
+.adminDashBtn > div:not(.adminDashIcon):not(.adminDashArrow){flex:1;min-width:0;}
+.adminDashLabel{font-size:16px;font-weight:700;color:var(--text);font-family:var(--font);display:block;margin-bottom:3px;}
+.adminDashSub{font-size:12px;color:var(--text2);font-family:var(--font);}
+.adminDashArrow{margin-left:auto;font-size:22px;color:var(--text2);font-weight:300;flex-shrink:0;}
+
+/* Admin subviews */
+.adminSubview{display:flex;flex-direction:column;gap:10px;width:100%;}
+.adminSubview.hidden{display:none!important;}
+.adminBackBtn{
+  display:flex;align-items:center;gap:7px;
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.13);
+  border-radius:30px;cursor:pointer;
+  color:var(--text);font-size:13px;font-weight:600;font-family:var(--font);
+  padding:9px 16px 9px 12px;align-self:flex-start;margin-bottom:20px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.1);transition:opacity .15s,transform .12s;
+}
+.adminBackBtn:active{opacity:.7;transform:scale(.96);}
+body.dark .adminBackBtn{background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.1);color:var(--text);}
+
+/* ===== LOGS ===== */
+.logFilterChip{
+  flex-shrink:0;padding:7px 14px;border-radius:20px;
+  font-size:12px;font-weight:600;font-family:var(--font);
+  background:var(--card);color:var(--text2);
+  border:1.5px solid var(--border);cursor:pointer;white-space:nowrap;transition:all .15s;
+}
+.logFilterChip.active{background:var(--green);color:#fff;border-color:var(--green);}
+body.dark .logFilterChip{background:var(--card);color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.15);}
+body.dark .logFilterChip.active{background:var(--green);color:#fff;border-color:var(--green);}
+
+.logItem{
+  display:flex;flex-direction:column;gap:0;padding:0;
+  background:var(--card);border-radius:20px;border:1px solid var(--border);
+  box-shadow:0 2px 8px rgba(0,0,0,0.05);overflow:hidden;margin-bottom:10px;
+}
+body.dark .logItem{background:var(--card);border-color:var(--border);box-shadow:none;}
+
+.logItem-ico{width:40px;height:40px;min-width:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logItem-ico svg{width:20px;height:20px;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.log-review .logItem-ico{background:rgba(96,165,250,0.15);color:#2563eb;}
+.log-toilet .logItem-ico{background:rgba(0,168,89,0.15);color:#059669;}
+.log-delete .logItem-ico{background:rgba(239,68,68,0.15);color:#dc2626;}
+.log-auth   .logItem-ico{background:rgba(124,58,237,0.15);color:#7c3aed;}
+.log-admin  .logItem-ico{background:rgba(245,158,11,0.15);color:#d97706;}
+.log-fav    .logItem-ico{background:rgba(239,68,68,0.15);color:#ef4444;}
+body.dark .log-review .logItem-ico{background:rgba(96,165,250,0.18);color:#93c5fd;}
+body.dark .log-toilet .logItem-ico{background:rgba(0,168,89,0.18);color:#4ade80;}
+body.dark .log-delete .logItem-ico{background:rgba(239,68,68,0.18);color:#f87171;}
+body.dark .log-auth   .logItem-ico{background:rgba(124,58,237,0.18);color:#a78bfa;}
+body.dark .log-admin  .logItem-ico{background:rgba(245,158,11,0.18);color:#fbbf24;}
+body.dark .log-fav    .logItem-ico{background:rgba(239,68,68,0.18);color:#f87171;}
+
+.logItem-action{font-size:15px;font-weight:700;color:var(--text);line-height:1.35;margin-bottom:6px;}
+.logItem-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.logItem-who{font-size:12px;font-weight:700;padding:2px 9px;border-radius:20px;background:var(--bg);color:var(--text);}
+body.dark .logItem-who{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.85);}
+.logItem-who.admin-badge{background:rgba(124,58,237,0.12);color:#7c3aed;}
+body.dark .logItem-who.admin-badge{background:rgba(124,58,237,0.18);color:#a78bfa;}
+.logItem-datetime{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;margin-left:auto;}
+.logItem-date{font-size:12px;font-weight:600;color:var(--text);}
+.logItem-time{font-size:11px;color:var(--text2);margin-top:1px;}
+body.dark .logItem-date{color:rgba(255,255,255,0.85);}
+body.dark .logItem-time{color:rgba(255,255,255,0.5);}
+.logItem-detail{font-size:13px;color:var(--text);line-height:1.5;word-break:break-word;padding:10px 14px;background:var(--bg);border-radius:16px;border:1px solid var(--border);}
+body.dark .logItem-detail{background:rgba(255,255,255,0.05);color:var(--text);}
+.logsEmpty{text-align:center;color:var(--text2);font-size:13px;padding:40px 16px;line-height:1.6;}
+
+/* ===== STATS ===== */
+.statSummaryCard{background:var(--card);border-radius:20px;border:1px solid var(--border);padding:14px 16px;box-shadow:0 2px 10px rgba(0,0,0,0.06);display:flex;flex-direction:column;gap:4px;}
+body.dark .statSummaryCard{box-shadow:none;}
+.statSummaryNum{font-size:28px;font-weight:800;color:var(--text);letter-spacing:-.5px;line-height:1;}
+.statSummaryLabel{font-size:12px;color:var(--text2);font-weight:600;line-height:1.3;}
+.statSummaryIcon{font-size:20px;margin-bottom:4px;}
+.statItemCard{background:var(--card);border-radius:20px;border:1px solid var(--border);padding:14px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,0.05);display:flex;align-items:center;gap:14px;cursor:default;}
+body.dark .statItemCard{box-shadow:none;}
+.statItemCard:last-child{margin-bottom:0;}
+.statItemIco{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.statItemBody{flex:1;min-width:0;}
+.statItemTitle{font-size:14px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.statItemSub{font-size:12px;color:var(--text2);margin-top:2px;line-height:1.35;}
+.statItemBadge{flex-shrink:0;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.statBadgeGreen{background:rgba(0,168,89,0.12);color:var(--green);}
+.statBadgeBlue{background:rgba(59,130,246,0.12);color:#2563eb;}
+.statBadgePurple{background:rgba(124,58,237,0.12);color:#7c3aed;}
+.statBadgeRed{background:rgba(239,68,68,0.12);color:#ef4444;}
+body.dark .statBadgeGreen{background:rgba(0,168,89,0.18);color:#4ade80;}
+body.dark .statBadgeBlue{background:rgba(59,130,246,0.18);color:#93c5fd;}
+body.dark .statBadgePurple{background:rgba(124,58,237,0.18);color:#a78bfa;}
+body.dark .statBadgeRed{background:rgba(239,68,68,0.18);color:#f87171;}
+.statsLoading{text-align:center;color:var(--text2);font-size:13px;padding:40px 0;}
