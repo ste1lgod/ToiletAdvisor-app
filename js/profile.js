@@ -194,3 +194,108 @@ function doLogout(){
   if(guest)guest.style.cssText='display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:16px;padding:40px 24px;';
   if(user)user.style.display='none';
 }
+
+// ── PROFILE SCREEN ──
+function loadProfile(){
+  const guest=document.getElementById('pGuestView');
+  const user=document.getElementById('pUserView');
+  if(!guest||!user)return;
+  if(!currentUser){
+    guest.style.cssText='display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:16px;padding:40px 24px;';
+    user.style.display='none';
+    return;
+  }
+  guest.style.display='none';
+  user.style.cssText='width:100%;display:flex;flex-direction:column;gap:14px;';
+
+  const label=currentUser.phone||currentUser.login||'?';
+  const ini=label.replace(/\+/g,'').slice(0,2).toUpperCase();
+  const avatarLetter=document.getElementById('pAvatarLetter');
+  if(avatarLetter)avatarLetter.textContent=ini;
+  const avatarWrap=document.getElementById('pAvatarWrap');
+  if(avatarWrap)avatarWrap.style.background=currentUser.role==='admin'?'#7c3aed':'var(--green)';
+  const phoneLabel=document.getElementById('pPhoneLabel');
+  if(phoneLabel)phoneLabel.textContent=label;
+
+  const nickInput=document.getElementById('pNickInput');
+  if(nickInput){nickInput.value=currentUser.nick||'';nickInput.placeholder=label;}
+
+  const badge=document.getElementById('pRoleBadge');
+  if(badge){
+    if(currentUser.role==='admin'){
+      badge.textContent='⚙️ Admin';
+      badge.style.cssText='flex-shrink:0;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(124,58,237,0.15);color:#7c3aed;border:1px solid rgba(124,58,237,0.3);';
+    } else {
+      badge.textContent='✦ User';
+      badge.style.cssText='flex-shrink:0;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(59,130,246,0.12);color:#2563eb;border:1px solid rgba(59,130,246,0.3);';
+    }
+  }
+
+  const borderColor=currentUser.role==='admin'?'#7c3aed':'var(--green)';
+  const c1=document.getElementById('pStatReviewsCard');
+  const c2=document.getElementById('pStatFavCard');
+  if(c1)c1.style.borderColor=borderColor;
+  if(c2)c2.style.borderColor=borderColor;
+
+  const statFav=document.getElementById('pStatFav');
+  const statReviews=document.getElementById('pStatReviews');
+  const favs=getFavorites();
+  if(statFav)statFav.textContent=favs.length;
+  if(statReviews)statReviews.textContent='0';
+
+  const list=document.getElementById('pFavList');
+  if(list){
+    if(favs.length){renderFavorites();}
+    else{list.innerHTML=_skFavCards(3);}
+  }
+
+  _loadFavoritesFromFirestore();
+  loadProfileStats();
+}
+
+async function loadProfileStats(){
+  if(!currentUser)return;
+  const el=document.getElementById('pStatReviews');
+  if(el)el.textContent='0';
+  try{
+    await _loadFirebase();
+    let revSize=0;
+    try{
+      const revSnap=await db.collection('reviews').where('userId','==',currentUser.id).limit(200).get();
+      revSize=revSnap.size;
+    }catch(e2){
+      try{
+        const name=currentUser.nick||currentUser.phone||currentUser.login||'';
+        if(name){
+          const revSnap2=await db.collection('reviews').where('userPhone','==',name).limit(200).get();
+          revSize=revSnap2.size;
+        }
+      }catch(e3){}
+    }
+    if(el)el.textContent=revSize;
+  }catch(e){if(el)el.textContent='0';}
+}
+
+async function saveNick(nick){
+  if(!currentUser)return;
+  const trimmed=nick.trim();
+  currentUser.nick=trimmed;
+  localStorage.setItem('ta_user',JSON.stringify(currentUser));
+  if(_usersCache[currentUser.id]){_usersCache[currentUser.id].nick=trimmed;}
+  else{_usersCache[currentUser.id]={nick:trimmed,phone:currentUser.phone||'',login:currentUser.login||'',role:currentUser.role||'user'};}
+  updateLoginBtn();
+  try{
+    await _loadFirebase();
+    await db.collection('users').doc(currentUser.id).set({nick:trimmed},{merge:true});
+    if(trimmed){
+      const displayName=trimmed;
+      const snap=await db.collection('reviews').where('userId','==',currentUser.id).limit(100).get();
+      const batch=db.batch();
+      snap.docs.forEach(doc=>batch.update(doc.ref,{userPhone:displayName}));
+      const logSnap=await db.collection('logs').where('actorId','==',currentUser.id).limit(200).get();
+      logSnap.docs.forEach(doc=>batch.update(doc.ref,{actorName:displayName,actorNick:displayName}));
+      await batch.commit();
+      Object.keys(_reviewsCache).forEach(k=>delete _reviewsCache[k]);
+    }
+  }catch(e){console.warn('saveNick error:',e);}
+}
