@@ -294,11 +294,16 @@ async function loadAdminStats(){
       const registered=u.createdAt?(()=>{const d=new Date(u.createdAt);return`${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;})():'—';
       const ini=displayName.replace(/\+/g,'').slice(0,2).toUpperCase();
       const avatarColor=isAdmin?'#7c3aed':'var(--green)';
+      const avatarBg=isAdmin?'rgba(124,58,237,0.12)':'rgba(0,168,89,0.10)';
       return`<div class="statItemCard">
-        <div class="statItemIco" style="background:${isAdmin?'rgba(124,58,237,0.12)':'rgba(0,168,89,0.10)'};border-radius:50%;color:${avatarColor};font-size:14px;font-weight:800;">${ini}</div>
+        <div class="statItemIco" style="background:${avatarBg};border-radius:50%;color:${avatarColor};font-size:14px;font-weight:800;">${ini}</div>
         <div class="statItemBody">
           <div class="statItemTitle">${displayName}</div>
-          <div class="statItemSub">${identifier!==displayName?identifier+' · ':''}${revCount} отз. · Рег. ${registered}</div>
+          <div class="statItemMeta">
+            ${identifier&&identifier!==displayName?`<span class="statItemMetaChip">${identifier}</span>`:''}
+            <span class="statItemMetaChip">💬 ${revCount} отз.</span>
+            <span class="statItemMetaChip">📅 ${registered}</span>
+          </div>
         </div>
         <span class="statItemBadge ${isAdmin?'statBadgePurple':'statBadgeBlue'}">${isAdmin?'⚙️ Admin':'User'}</span>
       </div>`;
