@@ -165,6 +165,10 @@ async function loadToilets(){
     if(!navigator.onLine)showOfflineBanner();
   }
   renderMarkers();
+  // Если шторка открыта — обновляем сердечко (мог пропасть после reload)
+  if(isSheetOpen && selectedToilet){
+    updateFavBtn(selectedToilet.id);
+  }
 }
 
 function renderMarkers(){
