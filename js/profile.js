@@ -318,7 +318,7 @@ function onAdminNavClick(){
   if(isAlreadyOnAdd){
     showAdminDashboard();
     const addScreen=document.getElementById('addScreen');
-    if(addScreen)addScreen.scrollTo({top:0,behavior:'smooth'});
+    if(addScreen)addScreen.scrollTo({top:0,behavior:'instant'});
   } else {
     switchTab('add');
   }
