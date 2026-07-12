@@ -1,4 +1,13 @@
+# Зависимости Node.js
 node_modules/
+scripts/node_modules/
+server/node_modules/
+
+# Ключи и секреты — никогда не коммитить
 serviceAccountKey.json
 *.env
 .env
+
+# Данные сервера (JSON-файлы с пользователями и отзывами)
+server/data/users.json
+server/data/reviews.json
