@@ -414,26 +414,20 @@
 
   <!-- Сабвью: модерация отзывов -->
   <div id="adminSubModeration" class="adminSubview hidden">
-    <div style="position:relative;display:flex;align-items:center;min-height:36px;margin-bottom:16px;gap:8px;">
-      <button class="adminBackBtn" style="position:relative;z-index:1;" onclick="showAdminDashboard()">‹ Назад</button>
-      <div style="position:absolute;left:0;right:0;text-align:center;font-size:17px;font-weight:800;color:var(--text);letter-spacing:-.3px;pointer-events:none;">Модерация отзывов</div>
-      <div style="flex:1;"></div>
-      <button id="moderationRefreshBtn" class="refreshBtn" style="position:relative;z-index:1;" onclick="runRefresh(this,loadModerationReviews)">
-        Обновить
-      </button>
+    <div class="adminSubHeader">
+      <button class="adminBackBtn" onclick="showAdminDashboard()">‹ Назад</button>
+      <div class="adminSubHeaderTitle">Модерация отзывов</div>
+      <button id="moderationRefreshBtn" class="refreshBtn" onclick="runRefresh(this,loadModerationReviews)">Обновить</button>
     </div>
     <div id="moderationList"></div>
   </div>
 
   <!-- Сабвью: журнал действий -->
   <div id="adminSubLogs" class="adminSubview hidden">
-    <div style="position:relative;display:flex;align-items:center;min-height:36px;margin-bottom:16px;gap:8px;">
-      <button class="adminBackBtn" style="position:relative;z-index:1;" onclick="showAdminDashboard()">‹ Назад</button>
-      <div style="position:absolute;left:0;right:0;text-align:center;font-size:15px;font-weight:800;color:var(--text);letter-spacing:-.3px;pointer-events:none;">📋 Журнал действий</div>
-      <div style="flex:1;"></div>
-      <button id="logsRefreshBtn" class="refreshBtn" style="position:relative;z-index:1;" onclick="runRefresh(this,loadActivityLogs)">
-        Обновить
-      </button>
+    <div class="adminSubHeader">
+      <button class="adminBackBtn" onclick="showAdminDashboard()">‹ Назад</button>
+      <div class="adminSubHeaderTitle">📋 Журнал действий</div>
+      <button id="logsRefreshBtn" class="refreshBtn" onclick="runRefresh(this,loadActivityLogs)">Обновить</button>
     </div>
     <!-- Фильтр по типу -->
     <div id="logsFilter" style="display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;padding-bottom:2px;">
