@@ -58,6 +58,8 @@ async function _loadFavoritesFromFirestore(){
     }
   }catch(e){
     console.warn('_loadFavoritesFromFirestore:',e.message);
+    // Даже при ошибке — обновляем сердечко из localStorage
+    if(isSheetOpen&&selectedToilet){ updateFavBtn(selectedToilet.id); }
     renderFavorites();
   }
 }
