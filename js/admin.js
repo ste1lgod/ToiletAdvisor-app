@@ -402,3 +402,248 @@ function wizFillConfirm(){
 }
 
 function wizToggleTag(el){el.classList.toggle('on');}
+
+function _wizShowOverlay(){
+  const ov=document.getElementById('wizPickOverlay');
+  if(ov){ov.classList.remove('hidden');ov.classList.add('active');}
+}
+function _wizHideOverlay(){
+  const ov=document.getElementById('wizPickOverlay');
+  if(ov){ov.classList.add('hidden');ov.classList.remove('active');}
+  wizHideSuggest();
+}
+
+function wizStartPickLocation(){
+  wizPickMode=true;
+  const nav=document.getElementById('bottomNav');
+  if(nav)nav.style.display='none';
+  switchTab('map');
+  _wizShowOverlay();
+  requestAnimationFrame(()=>{
+    const header=document.getElementById('wizPickHeader');
+    const addrBar=document.getElementById('wizPickAddressBar');
+    const pin=document.getElementById('wizPickPin');
+    if(pin&&header&&addrBar){
+      const hH=header.getBoundingClientRect().height;
+      const aH=addrBar.getBoundingClientRect().height;
+      pin.style.marginTop=(-20+(hH-aH)/2)+'px';
+    }
+  });
+  const si=document.getElementById('wizPickSearch');
+  if(si){si.value='';si.blur();}
+  wizHideSuggest();
+  wizScheduleGeocode();
+  if(myMap){
+    myMap.events.add('boundschange',_wizOnMapMove);
+    myMap.events.add('actionbegin',_wizOnMapDragStart);
+    myMap.events.add('actionend',_wizOnMapDragEnd);
+  }
+}
+
+function _wizOnMapDragStart(){
+  const pin=document.getElementById('wizPickPin');
+  if(pin)pin.classList.add('dragging');
+  const addr=document.getElementById('wizPickAddressMain');
+  if(addr)addr.textContent='Перемещаю...';
+}
+function _wizOnMapDragEnd(){
+  const pin=document.getElementById('wizPickPin');
+  if(pin)pin.classList.remove('dragging');
+  wizScheduleGeocode();
+}
+function _wizOnMapMove(){
+  clearTimeout(_wizGeocodeTimer);
+  const addr=document.getElementById('wizPickAddressMain');
+  if(addr&&addr.textContent!=='Перемещаю...')addr.textContent='...';
+}
+
+function wizScheduleGeocode(){
+  clearTimeout(_wizGeocodeTimer);
+  _wizGeocodeTimer=setTimeout(()=>{
+    if(!myMap||!wizPickMode)return;
+    const center=myMap.getCenter();
+    wizGeocode(center[0],center[1]).then(addr=>{
+      const addrEl=document.getElementById('wizPickAddressMain');
+      if(addrEl)addrEl.textContent=addr;
+      _wizLastGeocodeCoords=[center[0],center[1]];
+    });
+  },700);
+}
+
+async function wizGeocode(lat,lon){
+  try{
+    const url=`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=ru&zoom=18`;
+    const r=await fetch(url,{headers:{'Accept-Language':'ru'}});
+    if(!r.ok)throw new Error('http '+r.status);
+    const data=await r.json();
+    const a=data.address||{};
+    const parts=[];
+    if(a.road)parts.push(a.road);
+    if(a.house_number)parts.push(a.house_number);
+    if(parts.length)return parts.join(', ');
+    return data.name||a.neighbourhood||a.suburb||data.display_name?.split(',')[0]||`${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+  }catch(e){return`${lat.toFixed(4)}, ${lon.toFixed(4)}`;}
+}
+
+async function wizDoSearch(query){
+  if(!query||!wizPickMode)return;
+  try{
+    const url=`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent('Ташкент '+query)}&format=json&limit=6&accept-language=ru&countrycodes=uz&viewbox=69.10,41.45,69.45,41.15&bounded=1`;
+    const r=await fetch(url,{headers:{'Accept-Language':'ru'}});
+    if(!r.ok)throw new Error('http '+r.status);
+    const data=await r.json();
+    if(!data.length){wizHideSuggest();return;}
+    const items=data.map(item=>{
+      const parts=item.display_name.split(', ');
+      const clean=parts.filter(p=>p!=='Узбекистан'&&p!=='100000'&&p!=='Toshkent'&&p!=='Ташкент'||parts.indexOf(p)===0);
+      return{name:clean.slice(0,3).join(', '),desc:'',coords:[parseFloat(item.lat),parseFloat(item.lon)]};
+    });
+    wizShowSuggest(items);
+  }catch(e){wizHideSuggest();}
+}
+
+function wizCancelPickLocation(){
+  wizPickMode=false;
+  const nav=document.getElementById('bottomNav');
+  if(nav)nav.style.display='';
+  _wizHideOverlay();
+  if(myMap){
+    myMap.events.remove('boundschange',_wizOnMapMove);
+    myMap.events.remove('actionbegin',_wizOnMapDragStart);
+    myMap.events.remove('actionend',_wizOnMapDragEnd);
+  }
+  switchTab('add');
+}
+
+function wizConfirmLocation(){
+  if(!myMap)return;
+  const center=myMap.getCenter();
+  wizPickMode=false;
+  const nav=document.getElementById('bottomNav');
+  if(nav)nav.style.display='';
+  _wizHideOverlay();
+  if(myMap){
+    myMap.events.remove('boundschange',_wizOnMapMove);
+    myMap.events.remove('actionbegin',_wizOnMapDragStart);
+    myMap.events.remove('actionend',_wizOnMapDragEnd);
+  }
+  wizCoords=[center[0],center[1]];
+  const addrEl=document.getElementById('wizPickAddressMain');
+  const addrText=addrEl?addrEl.textContent:'';
+  const confirmed=document.getElementById('wizCoordsConfirmed');
+  if(confirmed){confirmed.style.display='block';confirmed.textContent=`✓ ${addrText||(center[0].toFixed(4)+', '+center[1].toFixed(4))}`;}
+  const next1=document.getElementById('wizNext1');
+  if(next1)next1.disabled=false;
+  const navRow1=document.getElementById('wizNavRow1');
+  if(navRow1)navRow1.style.display='';
+  const menuBtnRow=document.getElementById('wizMenuBtnRow');
+  if(menuBtnRow)menuBtnRow.style.display='none';
+  _skipAdminDashboard=true;
+  switchTab('add');
+  setTimeout(()=>wizGoStep(2),80);
+}
+
+function wizShowSuggest(items){
+  const inner=document.getElementById('wizPickSuggestInner');
+  const divider=document.getElementById('wizPickDivider');
+  if(!inner)return;
+  if(!items.length){wizHideSuggest();return;}
+  inner.innerHTML=items.map(it=>{
+    const parts=it.name.split(', ');
+    const main=parts[0]||it.name;
+    const sub=parts.slice(1).join(', ');
+    return`<div class="wizPickSuggestItem" onclick="wizSelectSuggest(${it.coords[0]},${it.coords[1]})">
+      <div class="sugIco">📍</div>
+      <div class="sugText">
+        <div class="sugName">${main}</div>
+        ${sub?`<div class="sugSub">${sub}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  if(divider)divider.classList.add('vis');
+  inner.style.display='block';
+  const hint=document.getElementById('wizPickHint');
+  if(hint)hint.style.visibility='hidden';
+}
+
+function wizHideSuggest(){
+  const inner=document.getElementById('wizPickSuggestInner');
+  const divider=document.getElementById('wizPickDivider');
+  if(inner){inner.innerHTML='';inner.style.display='none';}
+  if(divider)divider.classList.remove('vis');
+  const hint=document.getElementById('wizPickHint');
+  if(hint)hint.style.visibility='visible';
+}
+
+function wizSelectSuggest(lat,lon){
+  if(!myMap)return;
+  myMap.setCenter([lat,lon],17,{duration:500});
+  wizHideSuggest();
+  const input=document.getElementById('wizPickSearch');
+  if(input)input.blur();
+  setTimeout(wizScheduleGeocode,600);
+}
+
+function wizClearSearch(){
+  const input=document.getElementById('wizPickSearch');
+  const clearBtn=document.getElementById('wizPickSearchClear');
+  if(input){input.value='';input.focus();}
+  if(clearBtn)clearBtn.classList.add('hidden');
+  wizHideSuggest();
+}
+
+function wizInitSearch(){
+  const input=document.getElementById('wizPickSearch');
+  const clearBtn=document.getElementById('wizPickSearchClear');
+  if(!input)return;
+  input.addEventListener('input',()=>{
+    const val=input.value.trim();
+    clearBtn&&clearBtn.classList.toggle('hidden',!val);
+    clearTimeout(_wizSearchTimer);
+    if(!val){wizHideSuggest();return;}
+    _wizSearchTimer=setTimeout(()=>wizDoSearch(val),350);
+  });
+  input.addEventListener('focus',()=>{if(input.value.trim())wizDoSearch(input.value.trim());});
+}
+
+async function wizSaveToilet(){
+  if(!currentUser||currentUser.role!=='admin'){showToast(t('toastNeedAdmin'));return;}
+  if(!wizCoords){showToast(t('toastNoPlace'));return;}
+  const title=document.getElementById('wizTitle').value.trim();
+  if(!title){showToast(t('toastEnterTitle'));return;}
+  const btn=document.getElementById('wizSaveBtn');
+  if(btn){btn.textContent='⏳ Сохраняю...';btn.disabled=true;}
+  const tags={};
+  document.querySelectorAll('.tagToggle').forEach(el=>{tags[el.dataset.tag]=el.classList.contains('on');});
+  const body={
+    lat:wizCoords[0],lon:wizCoords[1],title,
+    description:document.getElementById('wizDesc').value.trim()||'',
+    photo:'',
+    isOpen:tags.isOpen||false,isFree:tags.isFree||false,
+    hasSoap:tags.hasSoap||false,hasPaper:tags.hasPaper||false,
+    isAccessible:tags.isAccessible||false,isTaharatkhana:tags.isTaharatkhana||false,
+    addedBy:currentUser.id,createdAt:new Date().toISOString()
+  };
+  try{
+    await _loadFirebase();
+    await db.collection('toilets').add(body);
+    loadToilets();
+    showToast(t('toiletAdded'));
+    const addrEl=document.getElementById('wizPickAddressMain');
+    const addr=(addrEl&&addrEl.textContent&&addrEl.textContent!=='Определяю адрес...'&&addrEl.textContent!=='...')
+      ?addrEl.textContent:`${body.lat.toFixed(5)}, ${body.lon.toFixed(5)}`;
+    logAction({type:'toilet',category:'toilet',action:t('logAddedToilet'),
+      detail:`"${body.title}" · ${addr}${body.description?' · '+body.description.slice(0,60):''}`,});
+    wizReset();
+    showAdminDashboard();
+    switchTab('map');
+  }catch(e){
+    showToast('Ошибка: '+e.message);
+    if(btn){btn.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Сохранить';btn.disabled=false;}
+    console.error(e);
+  }
+}
+
+// обратная совместимость
+function pickLocationOnMap(){wizStartPickLocation();}
+async function submitAddToiletDirect(){wizSaveToilet();}
