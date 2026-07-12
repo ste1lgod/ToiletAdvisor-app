@@ -168,16 +168,13 @@ function renderFavorites(){
   list.innerHTML=favs.map(f=>{
     const _t=allToilets.find(x=>x.id===f.id);
     const _ico=_t?.isTaharatkhana?'🕌':'🚻';
-    // Берём addr из самого объекта избранного (f.addr),
-    // fallback — addr туалета из allToilets, потом координаты
     const _desc=_t?.description||'';
-    // Приоритет: addr из объекта избранного, потом из allToilets — но только если не плохой
     const _addrFromFav=f.addr||'';
     const _addrFromToilet=_t?.addr||'';
     const _addrRaw=!_isBadAddr(_addrFromFav,_desc)?_addrFromFav
       :(!_isBadAddr(_addrFromToilet,_desc)?_addrFromToilet:'');
     const _addr=_addrRaw||(f.lat?`${Number(f.lat).toFixed(4)}, ${Number(f.lon).toFixed(4)}`:'—');
-    return`<div class="pFavItem">
+    return`<div class="pFavItem" data-fav-id="${f.id}">
       <div class="pFavItem-body">
         <div class="pFavItem-ico">${_ico}</div>
         <div class="pFavItem-info" onclick="openFavSheet('${f.id}')">
