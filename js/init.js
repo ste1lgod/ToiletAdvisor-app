@@ -146,9 +146,9 @@ _patchSeedAddresses();
 // Избранное — мгновенно из localStorage, Firestore синхронизируется фоново
 if(currentUser){ _loadFavoritesFromFirestore(); }
 
-// Патч ников в отзывах — запускаем сразу после загрузки кэша пользователей
-// (не через setTimeout — кэш уже есть или грузится параллельно)
-_loadUsersCache().then(() => _patchReviewNicks());
+// Патч ников в отзывах — запускаем после загрузки кэша пользователей,
+// но с небольшой задержкой чтобы не конкурировать с loadToilets на старте
+_loadUsersCache().then(() => setTimeout(_patchReviewNicks, 5000));
 
 // Начальное состояние профиля (синхронно, до первого рендера)
 (function(){
