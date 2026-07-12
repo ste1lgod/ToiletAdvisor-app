@@ -4528,8 +4528,11 @@ function closeFavConfirm(){
 function removeFavorite(toiletId){
   const favs=getFavorites().filter(f=>f.id!==toiletId);
   saveFavorites(favs);
+  _removeFavFromFirestore(toiletId); // удаляем из Firestore
   renderFavorites();
   updateFavBtn(toiletId);
+  const favEl=document.getElementById('pStatFav');
+  if(favEl)favEl.textContent=favs.length;
 }
 // Открыть карточку туалета прямо во вкладке профиля
 function openFavSheet(toiletId){
