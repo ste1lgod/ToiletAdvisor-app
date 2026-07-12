@@ -121,12 +121,27 @@ setLang(currentLang);
 applyTheme();
 updateLoginBtn();
 switchTab('map');
+
+// Параллельно запускаем все фоновые загрузки — не ждём друг друга
+// _usersCache уже восстановлен из localStorage синхронно (в profile.js)
+// Фоновое обновление кэша пользователей из Firestore
+if(!_usersCacheLoaded){
+  // Кэша нет (первый запуск или устарел) — грузим сразу
+  _loadUsersCache();
+} else {
+  // Кэш есть — тихо обновляем в фоне через 2 сек чтобы не мешать старту
+  setTimeout(() => _loadUsersCache({ forceRefresh: true }), 2000);
+}
+
 _syncUserNick();
 _patchSeedAddresses();
-// Синхронизируем избранное из Firestore при старте — чтобы сердечки были правильными
+
+// Избранное — мгновенно из localStorage, Firestore синхронизируется фоново
 if(currentUser){ _loadFavoritesFromFirestore(); }
-// Патчим ники в отзывах (фоново, один раз)
-setTimeout(_patchReviewNicks, 3000);
+
+// Патч ников в отзывах — запускаем сразу после загрузки кэша пользователей
+// (не через setTimeout — кэш уже есть или грузится параллельно)
+_loadUsersCache().then(() => _patchReviewNicks());
 
 // Начальное состояние профиля (синхронно, до первого рендера)
 (function(){
