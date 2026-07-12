@@ -38,10 +38,12 @@ body.dark .adminDashBtn{background:var(--card);border-color:var(--border);box-sh
   font-size:15px;font-weight:800;color:var(--text);
   letter-spacing:-.3px;text-align:center;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  min-width:0;
 }
 /* Кнопка Обновить — прижата вправо */
 .adminSubHeader .refreshBtn{
   justify-self:end;
+  min-width:0;
 }
 .adminBackBtn{
   display:flex;align-items:center;gap:7px;
