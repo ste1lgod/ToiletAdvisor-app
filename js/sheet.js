@@ -169,7 +169,18 @@ const _REVIEWS_CACHE_TTL = 5 * 60 * 1000; // 5 минут
 function _saveReviewsToStorage(toiletId, data){
   try{
     localStorage.setItem(_REVIEWS_CACHE_KEY + toiletId, JSON.stringify({ ts: Date.now(), data }));
-  }catch(e){}
+  }catch(e){
+    // QuotaExceededError — очищаем старые кэши отзывов и пробуем ещё раз
+    try{
+      const toRemove = [];
+      for(let i = 0; i < localStorage.length; i++){
+        const k = localStorage.key(i);
+        if(k && k.startsWith(_REVIEWS_CACHE_KEY)) toRemove.push(k);
+      }
+      toRemove.forEach(k => localStorage.removeItem(k));
+      localStorage.setItem(_REVIEWS_CACHE_KEY + toiletId, JSON.stringify({ ts: Date.now(), data }));
+    }catch(e2){}
+  }
 }
 
 async function _fetchReviewsFromFirestore(id){
