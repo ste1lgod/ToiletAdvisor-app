@@ -113,27 +113,33 @@ body.dark .phoneRow input::placeholder{color:rgba(255,255,255,0.28);}
   display:flex;align-items:center;background:#fff;
   border:1.5px solid rgba(0,0,0,0.12);border-radius:14px;
   overflow:hidden;margin-bottom:14px;
-  transition:border-color .2s;box-shadow:0 1px 3px rgba(0,0,0,0.06);
+  transition:border-color .2s,box-shadow .2s;box-shadow:0 1px 3px rgba(0,0,0,0.06);
+  /* Фиксированная высота — не прыгает при смене type и нажатии глазика */
+  height:52px;min-height:52px;
 }
 .passRow:focus-within{border-color:var(--green);box-shadow:0 0 0 3px rgba(0,168,89,0.12);}
 body.dark .passRow{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.14);box-shadow:none;}
 body.dark .passRow:focus-within{border-color:var(--green);box-shadow:0 0 0 3px rgba(0,168,89,0.15);}
 .passRow input{
-  flex:1;padding:14px 12px;border:none;background:transparent;
+  flex:1;height:100%;padding:0 12px;border:none;background:transparent;
   font-size:15px;font-weight:500;color:#111;outline:none;font-family:var(--font);
+  /* Убираем любые изменения размера при смене type */
+  line-height:1;box-sizing:border-box;
 }
 body.dark .passRow input{color:#fff;}
 body.dark .passRow input::placeholder{color:rgba(255,255,255,0.28);}
 
 /* ── Кнопка показа пароля ── */
 .eyeBtn{
-  width:44px;height:44px;display:flex;align-items:center;justify-content:center;
+  /* Фиксированный размер — не сдвигает строку */
+  width:44px;height:44px;min-width:44px;
+  display:flex;align-items:center;justify-content:center;
   flex-shrink:0;background:none;border:none;cursor:pointer;
   color:#aaa;border-radius:10px;margin-right:4px;
-  transition:color .18s,transform .15s;
+  transition:color .18s;
+  /* Убираем transform чтобы не дёргало строку */
 }
 body.dark .eyeBtn{color:rgba(255,255,255,0.30);}
-.eyeBtn:active{transform:scale(.88);}
 .eyeBtn.open{color:var(--green);}
 body.dark .eyeBtn.open{color:#4ade80;}
 
