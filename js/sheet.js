@@ -341,7 +341,10 @@ async function submitReview(){
     });
   }catch(e){
     console.error('Ошибка сохранения отзыва:',e);
-    showToast(t('toastReviewSaved'));
+    // Удаляем оптимистичный элемент из DOM — отзыв не сохранился
+    const tmpEl=document.getElementById(optimistic.id);
+    if(tmpEl)tmpEl.remove();
+    showToast('Ошибка сохранения. Попробуйте ещё раз.');
   }
 }
 
