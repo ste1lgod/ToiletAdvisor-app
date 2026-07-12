@@ -641,11 +641,8 @@ async function wizSaveToilet(){
     await db.collection('toilets').add(body);
     loadToilets();
     showToast(t('toiletAdded'));
-    const addrEl=document.getElementById('wizPickAddressMain');
-    const addr=(addrEl&&addrEl.textContent&&addrEl.textContent!=='Определяю адрес...'&&addrEl.textContent!=='...')
-      ?addrEl.textContent:`${body.lat.toFixed(5)}, ${body.lon.toFixed(5)}`;
     logAction({type:'toilet',category:'toilet',action:t('logAddedToilet'),
-      detail:`"${body.title}" · ${addr}${body.description?' · '+body.description.slice(0,60):''}`,});
+      detail:`"${body.title}" · ${body.addr||body.lat.toFixed(5)+', '+body.lon.toFixed(5)}${body.description?' · '+body.description.slice(0,60):''}`,});
     wizReset();
     showAdminDashboard();
     switchTab('map');
