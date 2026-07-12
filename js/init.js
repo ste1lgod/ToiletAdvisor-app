@@ -87,6 +87,8 @@ _syncUserNick();
 _patchSeedAddresses();
 // Синхронизируем избранное из Firestore при старте — чтобы сердечки были правильными
 if(currentUser){ _loadFavoritesFromFirestore(); }
+// Патчим ники в отзывах (фоново, один раз)
+setTimeout(_patchReviewNicks, 3000);
 
 // Начальное состояние профиля (синхронно, до первого рендера)
 (function(){
