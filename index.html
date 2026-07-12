@@ -2814,109 +2814,24 @@ body.dark #wizPickAddressBar{border-color:rgba(255,255,255,0.10);}
 <!-- WIZ PICK SUGGEST — вне всех stacking context, всегда поверх -->
 <div id="wizPickSuggest" class="hidden"></div>
 
-<script>
-// в”Ђв”Ђ Р“Р›РћР‘РђР›Р¬РќР«Р• РџР•Р Р•РњР•РќРќР«Р• в”Ђв”Ђ
-const COLORS=['#019451','#3b82f6','#8b5cf6','#f59e0b','#ef4444','#06b6d4','#ec4899'];
-const TASHKENT=[41.2995,69.2401];
-const FALLBACK_TOILETS=[
-  {id:'seed-0001-tashkent-city-mall',lat:41.2956,lon:69.2797,title:'РўСѓР°Р»РµС‚ РІ Tashkent City Mall',addr:'РїСЂРѕСЃРїРµРєС‚ РСЃР»Р°РјР° РљР°СЂРёРјРѕРІР°, 1',description:'Р§РёСЃС‚С‹Р№ С‚СѓР°Р»РµС‚ РЅР° 1-Рј СЌС‚Р°Р¶Рµ РўР Р¦ Tashkent City Mall, СЂСЏРґРѕРј СЃ С„СѓРґ-РєРѕСЂС‚РѕРј',isOpen:true,isFree:true,hasSoap:true,hasPaper:true,isAccessible:true,isTaharatkhana:false},
-  {id:'seed-0002-masjid-minor',lat:41.2871,lon:69.2768,title:'РўР°С…Р°СЂР°С‚С…Р°РЅР° Сѓ РјРµС‡РµС‚Рё РњРёРЅРѕСЂ',addr:'СѓР»РёС†Р° РљР°С‚Р°СЂС‚Р°Р», 56',description:'РњРµСЃС‚Рѕ РґР»СЏ РѕРјРѕРІРµРЅРёСЏ РїСЂРё РјРµС‡РµС‚Рё РњРёРЅРѕСЂ. Р“РѕСЂСЏС‡Р°СЏ РІРѕРґР°, РјС‹Р»Рѕ, С‚Р°РїРѕС‡РєРё',isOpen:true,isFree:true,hasSoap:true,hasPaper:false,isAccessible:false,isTaharatkhana:true},
-  {id:'seed-0003-railway-station',lat:41.3174,lon:69.2870,title:'РўСѓР°Р»РµС‚ РЅР° РІРѕРєР·Р°Р»Рµ РўР°С€РєРµРЅС‚-Р“Р»Р°РІРЅС‹Р№',addr:'СѓР»РёС†Р° РњСѓСЃС‚Р°РєРёР»Р»РёРє, 1',description:'РџР»Р°С‚РЅС‹Р№ С‚СѓР°Р»РµС‚ РІ Р·РґР°РЅРёРё РіР»Р°РІРЅРѕРіРѕ Р¶РµР»РµР·РЅРѕРґРѕСЂРѕР¶РЅРѕРіРѕ РІРѕРєР·Р°Р»Р°',isOpen:false,isFree:false,hasSoap:true,hasPaper:true,isAccessible:true,isTaharatkhana:false},
-  {id:'seed-0004-navoi-park',lat:41.3058,lon:69.2714,title:'РўСѓР°Р»РµС‚ РІ РїР°СЂРєРµ РђР»РёС€РµСЂР° РќР°РІРѕРё',addr:'СѓР»РёС†Р° РђР»РёС€РµСЂР° РќР°РІРѕРё, 30',description:'РћР±С‰РµСЃС‚РІРµРЅРЅС‹Р№ С‚СѓР°Р»РµС‚ РІ С†РµРЅС‚СЂР°Р»СЊРЅРѕР№ С‡Р°СЃС‚Рё РїР°СЂРєР° РќР°РІРѕРё',isOpen:false,isFree:true,hasSoap:false,hasPaper:true,isAccessible:false,isTaharatkhana:false},
-  {id:'seed-0005-khastimom',lat:41.3276,lon:69.2623,title:'РўР°С…Р°СЂР°С‚С…Р°РЅР° РІ РјРµС‡РµС‚Рё РҐР°СЃС‚РёРјРѕРј',addr:'СѓР»РёС†Р° Р—Р°Р№РЅР°Р±РёРґРёРЅ Р’РѕСЃРёРєРѕРІ, 103',description:'РўР°С…Р°СЂР°С‚С…Р°РЅР° РїСЂРё СЃРѕР±РѕСЂРЅРѕР№ РјРµС‡РµС‚Рё РҐР°СЃС‚Рё-РРјРѕРј, СЂСЏРґРѕРј СЃ РјРµРґСЂРµСЃРµ',isOpen:true,isFree:true,hasSoap:true,hasPaper:false,isAccessible:false,isTaharatkhana:true},
-  {id:'seed-0006-next-mall',lat:41.3376,lon:69.2841,title:'РўСѓР°Р»РµС‚ РІ РўР Р¦ Next',addr:'РїСЂРѕСЃРїРµРєС‚ РђРјРёСЂР° РўРµРјСѓСЂР°, 108',description:'РўСѓР°Р»РµС‚ РЅР° 2-Рј СЌС‚Р°Р¶Рµ С‚РѕСЂРіРѕРІРѕРіРѕ С†РµРЅС‚СЂР° Next РЅР° Р®РЅСѓСЃР°Р±Р°РґРµ',isOpen:true,isFree:true,hasSoap:true,hasPaper:true,isAccessible:true,isTaharatkhana:false},
-  {id:'seed-0007-broadway',lat:41.2983,lon:69.2717,title:'РўСѓР°Р»РµС‚ РЅР° Broadway (РїРµС€РµС…РѕРґРЅР°СЏ Р·РѕРЅР°)',addr:'СѓР»РёС†Р° РЎР°Р№РёР»РіРѕС… (Broadway)',description:'РћР±С‰РµСЃС‚РІРµРЅРЅС‹Р№ РїР»Р°С‚РЅС‹Р№ С‚СѓР°Р»РµС‚ РЅР° РїРµС€РµС…РѕРґРЅРѕР№ СѓР»РёС†Рµ РЎР°Р№РёР»РіРѕС… (Broadway)',isOpen:true,isFree:false,hasSoap:true,hasPaper:true,isAccessible:false,isTaharatkhana:false}
-];
-const T={
-  ru:{search:'РџРѕРёСЃРє С‚СѓР°Р»РµС‚Р°...',loginBtn:'в†’ Р’РѕР№С‚Рё',open:'РћС‚РєСЂС‹С‚Рѕ',closed:'Р—Р°РєСЂС‹С‚Рѕ',free:'рџ†“ Р‘РµСЃРїР»Р°С‚РЅРѕ',paid:'РџР»Р°С‚РЅРѕ',noReviews:'РџРѕРєР° РЅРµС‚ РѕС‚Р·С‹РІРѕРІ',success:'вњ“ Р’Р°С€ РѕС‚Р·С‹РІ РґРѕР±Р°РІР»РµРЅ!',kmAway:'РєРј РѕС‚ РІР°СЃ',mAway:'Рј РѕС‚ РІР°СЃ',findNearest:'РќР°Р№С‚Рё Р±Р»РёР¶Р°Р№С€РёР№ С‚СѓР°Р»РµС‚',addHint:'рџ“Ќ РќР°Р¶РјРёС‚Рµ РЅР° РєР°СЂС‚Рµ, С‡С‚РѕР±С‹ РІС‹Р±СЂР°С‚СЊ РјРµСЃС‚Рѕ',distFallback:'(РѕС‚ С†РµРЅС‚СЂР°)',route:'РњР°СЂС€СЂСѓС‚',writeReview:'РќР°РїРёС€РёС‚Рµ РІР°С€ РѕС‚Р·С‹РІ...',submit:'РћС‚РїСЂР°РІРёС‚СЊ',leaveReview:'РћСЃС‚Р°РІРёС‚СЊ РѕС‚Р·С‹РІ',adminDenied:'Р­С‚Р° РІРєР»Р°РґРєР° РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅР° С‚РѕР»СЊРєРѕ РґР»СЏ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂРѕРІ Toilet Advisor.',adminDeniedTitle:'Р”РѕСЃС‚СѓРї РѕРіСЂР°РЅРёС‡РµРЅ',adminDeniedBtn:'Р’РѕР№С‚Рё РєР°Рє РђРґРјРёРЅ',profile:'РџСЂРѕС„РёР»СЊ',profileSub:'Р’РѕР№РґРёС‚Рµ С‡С‚РѕР±С‹ СѓРІРёРґРµС‚СЊ РґР°РЅРЅС‹Рµ',profileAccount:'РђРєРєР°СѓРЅС‚',profileRole:'Р РѕР»СЊ',profileLogout:'рџљЄ Р’С‹Р№С‚Рё РёР· Р°РєРєР°СѓРЅС‚Р°',profileLogin:'в†’ Р’РѕР№С‚Рё РІ Р°РєРєР°СѓРЅС‚',profileAdmin:'РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ',toiletAdded:'РўСѓР°Р»РµС‚ РґРѕР±Р°РІР»РµРЅ!',logAddedToilet:'Р”РѕР±Р°РІРёР» С‚СѓР°Р»РµС‚',logLeftReview:'РћСЃС‚Р°РІРёР» РѕС‚Р·С‹РІ',logDeletedReview:'РЈРґР°Р»РёР» РѕС‚Р·С‹РІ',logLogin:'Р’С…РѕРґ РІ СЃРёСЃС‚РµРјСѓ',logLogout:'Р’С‹С…РѕРґ РёР· Р°РєРєР°СѓРЅС‚Р°',logRegister:'Р РµРіРёСЃС‚СЂР°С†РёСЏ РЅРѕРІРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ',logAdminLogin:'Р’С…РѕРґ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°',logToilet:'РўСѓР°Р»РµС‚',logRating:'РћС†РµРЅРєР°',logUser:'РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ',logAdmin:'РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ',logAddedFav:'Р”РѕР±Р°РІРёР» РІ РёР·Р±СЂР°РЅРЅРѕРµ',logRemovedFav:'РЈР±СЂР°Р» РёР· РёР·Р±СЂР°РЅРЅРѕРіРѕ',toastGeoUnavail:'Р“РµРѕР»РѕРєР°С†РёСЏ РЅРµРґРѕСЃС‚СѓРїРЅР°',toastNoPoints:'РќРµС‚ С‚РѕС‡РµРє РЅР° РєР°СЂС‚Рµ',toastEnterReview:'Р’РІРµРґРёС‚Рµ С‚РµРєСЃС‚ Рё РїРѕСЃС‚Р°РІСЊС‚Рµ РѕС†РµРЅРєСѓ',toastReviewSaved:'РћС‚Р·С‹РІ СЃРѕС…СЂР°РЅС‘РЅ Р»РѕРєР°Р»СЊРЅРѕ, СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёСЏ РїСЂРё РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРё СЃРІСЏР·Рё',toastFillAll:'Р—Р°РїРѕР»РЅРёС‚Рµ РІСЃРµ РїРѕР»СЏ',toastUserNotFound:'РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ РЅРµ РЅР°Р№РґРµРЅ',toastWrongPass:'РќРµРІРµСЂРЅС‹Р№ РїР°СЂРѕР»СЊ',toastAlreadyReg:'Р­С‚РѕС‚ РЅРѕРјРµСЂ СѓР¶Рµ Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅ',toastRegOk:'Р РµРіРёСЃС‚СЂР°С†РёСЏ СѓСЃРїРµС€РЅР°',toastLoginOk:'Р’С‹ РІРѕС€Р»Рё РІ СЃРёСЃС‚РµРјСѓ',toastAdminLoginOk:'Р’С‹ РІРѕС€Р»Рё РєР°Рє Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ',toastAdminNotFound:'РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ РЅРµ РЅР°Р№РґРµРЅ',toastLogout:'Р’С‹ РІС‹С€Р»Рё РёР· Р°РєРєР°СѓРЅС‚Р°',toastReviewDeleted:'РћС‚Р·С‹РІ СѓРґР°Р»С‘РЅ',toastNeedAdmin:'РўСЂРµР±СѓСЋС‚СЃСЏ РїСЂР°РІР° Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°',toastNoPlace:'РќРµ РІС‹Р±СЂР°РЅРѕ РјРµСЃС‚Рѕ',toastEnterTitle:'Р’РІРµРґРёС‚Рµ РЅР°Р·РІР°РЅРёРµ',toastFirstPlace:'РЎРЅР°С‡Р°Р»Р° СѓРєР°Р¶РёС‚Рµ РјРµСЃС‚Рѕ РЅР° РєР°СЂС‚Рµ',toastNoPlaceMap:'Р’С‹Р±РµСЂРёС‚Рµ РјРµСЃС‚Рѕ РЅР° РєР°СЂС‚Рµ',toastTimeout:'РџСЂРµРІС‹С€РµРЅРѕ РІСЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ. РџСЂРѕРІРµСЂСЊС‚Рµ РёРЅС‚РµСЂРЅРµС‚ Рё РїРѕРїСЂРѕР±СѓР№С‚Рµ СЃРЅРѕРІР°.',toastOnline:'РџРѕРґРєР»СЋС‡РµРЅРёРµ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРѕ',soap:'РњС‹Р»Рѕ',paper:'Р‘СѓРјР°РіР°',accessible:'Р”РѕСЃС‚СѓРїРЅРѕСЃС‚СЊ',catAll:'рџ—єпёЏ Р’СЃРµ',catTaharatkhana:'рџ•Њ РўР°С…Р°СЂР°С‚С…Р°РЅР°',catFree:'рџ†“ Р‘РµСЃРїР»Р°С‚РЅРѕ',catSoap:'рџ§ј РњС‹Р»Рѕ',catPaper:'рџ§» Р‘СѓРјР°РіР°',catAccessible:'в™ї Р”РѕСЃС‚СѓРїРЅС‹Рµ',navMap:'РљР°СЂС‚Р°',navProfile:'РџСЂРѕС„РёР»СЊ',reviews:'РћС‚Р·С‹РІС‹',reviewsTitle:'РћС‚Р·С‹РІС‹',authNotice:'рџ”’ Р§С‚РѕР±С‹ РѕСЃС‚Р°РІРёС‚СЊ РѕС†РµРЅРєСѓ, РїРѕР¶Р°Р»СѓР№СЃС‚Р°, РІРѕР№РґРёС‚Рµ РІ СЃРёСЃС‚РµРјСѓ',adminPanelTitle:'вљ™пёЏ РџР°РЅРµР»СЊ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°',adminAddPoint:'Р”РѕР±Р°РІРёС‚СЊ С‚РѕС‡РєСѓ',adminAddPointSub:'Р”РѕР±Р°РІРёС‚СЊ РЅРѕРІС‹Р№ С‚СѓР°Р»РµС‚ РЅР° РєР°СЂС‚Сѓ',adminModeration:'РњРѕРґРµСЂР°С†РёСЏ РѕС‚Р·С‹РІРѕРІ',adminModerationSub:'РџСЂРѕСЃРјРѕС‚СЂ Рё СѓРґР°Р»РµРЅРёРµ РѕС‚Р·С‹РІРѕРІ РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№',adminLogs:'Р–СѓСЂРЅР°Р» РґРµР№СЃС‚РІРёР№',adminLogsSub:'Р’СЃРµ РґРµР№СЃС‚РІРёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ Рё Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂРѕРІ',adminBack:'вЂ№ РќР°Р·Р°Рґ',adminModerationTitle:'РњРѕРґРµСЂР°С†РёСЏ РѕС‚Р·С‹РІРѕРІ',adminLogsTitle:'рџ“‹ Р–СѓСЂРЅР°Р» РґРµР№СЃС‚РІРёР№',logFilterAll:'Р’СЃРµ',logFilterReviews:'РћС‚Р·С‹РІС‹',logFilterToilets:'РўСѓР°Р»РµС‚С‹',logFilterAuth:'Р’С…РѕРґС‹',logFilterAdmin:'РђРґРјРёРЅ',wizStep1Title:'рџ“Ќ РЈРєР°Р¶РёС‚Рµ РјРµСЃС‚Рѕ',wizStep2Title:'вњЏпёЏ Р”РѕР±Р°РІСЊС‚Рµ РѕРїРёСЃР°РЅРёРµ',wizStep3Title:'рџ”Ќ РџСЂРѕРІРµСЂСЊС‚Рµ РґР°РЅРЅС‹Рµ',wizMapSub:'РќР°Р¶РјРёС‚Рµ РєРЅРѕРїРєСѓ РЅРёР¶Рµ, Р·Р°С‚РµРј РІС‹Р±РµСЂРёС‚Рµ РјРµСЃС‚Рѕ РЅР° РєР°СЂС‚Рµ вЂ” РїРёРЅ РІ С†РµРЅС‚СЂРµ СЌРєСЂР°РЅР° РїРѕРєР°Р¶РµС‚ С‚РѕС‡РєСѓ РґРѕР±Р°РІР»РµРЅРёСЏ',wizPickPlace:'РЈРєР°Р·Р°С‚СЊ РјРµСЃС‚Рѕ РЅР° РєР°СЂС‚Рµ',wizPickHint:'рџ“Ќ РЈРєР°Р¶РёС‚Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ вЂ” РїРµСЂРµРјРµСЃС‚РёС‚Рµ РєР°СЂС‚Сѓ РёР»Рё РЅР°Р№РґРёС‚Рµ СѓР»РёС†Сѓ',wizPickSearch:'РџРѕРёСЃРє СѓР»РёС†С‹...',wizPickSelect:'Р’С‹Р±СЂР°С‚СЊ',wizCatSpecial:'РћСЃРѕР±С‹Рµ РєР°С‚РµРіРѕСЂРёРё',wizCatFeatures:'РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё',wizTagTaharatkhana:'РўР°С…Р°СЂР°С‚С…Р°РЅР°',wizTagFree:'Р‘РµСЃРїР»Р°С‚РЅРѕ',wizTagOpen:'РћС‚РєСЂС‹С‚Рѕ',wizTagSoap:'РњС‹Р»Рѕ',wizTagPaper:'Р‘СѓРјР°РіР°',wizTagAccessible:'Р”РѕСЃС‚СѓРїРЅРѕ',wizTitlePlaceholder:'РќР°Р·РІР°РЅРёРµ С‚СѓР°Р»РµС‚Р°',wizDescPlaceholder:'РћРїРёСЃР°РЅРёРµ (РЅРµРѕР±СЏР·Р°С‚РµР»СЊРЅРѕ)',wizPrev:'в†ђ РќР°Р·Р°Рґ',wizNext:'Р”Р°Р»РµРµ в†’',wizSave:'РЎРѕС…СЂР°РЅРёС‚СЊ',wizNew:'вњЁ РќРѕРІС‹Р№',wizBack:'вЂ№ Р’ РјРµРЅСЋ',taharatTitle:'рџ•Њ РўР°С…РѕСЂР°С‚С…РѕРЅР° / РўР°С…Р°СЂР°С‚С…Р°РЅР°',taharatSub:'РњРµСЃС‚Рѕ РґР»СЏ РѕРјРѕРІРµРЅРёСЏ РїРµСЂРµРґ РЅР°РјР°Р·РѕРј',taharatHotWater:'рџ”Ґ Р“РѕСЂСЏС‡Р°СЏ РІРѕРґР°',taharatSoap:'рџ§ј РњС‹Р»Рѕ',taharatTowels:'рџ§» РџРѕР»РѕС‚РµРЅС†Р°',taharatSlippers:'рџ©ґ РўР°РїРѕС‡РєРё',taharatNote:'РЎРїРµС†РёР°Р»СЊРЅРѕ РѕР±РѕСЂСѓРґРѕРІР°РЅРЅРѕРµ РјРµСЃС‚Рѕ РґР»СЏ РѕРјРѕРІРµРЅРёСЏ. Р§РёСЃС‚С‹Рµ СѓСЃР»РѕРІРёСЏ, РіРѕСЂСЏС‡Р°СЏ РІРѕРґР°, РјС‹Р»Рѕ Рё РѕРґРЅРѕСЂР°Р·РѕРІС‹Рµ РїРѕР»РѕС‚РµРЅС†Р°.',loading:'Р—Р°РіСЂСѓР·РєР°...',noReviewsYet:'РћС‚Р·С‹РІРѕРІ РЅРµС‚',loginTitle:'Р”РѕР±СЂРѕ РїРѕР¶Р°Р»РѕРІР°С‚СЊ',loginNotice:'рџ’¬ Р”Р»СЏ РѕС‚РїСЂР°РІРєРё РѕС‚Р·С‹РІР° РЅРµРѕР±С…РѕРґРёРјРѕ РІРѕР№С‚Рё',tabLogin:'Р’РѕР№С‚Рё',tabRegister:'Р РµРіРёСЃС‚СЂР°С†РёСЏ',loginAction:'Р’РѕР№С‚Рё',registerAction:'Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊСЃСЏ',adminLoginTitle:'рџ”ђ Р’С…РѕРґ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°',cancel:'РћС‚РјРµРЅР°'},
-  uz:{search:'Hojatxona qidirish...',loginBtn:'в†’ Kirish',open:'Ochiq',closed:'Yopiq',free:"рџ†“ Bepul",paid:'Pullik',noReviews:'Sharhlar yoq',success:"вњ“ Sharhingiz qoshildi!",kmAway:'km uzoqda',mAway:'m uzoqda',findNearest:'Eng yaqin hojatxonani topish',addHint:"рџ“Ќ Xaritaga bosing",distFallback:'(markazdan)',route:"Yo'nalish",writeReview:"Sharhingizni yozing...",submit:'Yuborish',leaveReview:'Sharh qoldirish',adminDenied:"Bu bo'lim faqat Toilet Advisor administratorlari uchun.",adminDeniedTitle:'Kirish taqiqlangan',adminDeniedBtn:'Admin sifatida kirish',profile:'Profil',profileSub:"Ma'lumotlarni ko'rish uchun kiring",profileAccount:'Hisob',profileRole:'Rol',profileLogout:"рџљЄ Hisobdan chiqish",profileLogin:"в†’ Kirish",profileAdmin:'Administrator',toiletAdded:"Hojatxona qo'shildi!",logAddedToilet:"Hojatxona qo'shdi",logLeftReview:'Sharh qoldirdi',logDeletedReview:"Sharhni o'chirdi",logLogin:'Tizimga kirish',logLogout:'Tizimdan chiqish',logRegister:"Yangi foydalanuvchi ro'yxatdan o'tdi",logAdminLogin:'Administrator kirishi',logToilet:'Hojatxona',logRating:'Baho',logUser:'Foydalanuvchi',logAdmin:'Administrator',toastGeoUnavail:'Geolokatsiya mavjud emas',toastNoPoints:"Xaritada nuqtalar yo'q",toastEnterReview:"Matn kiriting va baho qo'ying",toastReviewSaved:'Sharh mahalliy saqlandi',toastFillAll:"Barcha maydonlarni to'ldiring",toastUserNotFound:'Foydalanuvchi topilmadi',toastWrongPass:"Noto'g'ri parol",toastAlreadyReg:"Bu raqam allaqachon ro'yxatdan o'tgan",toastRegOk:"Ro'yxatdan o'tish muvaffaqiyatli",toastLoginOk:'Tizimga kirdingiz',toastAdminLoginOk:'Administrator sifatida kirdingiz',toastAdminNotFound:'Administrator topilmadi',toastLogout:'Tizimdan chiqdingiz',toastReviewDeleted:"Sharh o'chirildi",toastNeedAdmin:'Administrator huquqlari talab qilinadi',toastNoPlace:'Joy tanlanmagan',toastEnterTitle:'Nom kiriting',toastFirstPlace:"Avval xaritada joyni ko'rsating",toastNoPlaceMap:'Xaritada joyni tanlang',toastTimeout:'Vaqt tugadi. Internetni tekshiring.',toastOnline:'Ulanish tiklandi',soap:"Sabun",paper:"Qog'oz",accessible:'Imkoniyat',catAll:"рџ—єпёЏ Hammasi",catTaharatkhana:'рџ•Њ Tahoratxona',catFree:"рџ†“ Bepul",catSoap:"рџ§ј Sabun",catPaper:"рџ§» Qog'oz",catAccessible:'в™ї Qulay',navMap:'Xarita',navProfile:'Profil',reviews:'Sharhlar',reviewsTitle:'Sharhlar',authNotice:"рџ”’ Baho qoldirish uchun tizimga kiring",adminPanelTitle:'вљ™пёЏ Administrator paneli',adminAddPoint:"Nuqta qo'shish",adminAddPointSub:'Xaritaga yangi hojatxona qo\'shish',adminModeration:'Sharhlarni moderatsiya',adminModerationSub:"Foydalanuvchi sharhlarini ko'rish va o'chirish",adminLogs:'Harakatlar jurnali',adminLogsSub:'Barcha foydalanuvchi va administrator harakatlari',adminBack:"вЂ№ Orqaga",adminModerationTitle:'Sharhlarni moderatsiya',adminLogsTitle:"рџ“‹ Harakatlar jurnali",logFilterAll:'Hammasi',logFilterReviews:'Sharhlar',logFilterToilets:'Hojatxonalar',logFilterAuth:'Kirishlar',logFilterAdmin:'Admin',wizStep1Title:"рџ“Ќ Joyni ko'rsating",wizStep2Title:"вњЏпёЏ Tavsif qo'shing",wizStep3Title:"рџ”Ќ Ma'lumotlarni tekshiring",wizMapSub:'Quyidagi tugmani bosing, keyin xaritada joyni tanlang',wizPickPlace:"Xaritada joyni ko'rsating",wizPickHint:"рџ“Ќ Koordinatalarni ko'rsating вЂ” xaritani suring yoki ko'cha toping",wizPickSearch:"Ko'cha qidirish...",wizPickSelect:'Tanlash',wizCatSpecial:'Maxsus kategoriyalar',wizCatFeatures:'Xususiyatlar',wizTagTaharatkhana:'Tahoratxona',wizTagFree:'Bepul',wizTagOpen:'Ochiq',wizTagSoap:'Sabun',wizTagPaper:"Qog'oz",wizTagAccessible:'Qulay',wizTitlePlaceholder:'Hojatxona nomi',wizDescPlaceholder:'Tavsif (ixtiyoriy)',wizPrev:"в†ђ Orqaga",wizNext:"Keyingisi в†’",wizSave:'Saqlash',wizNew:'вњЁ Yangi',wizBack:"вЂ№ Menyuga",taharatTitle:'рџ•Њ Tahoratxona',taharatSub:'Namoz oldidan tahorat olish joyi',taharatHotWater:'рџ”Ґ Issiq suv',taharatSoap:'рџ§ј Sabun',taharatTowels:'рџ§» Sochiqlar',taharatSlippers:'рџ©ґ Shippaklar',taharatNote:'Tahorat olish uchun maxsus jihozlangan joy. Toza sharoit, issiq suv, sabun va bir martalik sochiqlar.',loading:'Yuklanmoqda...',noReviewsYet:"Sharhlar yo'q",loginTitle:'Xush kelibsiz',loginNotice:"рџ’¬ Sharh yuborish uchun tizimga kiring",tabLogin:'Kirish',tabRegister:"Ro'yxatdan o'tish",loginAction:'Kirish',registerAction:"Ro'yxatdan o'tish",adminLoginTitle:'рџ”ђ Administrator kirishi',cancel:'Bekor qilish'},
-  en:{search:'Search toilet...',loginBtn:'в†’ Login',open:'Open',closed:'Closed',free:'рџ†“ Free',paid:'Paid',noReviews:'No reviews yet',success:'вњ“ Review submitted!',kmAway:'km away',mAway:'m away',findNearest:'Find nearest toilet',addHint:'рџ“Ќ Tap map to select location',distFallback:'(from center)',route:'Route',writeReview:'Write your review...',submit:'Submit',leaveReview:'Leave a review',adminDenied:'This section is for Toilet Advisor administrators only.',adminDeniedTitle:'Access restricted',adminDeniedBtn:'Login as Admin',profile:'Profile',profileSub:'Login to see your data',profileAccount:'Account',profileRole:'Role',profileLogout:'рџљЄ Logout',profileLogin:'в†’ Login',profileAdmin:'Administrator',toiletAdded:'Toilet added!',logAddedToilet:'Added toilet',logLeftReview:'Left a review',logDeletedReview:'Deleted review',logLogin:'Logged in',logLogout:'Logged out',logRegister:'New user registered',logAdminLogin:'Admin login',logToilet:'Toilet',logRating:'Rating',logUser:'User',logAdmin:'Administrator',toastGeoUnavail:'Geolocation unavailable',toastNoPoints:'No points on map',toastEnterReview:'Enter text and set a rating',toastReviewSaved:'Review saved locally, will sync when online',toastFillAll:'Please fill all fields',toastUserNotFound:'User not found',toastWrongPass:'Wrong password',toastAlreadyReg:'This number is already registered',toastRegOk:'Registration successful',toastLoginOk:'You are logged in',toastAdminLoginOk:'Logged in as administrator',toastAdminNotFound:'Administrator not found',toastLogout:'You have logged out',toastReviewDeleted:'Review deleted',toastNeedAdmin:'Admin rights required',toastNoPlace:'No place selected',toastEnterTitle:'Enter a name',toastFirstPlace:'First select a place on the map',toastNoPlaceMap:'Select a place on the map',toastTimeout:'Request timed out. Check your internet connection.',toastOnline:'Connection restored',soap:'Soap',paper:'Paper',accessible:'Accessible',catAll:'рџ—єпёЏ All',catTaharatkhana:'рџ•Њ Taharatkhana',catFree:'рџ†“ Free',catSoap:'рџ§ј Soap',catPaper:'рџ§» Paper',catAccessible:'в™ї Accessible',navMap:'Map',navProfile:'Profile',reviews:'Reviews',reviewsTitle:'Reviews',authNotice:'рџ”’ Please log in to leave a review',adminPanelTitle:'вљ™пёЏ Admin Panel',adminAddPoint:'Add Point',adminAddPointSub:'Add a new toilet to the map',adminModeration:'Review Moderation',adminModerationSub:'View and delete user reviews',adminLogs:'Activity Log',adminLogsSub:'All user and admin actions',adminBack:'вЂ№ Back',adminModerationTitle:'Review Moderation',adminLogsTitle:'рџ“‹ Activity Log',logFilterAll:'All',logFilterReviews:'Reviews',logFilterToilets:'Toilets',logFilterAuth:'Logins',logFilterAdmin:'Admin',wizStep1Title:'рџ“Ќ Select Location',wizStep2Title:'вњЏпёЏ Add Details',wizStep3Title:'рџ”Ќ Review Data',wizMapSub:'Tap the button below, then select a location on the map',wizPickPlace:'Select on Map',wizPickHint:'рџ“Ќ Set coordinates вЂ” move the map or find a street',wizPickSearch:'Search street...',wizPickSelect:'Select',wizCatSpecial:'Special Categories',wizCatFeatures:'Features',wizTagTaharatkhana:'Taharatkhana',wizTagFree:'Free',wizTagOpen:'Open',wizTagSoap:'Soap',wizTagPaper:'Paper',wizTagAccessible:'Accessible',wizTitlePlaceholder:'Toilet name',wizDescPlaceholder:'Description (optional)',wizPrev:'в†ђ Back',wizNext:'Next в†’',wizSave:'Save',wizNew:'вњЁ New',wizBack:'вЂ№ Menu',taharatTitle:'рџ•Њ Taharatkhana',taharatSub:'Ablution place before prayer',taharatHotWater:'рџ”Ґ Hot water',taharatSoap:'рџ§ј Soap',taharatTowels:'рџ§» Towels',taharatSlippers:'рџ©ґ Slippers',taharatNote:'A specially equipped place for ablution. Clean conditions, hot water, soap and disposable towels.',loading:'Loading...',noReviewsYet:'No reviews yet',loginTitle:'Welcome',loginNotice:'рџ’¬ Please log in to submit a review',tabLogin:'Log In',tabRegister:'Register',loginAction:'Log In',registerAction:'Register',adminLoginTitle:'рџ”ђ Admin Login',cancel:'Cancel'}
-};
-function t(k){return(T[currentLang]||T.ru)[k]||(T.ru[k]||k);}
-let currentLang=localStorage.getItem('ta_lang')||'ru';
-let currentTheme=localStorage.getItem('ta_theme')||'light';
-let currentUser=null,allToilets=[],currentCat='all';
-let selectedToilet=null,reviewRating=0,authTab='login';
-let addCoords=null,myMap=null,searchTimer=null;
-let userCoords=null,userPlacemark=null;
-try{const s=localStorage.getItem('ta_user');if(s)currentUser=JSON.parse(s);}catch(e){}
-</script>
-
-<!-- JS РјРѕРґСѓР»Рё -->
-<script src="js/firebase.js"></script>
-<script src="js/ui.js"></script>
-<script src="js/map.js"></script>
-<script src="js/sheet.js"></script>
-<script src="js/favorites.js"></script>
-<script src="js/profile.js"></script>
-<script src="js/admin.js"></script>
-
-<script>
-// в”Ђв”Ђ РРќРР¦РРђР›РР—РђР¦РРЇ в”Ђв”Ђ
-// РџРѕРёСЃРє Рё С‡РёРїС‹ РєР°С‚РµРіРѕСЂРёР№
-document.getElementById('searchInput').addEventListener('input',function(){
-  clearTimeout(searchTimer);searchTimer=setTimeout(renderMarkers,300);
-});
-document.querySelectorAll('.catChip').forEach(chip=>{
-  chip.addEventListener('click',function(){
-    if(this.classList.contains('active')&&this.dataset.cat!=='all'){
-      document.querySelectorAll('.catChip').forEach(c=>c.classList.remove('active'));
-      document.querySelector('.catChip[data-cat="all"]').classList.add('active');
-      currentCat='all';
-    } else {
-      document.querySelectorAll('.catChip').forEach(c=>c.classList.remove('active'));
-      this.classList.add('active');
-      currentCat=this.dataset.cat;
-    }
-    renderMarkers();
-  });
-});
-
-// РћРЅР»Р°Р№РЅ/РѕС„Р»Р°Р№РЅ
-window.addEventListener('online',()=>{hideOfflineBanner();showToast(t('toastOnline'));loadToilets();});
-window.addEventListener('offline',()=>showOfflineBanner());
-if(!navigator.onLine)showOfflineBanner();
-
-// Р Р°Р·РјРµСЂ РєРѕРЅС‚СЂРѕР»РѕРІ РїСЂРё СЃС‚Р°СЂС‚Рµ Рё СЂРµСЃР°Р№Р·Рµ
-window.addEventListener('load',()=>{setTimeout(()=>{adjustControlsPosition();},400);});
-window.addEventListener('resize',()=>{adjustControlsPosition();});
-
-// РџР°С‚С‡ Р°РґСЂРµСЃРѕРІ seed-С‚РѕС‡РµРє
-async function _patchSeedAddresses(){
-  try{
-    await _loadFirebase();
-    const batch=db.batch();
-    let hasChanges=false;
-    for(const toilet of FALLBACK_TOILETS){
-      if(!toilet.addr)continue;
-      const local=allToilets.find(x=>x.id===toilet.id);
-      if(local&&!local.addr)local.addr=toilet.addr;
-      try{
-        const doc=await db.collection('toilets').doc(toilet.id).get();
-        if(doc.exists&&!doc.data().addr){batch.update(db.collection('toilets').doc(toilet.id),{addr:toilet.addr});hasChanges=true;}
-      }catch(e){}
-    }
-    if(hasChanges)await batch.commit();
-  }catch(e){console.warn('_patchSeedAddresses:',e.message);}
-}
-
-// РЎС‚Р°СЂС‚
-setLang(currentLang);
-applyTheme();
-updateLoginBtn();
-switchTab('map');
-_syncUserNick();
-_patchSeedAddresses();
-
-// РќР°С‡Р°Р»СЊРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ РїСЂРѕС„РёР»СЏ
-(function(){
-  const guest=document.getElementById('pGuestView');
-  const user=document.getElementById('pUserView');
-  if(!guest||!user)return;
-  if(currentUser){guest.style.display='none';user.style.display='flex';}
-  else{guest.style.display='flex';user.style.display='none';}
-})();
-</script>
+<!-- РљРѕРЅСЃС‚Р°РЅС‚С‹, РїРµСЂРµРІРѕРґС‹, РґР°РЅРЅС‹Рµ -->
+<script src="js/constants.js" charset="utf-8"></script>
+<!-- Firebase init + hashPassword -->
+<script src="js/firebase.js" charset="utf-8"></script>
+<!-- UI: toast, theme, lang, skeleton, offline -->
+<script src="js/ui.js" charset="utf-8"></script>
+<!-- РљР°СЂС‚Р°, РјР°СЂРєРµСЂС‹, РіРµРѕР»РѕРєР°С†РёСЏ -->
+<script src="js/map.js" charset="utf-8"></script>
+<!-- РЁС‚РѕСЂРєР°, РѕС‚Р·С‹РІС‹ -->
+<script src="js/sheet.js" charset="utf-8"></script>
+<!-- РР·Р±СЂР°РЅРЅРѕРµ -->
+<script src="js/favorites.js" charset="utf-8"></script>
+<!-- РџСЂРѕС„РёР»СЊ, Р°РІС‚РѕСЂРёР·Р°С†РёСЏ -->
+<script src="js/profile.js" charset="utf-8"></script>
+<!-- РђРґРјРёРЅ: РІРёР·Р°СЂРґ, РјРѕРґРµСЂР°С†РёСЏ, Р»РѕРіРё, СЃС‚Р°С‚РёСЃС‚РёРєР° -->
+<script src="js/admin.js" charset="utf-8"></script>
+<!-- РџРµСЂРµРјРµРЅРЅС‹Рµ СЃРѕСЃС‚РѕСЏРЅРёСЏ + РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїСЂРёР»РѕР¶РµРЅРёСЏ -->
+<script src="js/init.js" charset="utf-8"></script>
 <!-- FAV CONFIRM DIALOG -->
 <div id="pFavConfirm">
   <div style="width:40px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 16px;"></div>
