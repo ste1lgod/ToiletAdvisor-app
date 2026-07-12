@@ -486,3 +486,115 @@ adminDashboard          — главный экран с 4 кнопками
 ### 12.5 runRefresh(btn, fn)
 Обёртка для кнопки "Обновить". Добавляет класс `loading` (opacity 0.5),
 вызывает `fn()`, убирает `loading`. Страховочный таймаут 15 сек.
+
+---
+
+## 13. Модуль init.js — запуск приложения
+
+### 13.1 Порядок старта
+
+```
+1. Синхронно: восстановить currentUser из localStorage
+2. Синхронно: восстановить _usersCache из localStorage (если TTL не истёк)
+3. setLang, applyTheme, updateLoginBtn, switchTab('map')
+4. Параллельно (не ждут друг друга):
+   - Если кэш пользователей устарел → _loadUsersCache() сразу
+   - Если свежий → _loadUsersCache({forceRefresh:true}) через 2 сек
+   - _syncUserNick()          — синхронизирует ник из Firestore если его нет
+   - _patchSeedAddresses()    — записывает адреса seed-точек в Firestore
+   - _loadFavoritesFromFirestore() — если авторизован
+   - _loadUsersCache().then(() => setTimeout(_patchReviewNicks, 5000))
+5. ymaps.ready() → initMap() → loadToilets() → _geocodeMissingAddresses()
+```
+
+### 13.2 _patchSeedAddresses()
+Проверяет seed-туалеты (`FALLBACK_TOILETS`) — если в Firestore у них нет поля `addr` →
+записывает его batch-операцией. Геокодирование НЕ делает (это делает `_geocodeMissingAddresses`).
+
+### 13.3 _patchReviewNicks()
+Запускается один раз за сессию через 5 сек после старта.
+Загружает все отзывы (limit 500), для каждого смотрит `_usersCache[userId]`,
+если `userPhone` отличается от актуального ника → добавляет в batch.
+При ошибке — автоматический retry через 30 сек.
+После успешного патча инвалидирует кэш отзывов.
+
+---
+
+## 14. CSS-архитектура
+
+### 14.1 CSS Custom Properties (дизайн-токены, base.css)
+
+```css
+--green      — основной зелёный цвет (#00A859)
+--bg         — фон страницы
+--card       — фон карточек
+--text       — основной текст
+--text2      — второстепенный текст (серый)
+--border     — цвет границ
+--sh         — тень карточек
+--glass-bg   — фон стеклянных элементов (glassmorphism)
+--glass-blur — blur-фильтр для стекла
+--font       — системный шрифт (SF Pro / Segoe UI / Roboto)
+--nav-h      — высота нижнего навбара
+--nav-offset — отступ снизу с учётом safe-area (iPhone notch)
+```
+
+Тёмная тема — отдельный блок `body.dark { ... }` переопределяет токены.
+
+### 14.2 Glassmorphism (стеклянный эффект)
+Хедер, навбар, кнопки, шторка используют:
+```css
+background: rgba(255,255,255,0.82);
+backdrop-filter: blur(18px);
+border: 1px solid rgba(255,255,255,0.6);
+```
+В тёмной теме: `background: rgba(28,28,30,0.95)`.
+
+### 14.3 Safe Area (iPhone/Android вырезы)
+Все отступы снизу используют `env(safe-area-inset-bottom, 0px)` —
+корректно работает на телефонах с вырезом под дисплей.
+
+---
+
+## 15. PWA (Progressive Web App)
+
+Файл `manifest.json` делает приложение устанавливаемым на телефон:
+- `display: standalone` — открывается без браузерного UI (как нативное приложение)
+- `theme_color` — цвет статус-бара на Android
+- `apple-mobile-web-app-capable` — полноэкранный режим на iOS
+
+Офлайн-режим: при отсутствии интернета показывает баннер и использует данные из кэша
+(`allToilets` из последней сессии, `_reviewsCache` из localStorage).
+
+---
+
+## 16. Безопасность
+
+**Firestore Security Rules:**
+```
+toilets   → read: all,   write: только если есть нужные поля
+reviews   → read: all,   create: только с нужными полями, delete: false
+users     → read: all,   create: с passwordHash+role, update: только nick, delete: false
+logs      → read: false, create: true, delete: false
+favorites → read/write: true (защита через userId в пути коллекции)
+```
+
+**Пароли:** хранятся как SHA-256 хэш. Брутфорс через API затруднён Security Rules.
+
+**API Key:** публичный Web API Key Firebase — это нормально. Защита через Rules.
+
+**ServiceAccountKey.json** (приватный ключ сервис-аккаунта) — в `.gitignore`, никогда
+не попадает в репозиторий. Используется только для локальных скриптов.
+
+---
+
+## 17. Текущее состояние данных (после аудита июль 2026)
+
+| Метрика | Значение |
+|---------|---------|
+| Туалетов в базе | 17 |
+| Реальных пользователей | 7 |
+| Отзывов | 52 |
+| Администраторов | 2 (Admin(Amal), Admin(Emil)) |
+| Seed-туалетов | 7 (seed-0001 … seed-0007) |
+| Пользователей с ником | 3 (Admin(Amal), Admin(Emil), 888) |
