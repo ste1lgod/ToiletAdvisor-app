@@ -60,3 +60,43 @@ ToiletAdvisor/
 └── .github/workflows/
     └── deploy.yml          — GitHub Actions: автодеплой на Pages
 ```
+
+---
+
+## 3. Порядок загрузки скриптов
+
+Скрипты в `index.html` подключены в строгом порядке — каждый следующий зависит от предыдущего:
+
+```
+constants.js   → глобальные константы, переводы (T{}), FALLBACK_TOILETS
+firebase.js    → _loadFirebase(), hashPassword()
+ui.js          → showToast(), setLang(), _skCards(), runRefresh()
+map.js         → ymaps.ready(initMap), loadToilets(), renderMarkers()
+sheet.js       → openSheet(), getReviews(), submitReview(), _reviewsCache
+favorites.js   → toggleFavorite(), renderFavorites(), _isBadAddr()
+profile.js     → _usersCache, doAuth(), saveNick(), switchTab()
+admin.js       → визард, модерация, логи, статистика
+init.js        → глобальные переменные состояния, старт приложения
+```
+
+**Важно:** `init.js` идёт последним — к этому моменту все функции уже объявлены.
+Глобальные переменные (`currentUser`, `allToilets`, `myMap` и т.д.) объявлены в `init.js` и доступны из всех файлов.
+
+---
+
+## 4. Глобальные переменные состояния (init.js)
+
+| Переменная | Тип | Что хранит |
+|-----------|-----|-----------|
+| `currentUser` | Object\|null | Залогиненный пользователь: `{id, phone/login, role, nick}`. Сохраняется в localStorage как `ta_user`. |
+| `allToilets` | Array | Все туалеты загруженные из Firestore. Используется для рендера маркеров и шторки. |
+| `currentCat` | String | Активная категория фильтра: `'all'`, `'free'`, `'soap'`, `'paper'`, `'accessible'`, `'taharatkhana'`. |
+| `currentLang` | String | Текущий язык: `'ru'`, `'uz'`, `'en'`. Сохраняется в localStorage как `ta_lang`. |
+| `currentTheme` | String | Тема: `'light'` или `'dark'`. Сохраняется в localStorage как `ta_theme`. |
+| `selectedToilet` | Object\|null | Туалет открытый в шторке в данный момент. |
+| `reviewRating` | Number | Выбранная звёздочка при написании отзыва (1–5). |
+| `myMap` | Object\|null | Экземпляр карты Яндекс.Карты. |
+| `userCoords` | Array\|null | Координаты пользователя `[lat, lon]` от GPS. |
+| `wizCoords` | Array\|null | Координаты выбранные в визарде добавления туалета. |
+| `isSheetOpen` | Boolean | Открыта ли нижняя шторка. |
+| `wizPickMode` | Boolean | Активен ли режим выбора места на карте в визарде. |
