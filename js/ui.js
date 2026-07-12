@@ -211,5 +211,14 @@ function hideOfflineBanner(){
 async function runRefresh(btn, fn){
   if(btn.classList.contains('loading'))return;
   btn.classList.add('loading');
-  try{ await fn(); }finally{ btn.classList.remove('loading'); }
+  // Страховочный таймаут — через 15 сек снимаем loading в любом случае
+  const failsafe=setTimeout(()=>btn.classList.remove('loading'), 15000);
+  try{
+    await fn();
+  }catch(e){
+    console.warn('runRefresh error:', e);
+  }finally{
+    clearTimeout(failsafe);
+    btn.classList.remove('loading');
+  }
 }
