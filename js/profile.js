@@ -22,11 +22,18 @@ async function _loadUsersCache(){
 }
 
 // Возвращает актуальное отображаемое имя для userId
+// Приоритет: ник из кэша > телефон из кэша > логин из кэша > fallback из отзыва
 function _getActualName(userId,fallback){
   if(!userId)return fallback||'?';
   const u=_usersCache[userId];
-  if(!u)return fallback||userId;
-  return u.nick||u.phone||u.login||fallback||'?';
+  if(u){
+    // Если в кэше есть ник — всегда берём его
+    if(u.nick)return u.nick;
+    if(u.phone)return u.phone;
+    if(u.login)return u.login;
+  }
+  // Кэша нет — используем fallback из самого отзыва
+  return fallback||'?';
 }
 
 // ── SYNC NICK ──
