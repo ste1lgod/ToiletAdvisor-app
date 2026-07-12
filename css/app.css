@@ -153,3 +153,68 @@ body.dark #searchInput::placeholder{color:rgba(255,255,255,0.4);}
 body.dark .catChip{background:var(--card);color:rgba(255,255,255,0.65);border-color:rgba(255,255,255,0.2);}
 .catChip.active{background:var(--green);color:#fff;border:2px solid var(--green);}
 body.dark .catChip.active{background:var(--green);color:#fff;border:2px solid var(--green);}
+
+/* ===== ZOOM CONTROLS (custom, left side) ===== */
+#zoomControls{
+  position:fixed;
+  left:var(--side-gap);
+  top:calc(var(--controls-top, 170px) + 32px);
+  z-index:15;
+  display:flex;flex-direction:column;gap:8px;
+  /* Жёстко фиксируем, чтобы не уезжало при перерендере */
+  will-change:top;
+  transform:translateZ(0);
+}
+.zoomBtn{
+  width:44px;height:44px;border-radius:50%;
+  background:var(--glass-bg);
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
+  border:1px solid rgba(255,255,255,0.5);
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--sh-float);
+  font-size:20px;font-weight:300;color:var(--text);
+  transition:transform .15s,opacity .15s;
+  font-family:var(--font);
+  line-height:1;
+}
+body.dark .zoomBtn{border-color:rgba(255,255,255,0.12);}
+.zoomBtn:active{transform:scale(.88);opacity:.75;}
+
+/* ===== GEO BTN (below zoom controls) ===== */
+#geoBtn{
+  position:fixed;
+  left:var(--side-gap);
+  top:calc(var(--geo-top, 286px) + 32px);
+  z-index:15;width:44px;height:44px;border-radius:50%;
+  background:var(--glass-bg);
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
+  border:1px solid rgba(255,255,255,0.5);
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--sh-float);
+  transition:transform .15s;
+  /* Жёстко фиксируем */
+  will-change:top;
+  transform:translateZ(0);
+}
+body.dark #geoBtn{border-color:rgba(255,255,255,0.12);}
+#geoBtn:active{transform:scale(.88);}
+
+/* ===== PULSING BLUE DOT ===== */
+@keyframes pulseRing{0%{transform:translate(-50%,-50%) scale(1);opacity:.55;}100%{transform:translate(-50%,-50%) scale(3.8);opacity:0;}}
+.uDotWrap{position:relative;width:20px;height:20px;}
+.uDotRing{
+  position:absolute;top:50%;left:50%;width:20px;height:20px;border-radius:50%;
+  background:rgba(59,130,246,.3);
+  animation:pulseRing 1.9s ease-out infinite;
+}
+.uDotCore{
+  position:absolute;top:50%;left:50%;
+  width:14px;height:14px;border-radius:50%;
+  background:#3b82f6;border:2.5px solid #fff;
+  transform:translate(-50%,-50%);
+  box-shadow:0 2px 8px rgba(59,130,246,.5);
+}
