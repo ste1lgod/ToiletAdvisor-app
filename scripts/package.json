@@ -6,6 +6,7 @@
     "seed": "node seed.js"
   },
   "dependencies": {
+    "docx": "^9.7.1",
     "firebase-admin": "^14.1.0"
   }
 }
