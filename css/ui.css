@@ -31,16 +31,28 @@ body.dark .skFavCard{background:rgba(30,20,35,0.72);border-color:rgba(236,72,153
 /* ===== REFRESH BUTTON ===== */
 .refreshBtn{
   display:flex;align-items:center;justify-content:center;
-  width:36px;height:36px;background:var(--card);
-  border:1.5px solid var(--border);border-radius:50%;
-  cursor:pointer;color:var(--text);
-  box-shadow:0 1px 4px rgba(0,0,0,0.08);
-  transition:border-color .2s,color .2s,box-shadow .2s;
+  gap:6px;
+  height:36px;
+  padding:0 14px 0 10px;
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.13);
+  border-radius:30px;
+  cursor:pointer;
+  color:var(--text);
+  font-size:13px;font-weight:600;font-family:var(--font);
+  box-shadow:0 2px 8px rgba(0,0,0,0.08);
+  transition:opacity .15s,transform .12s;
   flex-shrink:0;position:relative;z-index:1;
+  white-space:nowrap;
 }
-.refreshBtn:active{transform:scale(.9);}
-.refreshBtn.loading{border-color:var(--green);color:var(--green);box-shadow:0 0 0 3px rgba(0,168,89,0.12);}
-.refreshBtn.loading svg{animation:spinRefresh .7s linear infinite;}
+body.dark .refreshBtn{border-color:rgba(255,255,255,0.10);color:var(--text);}
+.refreshBtn:active{opacity:.7;transform:scale(.96);}
+.refreshBtn svg{flex-shrink:0;}
+/* Состояние загрузки — иконка вращается, кнопка приглушена */
+.refreshBtn.loading{opacity:.5;pointer-events:none;}
+.refreshBtn.loading svg{animation:spinRefresh .8s linear infinite;}
 @keyframes spinRefresh{from{transform:rotate(0deg);}to{transform:rotate(-360deg);}}
 
 /* ===== OFFLINE BANNER ===== */
