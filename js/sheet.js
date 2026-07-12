@@ -51,31 +51,56 @@ async function openSheet(toilet){
   }
 
   document.getElementById('sRatingVal').textContent='—';
-  document.getElementById('reviewsList').innerHTML=`
-    <div class="rvSkeleton"><div class="rvSkAvatar"></div><div class="rvSkBody"><div class="rvSkLine w80"></div><div class="rvSkLine w60"></div><div class="rvSkLine w40"></div></div></div>
-    <div class="rvSkeleton"><div class="rvSkAvatar"></div><div class="rvSkBody"><div class="rvSkLine w60"></div><div class="rvSkLine w80"></div><div class="rvSkLine w40"></div></div></div>
-    <div class="rvSkeleton"><div class="rvSkAvatar"></div><div class="rvSkBody"><div class="rvSkLine w40"></div><div class="rvSkLine w60"></div><div class="rvSkLine w80"></div></div></div>
-  `;
+
+  // Сразу показываем кэшированные отзывы если они есть — без скелетона
+  const _cachedReviews = _reviewsCache[toilet.id];
+  if(_cachedReviews && _cachedReviews.data.length){
+    // Показываем кэш мгновенно — ники уже есть в _usersCache (из localStorage)
+    const avg = _cachedReviews.data.length
+      ? (_cachedReviews.data.reduce((s,r)=>s+r.rating,0) / _cachedReviews.data.length)
+      : 0;
+    document.getElementById('sRatingVal').textContent = avg > 0 ? avg.toFixed(1) : '—';
+    renderReviews(_cachedReviews.data);
+  } else {
+    document.getElementById('reviewsList').innerHTML=`
+      <div class="rvSkeleton"><div class="rvSkAvatar"></div><div class="rvSkBody"><div class="rvSkLine w80"></div><div class="rvSkLine w60"></div><div class="rvSkLine w40"></div></div></div>
+      <div class="rvSkeleton"><div class="rvSkAvatar"></div><div class="rvSkBody"><div class="rvSkLine w60"></div><div class="rvSkLine w80"></div><div class="rvSkLine w40"></div></div></div>
+      <div class="rvSkeleton"><div class="rvSkAvatar"></div><div class="rvSkBody"><div class="rvSkLine w40"></div><div class="rvSkLine w60"></div><div class="rvSkLine w80"></div></div></div>
+    `;
+  }
+
   resetReviewForm();
-  // Сердечко ставим сразу из localStorage-кэша
+  // Сердечко мгновенно из localStorage
   updateFavBtn(toilet.id);
   document.getElementById('toiletSheet').classList.add('open');
   _openBackdrop();
 
   try{
-    // Загружаем кэш пользователей только если ещё не загружен
-    const [reviews] = await Promise.all([
-      getReviews(toilet.id),
-      _usersCacheLoaded ? Promise.resolve() : _loadUsersCache()
-    ]);
-    if(!isSheetOpen||selectedToilet?.id!==toilet.id)return;
-    const avg=reviews.length?(reviews.reduce((s,r)=>s+r.rating,0)/reviews.length):0;
-    document.getElementById('sRatingVal').textContent=avg>0?avg.toFixed(1):'—';
-    renderReviews(reviews);
-    // Обновляем сердечко повторно — к этому моменту allToilets точно загружен
+    // Кэш пользователей уже загружен из localStorage при старте — не ждём
+    // getReviews вернёт кэш мгновенно, и тихо обновит если что изменилось
+    const reviews = await getReviews(toilet.id, (freshReviews) => {
+      // Колбэк: Firestore вернул обновлённые данные — перерисовываем тихо
+      if(!isSheetOpen || selectedToilet?.id !== toilet.id) return;
+      const avg = freshReviews.length
+        ? (freshReviews.reduce((s,r)=>s+r.rating,0) / freshReviews.length)
+        : 0;
+      document.getElementById('sRatingVal').textContent = avg > 0 ? avg.toFixed(1) : '—';
+      renderReviews(freshReviews);
+    });
+    if(!isSheetOpen || selectedToilet?.id !== toilet.id) return;
+    // Если кэша не было — рендерим то что пришло
+    if(!_cachedReviews || !_cachedReviews.data.length){
+      const avg = reviews.length
+        ? (reviews.reduce((s,r)=>s+r.rating,0) / reviews.length)
+        : 0;
+      document.getElementById('sRatingVal').textContent = avg > 0 ? avg.toFixed(1) : '—';
+      renderReviews(reviews);
+    }
     updateFavBtn(toilet.id);
   }catch(e){
-    document.getElementById('reviewsList').innerHTML=`<p class="rvNoReviews">${t('noReviews')}</p>`;
+    if(!_cachedReviews){
+      document.getElementById('reviewsList').innerHTML=`<p class="rvNoReviews">${t('noReviews')}</p>`;
+    }
   }
 }
 
