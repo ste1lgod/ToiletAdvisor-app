@@ -183,6 +183,9 @@ async function doAuth(){
       });
       currentUser={id:newDoc.id,phone,role:'user',nick:''};
       localStorage.setItem('ta_user',JSON.stringify(currentUser));
+      // Добавляем нового пользователя в кэш сразу — не ждём следующей загрузки
+      _usersCache[newDoc.id]={nick:'',phone,login:'',role:'user'};
+      try{ localStorage.setItem(_USERS_CACHE_KEY, JSON.stringify({ts:Date.now(),data:_usersCache})); }catch(e){}
       closeOverlay('authOverlay');
       updateLoginBtn();
       resetReviewForm();
