@@ -205,3 +205,100 @@ function renderLogs(){
     </div>`;
   }).join('');
 }
+
+// ── СТАТИСТИКА ──
+let _statsCurrentTab='toilets';
+
+function switchStatsTab(tab,chipEl){
+  _statsCurrentTab=tab;
+  document.querySelectorAll('#statsTabRow .logFilterChip').forEach(c=>c.classList.toggle('active',c.dataset.stab===tab));
+  document.getElementById('statsTabToilets').style.display=tab==='toilets'?'':'none';
+  document.getElementById('statsTabUsers').style.display=tab==='users'?'':'none';
+}
+
+async function loadAdminStats(){
+  document.getElementById('statsSummaryToilets').innerHTML=_skStatSummary();
+  document.getElementById('statsSummaryUsers').innerHTML=_skStatSummary();
+  document.getElementById('statsToiletsList').innerHTML=_skCards(3);
+  document.getElementById('statsUsersList').innerHTML=_skCards(3);
+  try{
+    await _loadFirebase();
+    const [toiletsSnap,usersSnap,reviewsSnap]=await Promise.all([
+      db.collection('toilets').get(),
+      db.collection('users').get(),
+      db.collection('reviews').limit(500).get()
+    ]);
+    const toilets=toiletsSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const users=usersSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const reviews=reviewsSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const MONTHS=['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+
+    // ── ТУАЛЕТЫ ──
+    const openCount=toilets.filter(x=>x.isOpen).length;
+    const freeCount=toilets.filter(x=>x.isFree).length;
+    const taharatCount=toilets.filter(x=>x.isTaharatkhana).length;
+    document.getElementById('statsSummaryToilets').innerHTML=`
+      <div class="statSummaryCard"><div class="statSummaryIcon">🚻</div><div class="statSummaryNum">${toilets.length}</div><div class="statSummaryLabel">Всего точек</div></div>
+      <div class="statSummaryCard"><div class="statSummaryIcon">🟢</div><div class="statSummaryNum">${openCount}</div><div class="statSummaryLabel">Открытых</div></div>
+      <div class="statSummaryCard"><div class="statSummaryIcon">🆓</div><div class="statSummaryNum">${freeCount}</div><div class="statSummaryLabel">Бесплатных</div></div>
+      <div class="statSummaryCard"><div class="statSummaryIcon">🕌</div><div class="statSummaryNum">${taharatCount}</div><div class="statSummaryLabel">Тахаратхан</div></div>`;
+
+    const reviewsByToilet={};
+    reviews.forEach(r=>{
+      if(!reviewsByToilet[r.toiletId])reviewsByToilet[r.toiletId]={count:0,sum:0};
+      reviewsByToilet[r.toiletId].count++;
+      reviewsByToilet[r.toiletId].sum+=r.rating||0;
+    });
+    const sortedToilets=[...toilets].sort((a,b)=>(reviewsByToilet[b.id]?.count||0)-(reviewsByToilet[a.id]?.count||0));
+    document.getElementById('statsToiletsList').innerHTML=sortedToilets.map(toilet=>{
+      const rv=reviewsByToilet[toilet.id]||{count:0,sum:0};
+      const avg=rv.count>0?(rv.sum/rv.count).toFixed(1):null;
+      const tags=[];
+      if(toilet.isOpen)tags.push('<span class="statItemBadge statBadgeGreen">Открыт</span>');
+      else tags.push('<span class="statItemBadge statBadgeRed">Закрыт</span>');
+      if(toilet.isFree)tags.push('<span class="statItemBadge statBadgeBlue">Бесплатно</span>');
+      if(toilet.isTaharatkhana)tags.push('<span class="statItemBadge statBadgePurple">Тахаратхана</span>');
+      const added=toilet.createdAt?(()=>{const d=new Date(toilet.createdAt);return`${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;})():'—';
+      return`<div class="statItemCard">
+        <div class="statItemIco" style="background:${toilet.isOpen?'rgba(0,168,89,0.12)':'rgba(239,68,68,0.10)'};">${toilet.isTaharatkhana?'🕌':'🚻'}</div>
+        <div class="statItemBody">
+          <div class="statItemTitle">${toilet.title||'—'}</div>
+          <div class="statItemSub">${avg?`⭐ ${avg} · `:''}${rv.count} отз. · Добавлен ${added}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">${tags.join('')}</div>
+        </div>
+      </div>`;
+    }).join('')||'<div class="statsLoading">Нет точек</div>';
+
+    // ── ПОЛЬЗОВАТЕЛИ ──
+    const adminCount=users.filter(u=>u.role==='admin').length;
+    document.getElementById('statsSummaryUsers').innerHTML=`
+      <div class="statSummaryCard"><div class="statSummaryIcon">👥</div><div class="statSummaryNum">${users.length}</div><div class="statSummaryLabel">Всего аккаунтов</div></div>
+      <div class="statSummaryCard"><div class="statSummaryIcon">⚙️</div><div class="statSummaryNum">${adminCount}</div><div class="statSummaryLabel">Администраторов</div></div>
+      <div class="statSummaryCard"><div class="statSummaryIcon">✦</div><div class="statSummaryNum">${users.length-adminCount}</div><div class="statSummaryLabel">Обычных юзеров</div></div>
+      <div class="statSummaryCard"><div class="statSummaryIcon">💬</div><div class="statSummaryNum">${reviews.length}</div><div class="statSummaryLabel">Всего отзывов</div></div>`;
+
+    const reviewsByUser={};
+    reviews.forEach(r=>{if(r.userId)reviewsByUser[r.userId]=(reviewsByUser[r.userId]||0)+1;});
+    const sortedUsers=[...users].sort((a,b)=>(reviewsByUser[b.id]||0)-(reviewsByUser[a.id]||0));
+    document.getElementById('statsUsersList').innerHTML=sortedUsers.map(u=>{
+      const isAdmin=u.role==='admin';
+      const displayName=u.nick||u.phone||u.login||'—';
+      const identifier=u.phone||u.login||'';
+      const revCount=reviewsByUser[u.id]||0;
+      const registered=u.createdAt?(()=>{const d=new Date(u.createdAt);return`${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;})():'—';
+      const ini=displayName.replace(/\+/g,'').slice(0,2).toUpperCase();
+      const avatarColor=isAdmin?'#7c3aed':'var(--green)';
+      return`<div class="statItemCard">
+        <div class="statItemIco" style="background:${isAdmin?'rgba(124,58,237,0.12)':'rgba(0,168,89,0.10)'};border-radius:50%;color:${avatarColor};font-size:14px;font-weight:800;">${ini}</div>
+        <div class="statItemBody">
+          <div class="statItemTitle">${displayName}</div>
+          <div class="statItemSub">${identifier!==displayName?identifier+' · ':''}${revCount} отз. · Рег. ${registered}</div>
+        </div>
+        <span class="statItemBadge ${isAdmin?'statBadgePurple':'statBadgeBlue'}">${isAdmin?'⚙️ Admin':'User'}</span>
+      </div>`;
+    }).join('')||'<div class="statsLoading">Нет пользователей</div>';
+  }catch(e){
+    document.getElementById('statsToiletsList').innerHTML=`<div class="statsLoading" style="color:#ef4444;">Ошибка: ${e.message}</div>`;
+    document.getElementById('statsUsersList').innerHTML=`<div class="statsLoading" style="color:#ef4444;">Ошибка: ${e.message}</div>`;
+  }
+}
