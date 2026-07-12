@@ -296,10 +296,12 @@ function loadProfile(){
 
   const list=document.getElementById('pFavList');
   if(list){
+    // Сразу рисуем из localStorage — Firestore догонит фоново
     if(favs.length){renderFavorites();}
     else{list.innerHTML=_skFavCards(3);}
   }
 
+  // Фоновая синхронизация с Firestore — не блокирует UI
   _loadFavoritesFromFirestore();
   loadProfileStats();
 }
