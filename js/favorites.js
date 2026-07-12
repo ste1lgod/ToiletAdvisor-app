@@ -156,13 +156,13 @@ function renderFavorites(){
     const _ico=_t?.isTaharatkhana?'🕌':'🚻';
     // Берём addr из самого объекта избранного (f.addr),
     // fallback — addr туалета из allToilets, потом координаты
-    const _addrRaw=f.addr||_t?.addr||'';
     const _desc=_t?.description||'';
-    // Считаем адрес плохим если он пустой, совпадает с description или является заглушкой
-    const _addrBad=!_addrRaw||_addrRaw===_desc||_addrRaw==='Нет адреса'||_addrRaw==='—';
-    const _addr=_addrBad
-      ?(f.lat?`${Number(f.lat).toFixed(4)}, ${Number(f.lon).toFixed(4)}`:'—')
-      :_addrRaw;
+    // Приоритет: addr из объекта избранного, потом из allToilets — но только если не плохой
+    const _addrFromFav=f.addr||'';
+    const _addrFromToilet=_t?.addr||'';
+    const _addrRaw=!_isBadAddr(_addrFromFav,_desc)?_addrFromFav
+      :(!_isBadAddr(_addrFromToilet,_desc)?_addrFromToilet:'');
+    const _addr=_addrRaw||(f.lat?`${Number(f.lat).toFixed(4)}, ${Number(f.lon).toFixed(4)}`:'—');
     return`<div class="pFavItem">
       <div class="pFavItem-body">
         <div class="pFavItem-ico">${_ico}</div>
