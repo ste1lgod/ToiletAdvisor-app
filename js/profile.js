@@ -351,11 +351,14 @@ async function saveNick(nick){
     if(trimmed){
       const displayName=trimmed;
       const snap=await db.collection('reviews').where('userId','==',currentUser.id).limit(100).get();
-      const batch=db.batch();
-      snap.docs.forEach(doc=>batch.update(doc.ref,{userPhone:displayName}));
       const logSnap=await db.collection('logs').where('actorId','==',currentUser.id).limit(200).get();
-      logSnap.docs.forEach(doc=>batch.update(doc.ref,{actorName:displayName,actorNick:displayName}));
-      await batch.commit();
+      // Только если есть что обновлять — делаем batch
+      if(snap.size > 0 || logSnap.size > 0){
+        const batch=db.batch();
+        snap.docs.forEach(doc=>batch.update(doc.ref,{userPhone:displayName}));
+        logSnap.docs.forEach(doc=>batch.update(doc.ref,{actorName:displayName,actorNick:displayName}));
+        await batch.commit();
+      }
       // Инвалидируем кэш отзывов (память + localStorage) и кэш пользователей
       Object.keys(_reviewsCache).forEach(k => {
         delete _reviewsCache[k];
