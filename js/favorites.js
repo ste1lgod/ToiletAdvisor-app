@@ -52,6 +52,10 @@ async function _loadFavoritesFromFirestore(){
     renderFavorites();
     const favEl=document.getElementById('pStatFav');
     if(favEl)favEl.textContent=getFavorites().length;
+    // Если шторка открыта — обновляем сердечко по актуальным данным Firestore
+    if(isSheetOpen&&selectedToilet){
+      updateFavBtn(selectedToilet.id);
+    }
   }catch(e){
     console.warn('_loadFavoritesFromFirestore:',e.message);
     renderFavorites();
