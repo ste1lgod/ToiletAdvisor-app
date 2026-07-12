@@ -1,39 +1,82 @@
 // ── ГЛОБАЛЬНЫЙ КЭШ ПОЛЬЗОВАТЕЛЕЙ ──
-let _usersCache={};
-let _usersCacheLoaded=false;
+// Хранится в localStorage, чтобы при перезагрузке ники были доступны мгновенно
+const _USERS_CACHE_KEY = 'ta_users_cache';
+const _USERS_CACHE_TTL = 30 * 60 * 1000; // 30 минут
 
-async function _loadUsersCache(){
-  if(_usersCacheLoaded)return _usersCache;
+let _usersCache = {};
+let _usersCacheLoaded = false;
+let _usersCacheLoadPromise = null; // защита от параллельных запросов
+
+// При инициализации сразу восстанавливаем кэш из localStorage
+(function _restoreUsersCache(){
   try{
-    await _loadFirebase();
-    const snap=await db.collection('users').limit(500).get();
-    snap.docs.forEach(d=>{
-      const data=d.data();
-      _usersCache[d.id]={
-        nick:data.nick||'',
-        phone:data.phone||'',
-        login:data.login||'',
-        role:data.role||'user'
-      };
-    });
-    _usersCacheLoaded=true;
-  }catch(e){console.warn('_loadUsersCache:',e.message);}
-  return _usersCache;
+    const raw = localStorage.getItem(_USERS_CACHE_KEY);
+    if(!raw) return;
+    const stored = JSON.parse(raw);
+    if(stored && stored.data && Date.now() - stored.ts < _USERS_CACHE_TTL){
+      _usersCache = stored.data;
+      _usersCacheLoaded = true;
+    }
+  }catch(e){}
+})();
+
+async function _loadUsersCache({ forceRefresh = false } = {}){
+  // Если кэш свежий и не требуется принудительное обновление — возвращаем сразу
+  if(_usersCacheLoaded && !forceRefresh) return _usersCache;
+
+  // Защита от параллельных вызовов: если уже грузим — ждём того же промиса
+  if(_usersCacheLoadPromise) return _usersCacheLoadPromise;
+
+  _usersCacheLoadPromise = (async () => {
+    try{
+      await _loadFirebase();
+      const snap = await db.collection('users').limit(500).get();
+      const fresh = {};
+      snap.docs.forEach(d => {
+        const data = d.data();
+        fresh[d.id] = {
+          nick:  data.nick  || '',
+          phone: data.phone || '',
+          login: data.login || '',
+          role:  data.role  || 'user'
+        };
+      });
+      _usersCache = fresh;
+      _usersCacheLoaded = true;
+      // Сохраняем в localStorage для следующей сессии
+      try{
+        localStorage.setItem(_USERS_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: fresh }));
+      }catch(e){}
+    }catch(e){
+      console.warn('_loadUsersCache:', e.message);
+    }
+    _usersCacheLoadPromise = null;
+    return _usersCache;
+  })();
+
+  return _usersCacheLoadPromise;
+}
+
+// Принудительно сбросить и перезагрузить кэш (вызывается после saveNick)
+function _invalidateUsersCache(){
+  _usersCacheLoaded = false;
+  _usersCacheLoadPromise = null;
+  try{ localStorage.removeItem(_USERS_CACHE_KEY); }catch(e){}
+  // Фоново перезагружаем
+  _loadUsersCache({ forceRefresh: true });
 }
 
 // Возвращает актуальное отображаемое имя для userId
 // Приоритет: ник из кэша > телефон из кэша > логин из кэша > fallback из отзыва
-function _getActualName(userId,fallback){
-  if(!userId)return fallback||'?';
-  const u=_usersCache[userId];
+function _getActualName(userId, fallback){
+  if(!userId) return fallback || '?';
+  const u = _usersCache[userId];
   if(u){
-    // Если в кэше есть ник — всегда берём его
-    if(u.nick)return u.nick;
-    if(u.phone)return u.phone;
-    if(u.login)return u.login;
+    if(u.nick)   return u.nick;
+    if(u.phone)  return u.phone;
+    if(u.login)  return u.login;
   }
-  // Кэша нет — используем fallback из самого отзыва
-  return fallback||'?';
+  return fallback || '?';
 }
 
 // ── SYNC NICK ──
