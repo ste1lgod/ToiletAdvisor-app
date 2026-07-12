@@ -10,10 +10,14 @@ try{const s=localStorage.getItem('ta_user');if(s)currentUser=JSON.parse(s);}catc
 // ── ПАТЧ НИКНЕЙМОВ В ОТЗЫВАХ ──
 // Проходит по всем отзывам, для каждого смотрит userId → берёт актуальный ник из users
 // Если userPhone отличается от ника — обновляет в Firestore
+// Запускается один раз за сессию
+let _patchReviewNicksDone = false;
 async function _patchReviewNicks(){
+  if(_patchReviewNicksDone) return;
+  _patchReviewNicksDone = true;
   try{
     await _loadFirebase();
-    await _loadUsersCache();
+    // Кэш пользователей уже загружен к этому моменту
     const snap = await db.collection('reviews').limit(500).get();
     if(snap.empty) return;
 
@@ -27,7 +31,6 @@ async function _patchReviewNicks(){
       if(!u) continue;
       const correctName = u.nick || u.phone || u.login || '';
       if(!correctName) continue;
-      // Обновляем только если userPhone не совпадает с актуальным ником
       if(r.userPhone !== correctName){
         batch.update(doc.ref, { userPhone: correctName });
         changes++;
@@ -38,10 +41,14 @@ async function _patchReviewNicks(){
       await batch.commit();
       console.log(`[patchNicks] Обновлено ${changes} отзывов`);
       // Инвалидируем кэш отзывов — при следующем открытии шторки подтянутся свежие
-      Object.keys(_reviewsCache).forEach(k => delete _reviewsCache[k]);
+      Object.keys(_reviewsCache).forEach(k => {
+        delete _reviewsCache[k];
+        try{ localStorage.removeItem(_REVIEWS_CACHE_KEY + k); }catch(e){}
+      });
     }
   }catch(e){
     console.warn('[patchReviewNicks]', e.message);
+    _patchReviewNicksDone = false; // разрешаем повторный запуск при ошибке
   }
 }
 
