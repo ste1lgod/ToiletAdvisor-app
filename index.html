@@ -4371,36 +4371,45 @@ async function toggleFavorite(toiletId){
   const favs=getFavorites();
   const idx=favs.findIndex(f=>f.id===toiletId);
   if(idx>=0){
+    // Удаляем
     const removed=favs[idx];
     favs.splice(idx,1);
-    saveFavorites(favs);
+    saveFavorites(favs); // обновляем localStorage кэш
+    _removeFavFromFirestore(toiletId); // удаляем из Firestore в фоне
+    updateFavBtn(toiletId);
+    renderFavorites();
+    const favEl=document.getElementById('pStatFav');
+    if(favEl)favEl.textContent=favs.length;
     showToast('Убрано из избранного');
     logAction({type:'fav',category:'fav',action:t('logRemovedFav'),detail:`${t('logToilet')}: ${removed?.title||toiletId}`});
   } else {
     const toilet=allToilets.find(x=>x.id===toiletId);
     if(!toilet)return;
-    // Геокодируем реальный адрес по координатам туалета
-    let addr='';
-    try{
-      addr=await wizGeocode(toilet.lat,toilet.lon);
-    }catch(e){
-      addr=`${toilet.lat.toFixed(4)}, ${toilet.lon.toFixed(4)}`;
+    // Геокодируем адрес
+    let addr=toilet.addr||'';
+    if(!addr){
+      try{ addr=await wizGeocode(toilet.lat,toilet.lon); }
+      catch(e){ addr=`${toilet.lat.toFixed(4)}, ${toilet.lon.toFixed(4)}`; }
+      if(addr){
+        toilet.addr=addr;
+        try{
+          await _loadFirebase();
+          await db.collection('toilets').doc(toilet.id).set({addr},{merge:true});
+        }catch(e){}
+      }
     }
-    // Сохраняем геокодированный адрес обратно в Firestore (один раз)
-    if(addr && !toilet.addr){
-      toilet.addr=addr;
-      try{
-        await _loadFirebase();
-        await db.collection('toilets').doc(toilet.id).set({addr},{merge:true});
-      }catch(e){}
-    }
-    favs.push({id:toilet.id,title:toilet.title,addr:addr,lat:toilet.lat,lon:toilet.lon});
-    saveFavorites(favs);
+    const favItem={id:toilet.id,title:toilet.title,addr:addr,lat:toilet.lat,lon:toilet.lon};
+    favs.push(favItem);
+    saveFavorites(favs); // обновляем localStorage кэш
+    _addFavToFirestore(favItem); // пишем в Firestore в фоне
+    updateFavBtn(toiletId);
+    renderFavorites();
+    const favEl=document.getElementById('pStatFav');
+    if(favEl)favEl.textContent=favs.length;
     showToast('Добавлено в избранное ❤️');
     logAction({type:'fav',category:'fav',action:t('logAddedFav'),detail:`${t('logToilet')}: ${toilet.title}`});
-    // Обновляем карточку избранного если профиль открыт
-    renderFavorites();
   }
+}
   updateFavBtn(toiletId);
 }
 function updateFavBtn(toiletId){
