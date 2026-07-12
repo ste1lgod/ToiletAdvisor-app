@@ -276,7 +276,24 @@ async function loadAdminStats(){
     }).join('')||'<div class="statsLoading">Нет точек</div>';
 
     // ── ПОЛЬЗОВАТЕЛИ ──
-    const adminCount=users.filter(u=>u.role==='admin').length;
+    // Фильтруем дубликаты: если несколько пользователей с одинаковым телефоном без ника —
+    // оставляем только одного (у которого есть отзывы, иначе первого по дате)
+    const phoneCount = {};
+    users.forEach(u => { if(u.phone && !u.nick) phoneCount[u.phone] = (phoneCount[u.phone]||0)+1; });
+    const seenDupPhone = {};
+    const dedupUsers = users.filter(u => {
+      // Администраторов и пользователей с ником всегда показываем
+      if(u.role === 'admin' || u.nick) return true;
+      // Пользователь с уникальным телефоном — показываем
+      if(!u.phone || phoneCount[u.phone] <= 1) return true;
+      // Дубликат: если у него есть отзывы — показываем
+      if(reviewsByUser[u.id] > 0) return true;
+      // Иначе — первый дубль показываем, остальные скрываем
+      if(!seenDupPhone[u.phone]){ seenDupPhone[u.phone] = true; return true; }
+      return false;
+    });
+
+    const adminCount=dedupUsers.filter(u=>u.role==='admin').length;
     document.getElementById('statsSummaryUsers').innerHTML=`
       <div class="statSummaryCard"><div class="statSummaryRow"><span class="statSummaryIcon">👥</span><span class="statSummaryNum">${users.length}</span></div><div class="statSummaryLabel">Всего аккаунтов</div></div>
       <div class="statSummaryCard"><div class="statSummaryRow"><span class="statSummaryIcon">⚙️</span><span class="statSummaryNum">${adminCount}</span></div><div class="statSummaryLabel">Администраторов</div></div>
