@@ -259,12 +259,18 @@ async function loadAdminStats(){
       if(toilet.isFree)tags.push('<span class="statItemBadge statBadgeBlue">Бесплатно</span>');
       if(toilet.isTaharatkhana)tags.push('<span class="statItemBadge statBadgePurple">Тахаратхана</span>');
       const added=toilet.createdAt?(()=>{const d=new Date(toilet.createdAt);return`${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;})():'—';
+      const addrLine=toilet.addr?`<div class="statItemAddr">${toilet.addr}</div>`:'';
       return`<div class="statItemCard">
         <div class="statItemIco" style="background:${toilet.isOpen?'rgba(0,168,89,0.12)':'rgba(239,68,68,0.10)'};">${toilet.isTaharatkhana?'🕌':'🚻'}</div>
         <div class="statItemBody">
           <div class="statItemTitle">${toilet.title||'—'}</div>
-          <div class="statItemSub">${avg?`⭐ ${avg} · `:''}${rv.count} отз. · Добавлен ${added}</div>
-          <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">${tags.join('')}</div>
+          ${addrLine}
+          <div class="statItemMeta">
+            ${avg?`<span class="statItemMetaChip">⭐ ${avg}</span>`:''}
+            <span class="statItemMetaChip">${rv.count} отз.</span>
+            <span class="statItemMetaChip">📅 ${added}</span>
+          </div>
+          <div class="statItemTags">${tags.join('')}</div>
         </div>
       </div>`;
     }).join('')||'<div class="statsLoading">Нет точек</div>';
