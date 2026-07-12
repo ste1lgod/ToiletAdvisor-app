@@ -301,3 +301,98 @@ Touch events на `#sDragZone`: отслеживает `touchstart/touchmove/tou
 ### 8.6 _saveReviewsToStorage(toiletId, data)
 Сохраняет отзывы в localStorage. При `QuotaExceededError` (хранилище переполнено) —
 очищает все кэши отзывов (`ta_rv_*`) и повторяет попытку.
+
+---
+
+## 9. Модуль favorites.js — избранное
+
+### 9.1 Хранение
+
+```
+localStorage ta_fav_{userId}     — быстрый кэш, ответ мгновенный
+Firestore users/{id}/favorites/  — источник правды, синхронизируется фоново
+```
+
+Структура в обоих местах одинакова: `{id, title, addr, lat, lon}`.
+
+### 9.2 Ключевые функции
+
+**`getFavorites()`** — читает из localStorage синхронно, возвращает массив.
+
+**`toggleFavorite(toiletId)`**
+- Если туалет уже в избранном → удаляет из localStorage + `_removeFavFromFirestore()` (fire-and-forget)
+- Если нет → проверяет адрес через `_isBadAddr()`, при необходимости геокодирует →
+  добавляет в localStorage + `_addFavToFirestore()` (fire-and-forget)
+- В обоих случаях мгновенно обновляет UI: `updateFavBtn()`, `renderFavorites()`
+
+**`_loadFavoritesFromFirestore()`** — загружает избранное из Firestore фоново.
+Сравнивает состав с localStorage. Если состав отличается — перерисовывает список.
+Если localStorage пустой а Firestore нет — синхронизирует localStorage из Firestore.
+Если наоборот — заливает localStorage в Firestore.
+
+**`renderFavorites()`** — рендерит список избранного в профиле.
+Каждый элемент получает `data-fav-id` атрибут для надёжного DOM-поиска.
+Если `allToilets` ещё не загружен — показывает скелетон и повторяет попытку (max 3 раза).
+После рендера запускает `_fixFavAddresses(favs)`.
+
+**`_isBadAddr(addr, desc)`** — проверяет адрес на корректность:
+- пустой → плохой
+- `"Нет адреса"` или `"—"` → плохой
+- совпадает с description туалета → плохой
+- выглядит как координаты `"41.308, 69.259"` → плохой
+
+**`_fixFavAddresses(favs)`** — проходит по элементам избранного у которых плохой адрес,
+геокодирует через Nominatim. Обновляет адрес в DOM по `data-fav-id`,
+в localStorage и в Firestore. Защищён флагом `_fixFavRunning` от параллельных запусков.
+
+---
+
+## 10. Модуль profile.js — авторизация и профиль
+
+### 10.1 Кэш пользователей
+
+```
+_usersCache = {}                — in-memory словарь: {userId: {nick, phone, login, role}}
+localStorage ta_users_cache     — persistent кэш с TTL 30 минут
+```
+
+**При старте страницы** (IIFE в начале файла): мгновенно восстанавливает кэш из localStorage
+если он свежий. Это позволяет показывать ники в отзывах без ожидания сетевого запроса.
+
+**`_loadUsersCache({forceRefresh})`** — загружает всех пользователей из Firestore.
+Защита от параллельных вызовов: если уже идёт загрузка → возвращает тот же Promise.
+При успехе сохраняет в `_usersCache` и в localStorage.
+
+**`_invalidateUsersCache()`** — сбрасывает кэш и запускает новую загрузку.
+Вызывается после `saveNick` чтобы новый ник распространился везде.
+
+**`_getActualName(userId, fallback)`** — возвращает имя для отображения.
+Приоритет: `nick > phone > login > fallback > 'Пользователь'`
+
+### 10.2 Авторизация
+
+**`doAuth()`** — вход или регистрация по телефону:
+- `login`: ищет в Firestore по телефону, проверяет хэш пароля, создаёт `currentUser`
+- `register`: проверяет что телефон не занят, создаёт документ в Firestore, добавляет в кэш
+
+**`doAdminLogin()`** — вход по логин/пароль:
+- Race с таймаутом 8 сек (защита от зависания)
+- Ищет по полям `login` И `role === 'admin'`
+- После входа обновляет запись в `_usersCache`
+- Флаг `_adminLoginInProgress` защищает от двойного клика
+
+**`doLogout()`** — очищает `currentUser` из localStorage, переключает на карту.
+
+### 10.3 saveNick(nick)
+1. Проверяет изменился ли ник (если нет — выходит сразу, не делает запросы)
+2. Обновляет `currentUser`, localStorage, `_usersCache` синхронно
+3. Обновляет в Firestore: `users/{id}` → set nick
+4. Если ник непустой → batch-обновление отзывов и логов пользователя
+5. Инвалидирует кэш отзывов и пользователей
+6. Toast-уведомление "Ник сохранён ✓"
+
+### 10.4 switchTab(tab)
+Переключатель между тремя экранами: `map`, `add` (admin), `profile`.
+Управляет видимостью хедера, контролов карты, экранов.
+При `add`: проверяет роль — `admin` видит панель, остальные видят экран блокировки.
+При `profile`: вызывает `loadProfile()`.
