@@ -118,7 +118,7 @@ function resetReviewForm(){
 
 // ── REVIEWS ──
 const _reviewsCache = {};
-const _REVIEWS_CACHE_TTL = 60000;
+const _REVIEWS_CACHE_TTL = 300000; // 5 минут
 
 async function getReviews(id){
   const cached = _reviewsCache[id];
