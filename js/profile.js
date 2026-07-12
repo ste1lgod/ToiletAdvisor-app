@@ -13,7 +13,7 @@ let _usersCacheLoadPromise = null; // защита от параллельных
     const raw = localStorage.getItem(_USERS_CACHE_KEY);
     if(!raw) return;
     const stored = JSON.parse(raw);
-    if(stored && stored.data && Date.now() - stored.ts < _USERS_CACHE_TTL){
+    if(stored && stored.data && typeof stored.data === 'object' && !Array.isArray(stored.data) && Date.now() - stored.ts < _USERS_CACHE_TTL){
       _usersCache = stored.data;
       _usersCacheLoaded = true;
     }
