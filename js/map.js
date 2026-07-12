@@ -315,3 +315,44 @@ function formatDist(m,fallback){
   const suf=fallback?` ${t('distFallback')}`:'';
   return m<1000?`▵ ${Math.round(m)} ${t('mAway')}${suf}`:`▵ ${(m/1000).toFixed(1)} ${t('kmAway')}${suf}`;
 }
+
+// ── BACKGROUND GEOCODING — добавляет адреса всем точкам без адреса ──
+async function _geocodeMissingAddresses(){
+  // Берём только точки без адреса или с координатами в виде строки
+  const needGeocode = allToilets.filter(t => {
+    if(!t.addr) return true;
+    // Если addr выглядит как координаты — заменяем
+    if(/^-?\d{1,3}\.\d{3,},\s*-?\d{1,3}\.\d{3,}$/.test((t.addr||'').trim())) return true;
+    return false;
+  });
+  if(!needGeocode.length) return;
+  console.log(`[geocode] Нужно адресов: ${needGeocode.length}`);
+  await _loadFirebase();
+  for(const toilet of needGeocode){
+    try{
+      const addr = await wizGeocode(toilet.lat, toilet.lon);
+      if(!addr || /^-?\d{1,3}\.\d/.test(addr.trim())) continue;
+      toilet.addr = addr;
+      // Сохраняем в Firestore
+      await db.collection('toilets').doc(toilet.id).set({addr}, {merge:true});
+      console.log(`[geocode] ${toilet.title} → ${addr}`);
+      // Если точка в избранном у кого-то — обновим там тоже
+      if(currentUser){
+        const favs = getFavorites();
+        const fi = favs.findIndex(f => f.id === toilet.id);
+        if(fi >= 0){
+          favs[fi].addr = addr;
+          saveFavorites(favs);
+          // Обновим в Firestore в коллекции favorites
+          try{
+            await db.collection('users').doc(currentUser.id)
+              .collection('favorites').doc(toilet.id).set({addr}, {merge:true});
+          }catch(e){}
+          renderFavorites();
+        }
+      }
+    }catch(e){
+      console.warn(`[geocode] Ошибка для ${toilet.title}:`, e.message);
+    }
+  }
+}
