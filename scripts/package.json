@@ -1,0 +1,11 @@
+{
+  "name": "toilet-advisor-scripts",
+  "version": "1.0.0",
+  "description": "Утилиты для инициализации Firestore",
+  "scripts": {
+    "seed": "node seed.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^14.1.0"
+  }
+}
