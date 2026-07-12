@@ -7,12 +7,15 @@ let addCoords=null,myMap=null,searchTimer=null;
 let userCoords=null,userPlacemark=null;
 try{const s=localStorage.getItem('ta_user');if(s)currentUser=JSON.parse(s);}catch(e){}
 
-// ── ПАТЧ АДРЕСОВ SEED-ТОЧЕК ──
+// ── ПАТЧ АДРЕСОВ ТУАЛЕТОВ ──
+// Запускается при старте: записывает addr в Firestore для точек у которых его нет
 async function _patchSeedAddresses(){
   try{
     await _loadFirebase();
-    const batch=db.batch();
-    let hasChanges=false;
+
+    // Шаг 1 — seed-точки: у них адреса уже есть в constants.js, просто пишем в Firestore
+    const seedBatch=db.batch();
+    let seedChanges=false;
     for(const toilet of FALLBACK_TOILETS){
       if(!toilet.addr)continue;
       const local=allToilets.find(x=>x.id===toilet.id);
@@ -20,12 +23,26 @@ async function _patchSeedAddresses(){
       try{
         const doc=await db.collection('toilets').doc(toilet.id).get();
         if(doc.exists&&!doc.data().addr){
-          batch.update(db.collection('toilets').doc(toilet.id),{addr:toilet.addr});
-          hasChanges=true;
+          seedBatch.update(db.collection('toilets').doc(toilet.id),{addr:toilet.addr});
+          seedChanges=true;
         }
       }catch(e){}
     }
-    if(hasChanges)await batch.commit();
+    if(seedChanges)await seedBatch.commit();
+
+    // Шаг 2 — остальные точки без addr: геокодируем через Nominatim (по 1 в секунду — rate limit)
+    const needsGeo=allToilets.filter(t=>!t.addr);
+    if(!needsGeo.length)return;
+    for(const toilet of needsGeo){
+      try{
+        await new Promise(r=>setTimeout(r,1100)); // уважаем rate limit Nominatim
+        const addr=await wizGeocode(toilet.lat,toilet.lon);
+        if(addr&&!addr.includes('.toFixed')){
+          toilet.addr=addr;
+          await db.collection('toilets').doc(toilet.id).set({addr},{merge:true});
+        }
+      }catch(e){}
+    }
   }catch(e){console.warn('_patchSeedAddresses:',e.message);}
 }
 
