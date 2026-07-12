@@ -55,10 +55,8 @@ body.dark .refreshBtn{
 }
 .refreshBtn:active{opacity:.7;transform:scale(.96);}
 .refreshBtn svg{flex-shrink:0;}
-/* Состояние загрузки — иконка вращается, кнопка приглушена */
+/* Состояние загрузки — кнопка приглушена */
 .refreshBtn.loading{opacity:.5;pointer-events:none;}
-.refreshBtn.loading svg{animation:spinRefresh .8s linear infinite;}
-@keyframes spinRefresh{from{transform:rotate(0deg);}to{transform:rotate(-360deg);}}
 
 /* ===== OFFLINE BANNER ===== */
 #offlineBanner{
