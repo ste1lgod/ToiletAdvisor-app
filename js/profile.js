@@ -348,7 +348,7 @@ async function saveNick(nick){
       await batch.commit();
       // Инвалидируем оба кэша — отзывов и пользователей
       Object.keys(_reviewsCache).forEach(k=>delete _reviewsCache[k]);
-      _usersCacheLoaded=false;
+      _invalidateUsersCache();
     }
   }catch(e){console.warn('saveNick error:',e);}
 }
