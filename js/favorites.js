@@ -118,3 +118,61 @@ async function toggleFavorite(toiletId){
     logAction({type:'fav',category:'fav',action:t('logAddedFav'),detail:`${t('logToilet')}: ${toilet.title}`});
   }
 }
+
+function updateFavBtn(toiletId){
+  const btn=document.getElementById('sFavBtn');
+  if(btn){
+    const fav=isFavorite(toiletId);
+    btn.classList.toggle('active',fav);
+    btn.innerHTML=fav
+      ?`<svg width="18" height="18" viewBox="0 0 24 24" fill="#ef4444" stroke="#ef4444" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`
+      :`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+  }
+}
+
+function renderFavorites(){
+  const list=document.getElementById('pFavList');
+  if(!list)return;
+  const favs=getFavorites();
+  const favEl=document.getElementById('pStatFav');
+  if(favEl)favEl.textContent=favs.length;
+  if(!favs.length){
+    list.innerHTML='<p style="text-align:center;color:var(--text2);font-size:13px;padding:10px 0;">Нет избранных туалетов</p>';
+    return;
+  }
+  if(!allToilets.length){
+    list.innerHTML=_skFavCards(favs.length);
+    setTimeout(()=>{ if(allToilets.length)renderFavorites(); },1200);
+    return;
+  }
+  list.innerHTML=favs.map(f=>{
+    const _t=allToilets.find(x=>x.id===f.id);
+    const _ico=_t?.isTaharatkhana?'🕌':'🚻';
+    const _toiletDesc=_t?.description||'';
+    const _addr=(f.addr&&f.addr!==_toiletDesc)?f.addr:(f.lat?`${Number(f.lat).toFixed(4)}, ${Number(f.lon).toFixed(4)}`:'—');
+    return`<div class="pFavItem">
+      <div class="pFavItem-body">
+        <div class="pFavItem-ico">${_ico}</div>
+        <div class="pFavItem-info" onclick="openFavSheet('${f.id}')">
+          <div class="pFavItem-title">${f.title}</div>
+          <div class="pFavItem-addr">${_addr}</div>
+        </div>
+      </div>
+      <div class="pFavItem-divider"></div>
+      <div class="pFavItem-actions">
+        <button class="pFavItem-btn" onclick="openFavOnMap('${f.id}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          На карте
+        </button>
+        <button class="pFavItem-btn" onclick="openFavSheet('${f.id}')" style="background:rgba(236,72,153,0.1);border-color:rgba(236,72,153,0.3);color:#ec4899;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          Открыть
+        </button>
+        <button class="pFavRemove" onclick="confirmRemoveFavorite('${f.id}','${f.title.replace(/'/g,"\\'")}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+  _fixFavAddresses(favs);
+}
